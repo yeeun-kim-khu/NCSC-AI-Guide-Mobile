@@ -398,7 +398,6 @@ def initialize_vector_db():
     
     try:
         vectorstore = Chroma(
-            persist_directory=persist_directory,
             embedding_function=embeddings
         )
         return vectorstore
@@ -419,8 +418,7 @@ def initialize_vector_db():
         
         vectorstore = Chroma.from_documents(
             docs, 
-            embeddings,
-            persist_directory=persist_directory
+            embeddings
         )
         return vectorstore
 
