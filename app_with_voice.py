@@ -72,12 +72,12 @@ def main():
         if "debug_logs" not in st.session_state:
             st.session_state.debug_logs = []
 
+        system_prompt = get_dynamic_prompt(user_mode, language_mode)
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1)
         memory = MemorySaver()
         agent = create_react_agent(
             model=llm,
             tools=get_tools(),
-            prompt=get_dynamic_prompt(user_mode, language_mode),
             checkpointer=memory,
         )
 
@@ -152,10 +152,10 @@ def main():
                         retrieved_docs = vector_db.similarity_search(user_input, k=3)
                         rag_context = "\n\n".join([f"[{doc.metadata.get('source', 'N/A')}]\n{doc.page_content}" for doc in retrieved_docs])
                         
-                        # RAG 컨텍스트를 시스템 메시지로 추가 (사용자 메시지와 분리)
+                        # 시스템 프롬프트와 RAG 컨텍스트를 시스템 메시지로 추가
                         config = {"configurable": {"thread_id": st.session_state.thread_id}}
                         messages = [
-                            {"role": "system", "content": f"[RAG 배경지식]\n{rag_context}"},
+                            {"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"},
                             {"role": "user", "content": user_input}
                         ]
                         result = agent.invoke({"messages": messages}, config=config)
