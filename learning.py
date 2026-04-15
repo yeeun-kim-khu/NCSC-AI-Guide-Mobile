@@ -59,6 +59,9 @@ ZONE_INFO = {
 def get_zone_exhibits_from_rag(zone_name, vector_db):
     """RAG DB: zone_name(='AI/Thinking/Action/Explore/Observe/Light') -> list of exhibits"""
     try:
+        print(f"=== RAG Search Debug ===")
+        print(f"Input zone_name: {zone_name}")
+        
         # zone_name based search terms - match actual CSV data
         search_terms = []
         
@@ -73,6 +76,7 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
         }
         
         mapped_zone = csv_zone_mapping.get(zone_name, zone_name)
+        print(f"Mapped zone: {mapped_zone}")
         
         # Skip zones without data
         if not mapped_zone:
@@ -80,16 +84,20 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
             return []
             
         search_terms.extend([mapped_zone, zone_name])
+        print(f"Search terms: {search_terms}")
         
         # Search with multiple terms
         all_docs = []
         for term in search_terms:
             try:
                 docs = vector_db.similarity_search(term, k=30)
+                print(f"Term '{term}' found {len(docs)} docs")
                 all_docs.extend(docs)
             except Exception as e:
                 print(f"Search error for term '{term}': {e}")
                 continue
+        
+        print(f"Total docs before filtering: {len(all_docs)}")
         
         # Remove duplicates and filter by zone relevance
         exhibits = []
@@ -99,13 +107,15 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
             content = doc.page_content
             category = doc.metadata.get("category", "")
             
-            # Check if content is relevant to the zone
+            # Check if content is relevant to zone
             is_relevant = (
                 mapped_zone in content or 
                 zone_name in content or 
                 mapped_zone in category or
                 zone_name in category
             )
+            
+            print(f"Doc check - Category: '{category}', Relevant: {is_relevant}")
             
             if is_relevant and content not in seen_content:
                 exhibits.append({
@@ -114,7 +124,8 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
                 })
                 seen_content.add(content)
         
-        print(f"RAG search result: {len(exhibits)} exhibits found in {zone_name}")
+        print(f"Final result: {len(exhibits)} exhibits found in {zone_name}")
+        print(f"=== End RAG Search Debug ===")
         return exhibits
     except Exception as e:
         print(f"RAG search error: {e}")
