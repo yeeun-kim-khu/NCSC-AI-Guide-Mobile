@@ -584,7 +584,10 @@ def main():
             user_input = st.session_state.get("pending_user_input")
             del st.session_state["pending_user_input"]
         
-        typed_input = st.chat_input(ui_text.get(language_mode, ui_text["한국어"])["chat_placeholder"])
+        typed_input = st.chat_input(
+            ui_text.get(language_mode, ui_text["한국어"])["chat_placeholder"],
+            key="tab1_chat_input"
+        )
         if not user_input:
             user_input = typed_input
         
