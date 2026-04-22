@@ -434,7 +434,7 @@ def render_post_visit_learning(
             "audiobook_generating": "오디오북 생성 중..."
         },
         "English": {
-            "title": "🎓 Post-Visit Learning",
+            "title": "🥰 Again Zone",
             "subtitle": "Select the zones you visited and review the science!",
             "floor1": "1st Floor",
             "floor2": "2nd Floor",
