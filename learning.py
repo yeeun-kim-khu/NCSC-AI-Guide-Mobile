@@ -173,7 +173,28 @@ def extract_principles_from_exhibits(exhibits, llm):
 
 def generate_quiz(zone_name, principle, llm, language="한국어"):
     """과학원리 기반 퀴즈 생성"""
-    
+
+    def _get_ui_glossary_rules(language_mode: str) -> str:
+        glossary = {
+            "English": {
+                "놀이터": "Zone",
+                "전시물": "Exhibit",
+                "과학원리": "Science principle",
+                "오디오북": "Audiobook",
+            }
+        }
+        if language_mode == "한국어":
+            return ""
+        lang_terms = glossary.get(language_mode, glossary["English"])
+        rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
+        return (
+            "\n\nGLOSSARY (must follow exactly):\n"
+            + "\n".join(rule_lines)
+            + "\n- Use these terms consistently. Do not mix languages.\n"
+        )
+
+    glossary_rules = _get_ui_glossary_rules(language)
+
     language_prompts = {
         "한국어": f"""'{zone_name}'의 '{principle}' 원리에 대한 퀴즈를 만들어주세요.
 
@@ -192,7 +213,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어"):
 
 어린이 눈높이에 맞춰 재미있고 교육적인 퀴즈를 만들어주세요!""",
         
-        "English": f"""Create a quiz about '{principle}' from '{zone_name}'.
+        "English": f"""Create a quiz about '{principle}' from '{zone_name}'.{glossary_rules}
 
 Quiz format:
 **Question**: [Easy-to-understand question for children]
@@ -228,6 +249,27 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     
     exhibit_summary = "\n".join([f"- {ex['metadata'].get('title', '')}" for ex in exhibits[:5]])
     principles_text = ", ".join(principles[:3])
+
+    def _get_ui_glossary_rules(language_mode: str) -> str:
+        glossary = {
+            "English": {
+                "놀이터": "Zone",
+                "전시물": "Exhibit",
+                "과학원리": "Science principle",
+                "오디오북": "Audiobook",
+            }
+        }
+        if language_mode == "한국어":
+            return ""
+        lang_terms = glossary.get(language_mode, glossary["English"])
+        rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
+        return (
+            "\n\nGLOSSARY (must follow exactly):\n"
+            + "\n".join(rule_lines)
+            + "\n- Use these terms consistently. Do not mix languages.\n"
+        )
+
+    glossary_rules = _get_ui_glossary_rules(language)
     
     language_prompts = {
         "한국어": f"""당신은 어린이를 위한 과학동화 작가입니다.
@@ -255,7 +297,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 - 긍정적이고 희망찬 결말
 - 잠들기 전 듣기 좋은 차분한 분위기""",
 
-        "English": f"""You are a children's science storyteller.
+        "English": f"""You are a children's science storyteller.{glossary_rules}
 
 **Background:**
 Today, a child visited '{zone_name}' and experienced these exhibits:
@@ -320,8 +362,44 @@ def text_to_audiobook(story_text, language="한국어"):
 # Streamlit UI
 # ============================================================================
 
-def render_post_visit_learning(vector_db, language_mode="한국어"):
+@st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
+def _backtranslate_to_korean_cached(text: str, source_language: str) -> str:
+    if not text or source_language == "한국어":
+        return ""
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    prompt = (
+        "You are a precise translator. Translate the following UI text into Korean. "
+        "Keep it concise and natural. Do not add extra explanations.\n\n"
+        f"Source language: {source_language}\n"
+        f"Text: {text}"
+    )
+    try:
+        resp = llm.invoke(prompt)
+        return (resp.content or "").strip()
+    except Exception:
+        return ""
+
+
+def render_post_visit_learning(
+    vector_db,
+    language_mode="한국어",
+    debug_show_korean: bool = False,
+    debug_backtranslate: bool = False,
+):
     """사후 학습 시스템 메인 UI"""
+
+    def _display_zone_name(zone: str) -> str:
+        if language_mode == "한국어":
+            return zone
+        official = {
+            "AI놀이터": "AI Zone",
+            "행동놀이터": "Activity Zone",
+            "관찰놀이터": "Discovery Zone",
+            "탐구놀이터": "Exploration Zone",
+        }
+        if zone in official:
+            return official[zone]
+        return zone.replace("놀이터", "ZONE")
     
     texts = {
         "한국어": {
@@ -336,6 +414,21 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
             "generating": "과학원리 분석 중...",
             "quiz_mode": "퀴즈 모드",
             "chat_mode": "질문 모드",
+            "select_principle": "퀴즈 주제 선택",
+            "make_quiz": "퀴즈 생성",
+            "quiz_generating": "퀴즈 생성 중...",
+            "question_prompt": "에 대해 궁금한 점을 물어보세요",
+            "answer_prefix": "답변",
+            "pick_zone_hint": "체험한 놀이터를 선택해주세요!",
+            "exhibits_not_found": "의 전시물 정보를 찾을 수 없습니다.",
+            "principles_not_found": "과학원리를 추출할 수 없습니다.",
+            "story_intro": "오늘 체험한 놀이터를 바탕으로 나만의 과학동화를 만들어보세요!",
+            "story_select_heading": "### 동화에 포함할 놀이터 선택",
+            "story_generated": "### 📖 생성된 동화",
+            "to_audiobook": "🎧 오디오북으로 변환",
+            "audiobook_download": "💾 오디오북 다운로드",
+            "story_fail": "동화 생성에 실패했습니다.",
+            "audiobook_fail": "오디오북 생성에 실패했습니다.",
             "generate_story": "과학동화 만들기",
             "story_generating": "동화 생성 중...",
             "audiobook_generating": "오디오북 생성 중..."
@@ -352,6 +445,21 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
             "generating": "Analyzing principles...",
             "quiz_mode": "Quiz Mode",
             "chat_mode": "Q&A Mode",
+            "select_principle": "Choose a quiz topic",
+            "make_quiz": "Generate quiz",
+            "quiz_generating": "Generating quiz...",
+            "question_prompt": ": ask what you're curious about",
+            "answer_prefix": "Answer",
+            "pick_zone_hint": "Please select the zones you visited!",
+            "exhibits_not_found": ": exhibit information not found.",
+            "principles_not_found": "Unable to extract science principles.",
+            "story_intro": "Create your own science story based on the zones you visited today!",
+            "story_select_heading": "### Select zones to include in the story",
+            "story_generated": "### 📖 Generated story",
+            "to_audiobook": "🎧 Convert to audiobook",
+            "audiobook_download": "💾 Download audiobook",
+            "story_fail": "Failed to generate the story.",
+            "audiobook_fail": "Failed to generate the audiobook.",
             "generate_story": "Create Story",
             "story_generating": "Generating story...",
             "audiobook_generating": "Creating audiobook..."
@@ -378,7 +486,8 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
             col = col1 if i % 2 == 0 else col2
             with col:
                 disabled = not ZONE_INFO[zone]["has_data"]
-                label = f"{zone} {text['no_data']}" if disabled else zone
+                zone_disp = _display_zone_name(zone)
+                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
                 if st.checkbox(label, key=f"zone_{zone}", disabled=disabled):
                     selected_zones.append(zone)
         
@@ -390,7 +499,8 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
             col = col3 if i % 2 == 0 else col4
             with col:
                 disabled = not ZONE_INFO[zone]["has_data"]
-                label = f"{zone} {text['no_data']}" if disabled else zone
+                zone_disp = _display_zone_name(zone)
+                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
                 if st.checkbox(label, key=f"zone_{zone}", disabled=disabled):
                     selected_zones.append(zone)
         
@@ -402,7 +512,7 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
             
             for zone in selected_zones:
-                st.markdown(f"## 🎯 {zone}")
+                st.markdown(f"## 🎯 {_display_zone_name(zone)}")
                 
                 with st.spinner(text["generating"]):
                     exhibits = get_zone_exhibits_from_rag(zone, vector_db)
@@ -416,20 +526,20 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
                             
                             if mode == text["quiz_mode"]:
                                 selected_principle = st.selectbox(
-                                    "퀴즈 주제 선택",
+                                    text["select_principle"],
                                     principles,
                                     key=f"principle_{zone}"
                                 )
                                 
-                                if st.button(f"퀴즈 생성", key=f"quiz_{zone}"):
-                                    with st.spinner("퀴즈 생성 중..."):
+                                if st.button(text["make_quiz"], key=f"quiz_{zone}"):
+                                    with st.spinner(text["quiz_generating"]):
                                         quiz = generate_quiz(zone, selected_principle, llm, language_mode)
                                         if quiz:
                                             st.markdown(quiz)
                             
                             else:  # 질문 모드
                                 user_question = st.text_input(
-                                    f"{zone}에 대해 궁금한 점을 물어보세요",
+                                    f"{_display_zone_name(zone)}{text['question_prompt']}",
                                     key=f"question_{zone}"
                                 )
                                 
@@ -443,21 +553,35 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
 어린이가 이해하기 쉽게 답변해주세요."""
                                     
                                     response = llm.invoke(prompt)
-                                    st.markdown(f"**답변:** {response.content}")
+                                    st.markdown(f"**{text['answer_prefix']}:** {response.content}")
                         else:
-                            st.info("과학원리를 추출할 수 없습니다.")
+                            st.info(text["principles_not_found"])
                     else:
-                        st.warning(f"{zone}의 전시물 정보를 찾을 수 없습니다.")
+                        st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
         else:
-            st.info("체험한 놀이터를 선택해주세요!")
+            st.info(text["pick_zone_hint"])
     
     with learning_tab2:
         st.subheader(text["tab2"])
-        st.markdown("오늘 체험한 놀이터를 바탕으로 나만의 과학동화를 만들어보세요!")
+        st.markdown(text["story_intro"])
+
+        if language_mode != "한국어" and debug_show_korean:
+            st.caption(f"KO: {texts['한국어']['story_intro']}")
+        if language_mode != "한국어" and debug_backtranslate:
+            bt = _backtranslate_to_korean_cached(text["story_intro"], language_mode)
+            if bt:
+                st.caption(f"BT: {bt}")
         
         selected_zones_story = []
         
-        st.markdown("### 동화에 포함할 놀이터 선택")
+        st.markdown(text["story_select_heading"])
+
+        if language_mode != "한국어" and debug_show_korean:
+            st.caption(f"KO: {texts['한국어']['story_select_heading']}")
+        if language_mode != "한국어" and debug_backtranslate:
+            bt = _backtranslate_to_korean_cached(text["story_select_heading"], language_mode)
+            if bt:
+                st.caption(f"BT: {bt}")
         for zone, info in ZONE_INFO.items():
             if info["has_data"]:
                 if st.checkbox(zone, key=f"story_{zone}"):
@@ -482,24 +606,31 @@ def render_post_visit_learning(vector_db, language_mode="한국어"):
                     story = generate_science_story(zone_names, all_exhibits, all_principles, language_mode)
                     
                     if story:
-                        st.markdown("### 📖 생성된 동화")
+                        st.markdown(text["story_generated"])
+
+                        if language_mode != "한국어" and debug_show_korean:
+                            st.caption(f"KO: {texts['한국어']['story_generated']}")
+                        if language_mode != "한국어" and debug_backtranslate:
+                            bt = _backtranslate_to_korean_cached(text["story_generated"], language_mode)
+                            if bt:
+                                st.caption(f"BT: {bt}")
                         st.markdown(story)
                         
-                        if st.button("🎧 오디오북으로 변환"):
+                        if st.button(text["to_audiobook"]):
                             with st.spinner(text["audiobook_generating"]):
                                 audio_bytes = text_to_audiobook(story, language_mode)
                                 
                                 if audio_bytes:
                                     st.audio(audio_bytes, format="audio/mp3")
                                     st.download_button(
-                                        label="💾 오디오북 다운로드",
+                                        label=text["audiobook_download"],
                                         data=audio_bytes,
                                         file_name="my_science_story.mp3",
                                         mime="audio/mp3"
                                     )
                                 else:
-                                    st.error("오디오북 생성에 실패했습니다.")
+                                    st.error(text["audiobook_fail"])
                     else:
-                        st.error("동화 생성에 실패했습니다.")
+                        st.error(text["story_fail"])
                 else:
-                    st.warning("선택한 놀이터의 정보를 찾을 수 없습니다.")
+                    st.warning(text["pick_zone_hint"])
