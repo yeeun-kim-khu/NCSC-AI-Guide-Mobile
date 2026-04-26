@@ -1230,6 +1230,20 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 - 운영시간, 입장료, 휴관일 → 반드시 RAG 또는 도구 결과 기반
 - RAG/도구에 없는 정보 → "공식 홈페이지(www.csc.go.kr)에서 확인해주세요"
    - "정확한 정보는 02-3668-3350으로 문의해주세요."
+
+=== OFFICIAL PLACE NAMES (MANDATORY GLOSSARY for non-Korean answers) ===
+When answering in English/Japanese/Chinese, you MUST use EXACTLY these official English names for places. NEVER invent alternative translations. For Japanese/Chinese answers, either keep the English official name or use the Korean original — do not invent localized names.
+- AI놀이터 → "AI Zone"
+- 행동놀이터 → "Activity Zone"
+- 생각놀이터 → "Thinking Zone"
+- 탐구놀이터 → "Discovery Zone"
+- 관찰놀이터 → "Discovery Zone"
+- 과학극장 → "Science Theater"
+- 빛놀이터 → "Interactive Theater"
+- 어린이교실 → "Kids Classroom"
+- 천체투영관 → "Planetarium"
+- 휴게실 → "Lounge"
+CRITICAL: These are the ONLY acceptable English names. Do NOT write "Thought Playground", "Observation Zone", "Light Zone", "Exploration Zone", or any other variant.
 """
     
     if mode == "어린이":
@@ -1377,72 +1391,60 @@ def load_zone_rows_from_csv(zone_name: str):
     rows = [x for x in rows if x.get("title")]
     return rows
 
-PLANETARIUM_VIDEO_INFO = {
-    "코코몽 우주탐험": {
-        "themes": "토성, 위성 타이탄, 태양계 행성, 우주여행, 모험",
-        "fulldomedb_url": "https://www.fddb.org/fulldome-shows/cocomong-space-adventure/",
-    },
-    "길냥이 키츠 슈퍼문 대모험": {
-        "themes": "달, 슈퍼문, 아폴로 미션, 달 기지, 미래 우주 탐사",
-        "fulldomedb_url": "https://www.fddb.org/",
-    },
-    "바니 앤 비니": {
-        "themes": "바다 생태계, 별과 별자리, 해양 생물, 자연의 신비",
-        "fulldomedb_url": "https://www.fddb.org/",
-    },
-    "다이노소어": {
-        "themes": "공룡, 중생대, 시간여행, 멸종, 지구의 역사",
-        "fulldomedb_url": "https://www.fddb.org/",
-    },
-    "길냥이 키츠 우주정거장의 비밀": {
-        "themes": "국제우주정거장(ISS), 무중력, 인공지능(A.I.), 우주생활",
-        "fulldomedb_url": "https://www.fddb.org/",
-    },
-}
+
+@st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
+def translate_answer_cached(text: str, target_language: str) -> str:
+    """규칙 기반 한국어 답변을 다른 언어로 번역 (캐시됨).
+    마크다운/이모지/표 구조는 유지한다."""
+    if not text or target_language == "한국어":
+        return text
+    lang_label = {
+        "English": "natural English",
+        "日本語": "natural Japanese (日本語)",
+        "中文": "natural Simplified Chinese (中文)",
+    }.get(target_language, "natural English")
+    try:
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        prompt = (
+            f"Translate the following Korean text into {lang_label}. "
+            f"Strictly preserve markdown formatting (headings, bullets, tables, bold), "
+            f"emojis, numbers, times, and proper nouns. Do NOT add explanations or notes. "
+            f"Output only the translated text.\n\n---\n{text}"
+        )
+        resp = llm.invoke(prompt)
+        out = (resp.content or "").strip()
+        return out or text
+    except Exception as e:
+        print(f"답변 번역 실패: {e}")
+        return text
 
 
-def _load_planetarium_videos():
-    """천체투영관 CSV에서 상영 영상 5개를 표준 row 형식으로 반환"""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(base_dir, "data")
-    csv_path = os.path.join(data_dir, "천체투영관.csv")
-    if not os.path.exists(csv_path):
-        return []
+def render_source_buttons(sources: list, language_mode: str = "한국어", key_suffix: str = ""):
+    """출처(참고 홈페이지) 렌더링 — 기본은 접힘, '자세히 보기' 펼침 안에서 버튼 노출."""
+    if not isinstance(sources, (list, tuple)):
+        return
+    sources = [s for s in sources if s]
+    if not sources:
+        return
 
-    for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
-        try:
-            df = pd.read_csv(csv_path, encoding=enc)
-            break
-        except Exception:
-            continue
-    else:
-        return []
+    expander_label = {
+        "한국어": "📚 참고 홈페이지 자세히 보기",
+        "English": "📚 More info (reference websites)",
+        "日本語": "📚 参考サイトを詳しく見る",
+        "中文": "📚 查看参考网站",
+    }.get(language_mode, "📚 More info (reference websites)")
 
-    df.columns = [str(c).strip() for c in df.columns]
-    rows = []
-    seen_titles = set()
-    for _, r in df.iterrows():
-        cat = str(r.get("category", "")).strip()
-        if not cat.startswith("프로그램_"):
-            continue
-        answer = str(r.get("answer", "")).strip()
-        # 영상 제목은 PLANETARIUM_VIDEO_INFO 키 중 answer/category에 매칭되는 것을 찾음
-        title = None
-        for video_title in PLANETARIUM_VIDEO_INFO.keys():
-            if video_title in answer or video_title.replace(" ", "") in cat.replace("_", "").replace(" ", ""):
-                title = video_title
-                break
-        if not title:
-            continue
-        if title in seen_titles:
-            continue
-        seen_titles.add(title)
+    link_label = {
+        "한국어": "🔗 참고 홈페이지",
+        "English": "🔗 Reference site",
+        "日本語": "🔗 参考サイト",
+        "中文": "🔗 参考网站",
+    }.get(language_mode, "🔗 Reference site")
 
-        info = PLANETARIUM_VIDEO_INFO.get(title, {})
-        rows.append({
-            "title": title,
-            "content": answer,
-            "detail": f"학습 주제: {info.get('themes', '')} | 참고: {info.get('fulldomedb_url', '')}",
-            "category": "상영영상",
-        })
-    return rows
+    with st.expander(expander_label, expanded=False):
+        for i, source in enumerate(sources[:5]):
+            if isinstance(source, str) and source.startswith("http"):
+                st.markdown(f"- [{link_label} {i+1}]({source})")
+            else:
+                st.markdown(f"- `{source}`")

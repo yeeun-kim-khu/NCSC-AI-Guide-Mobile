@@ -69,11 +69,40 @@ ZONE_GROUPS = {
     "빛놀이터": ["빛놀이터"],
 }
 
+ZONE_GROUP_LABELS = {
+    "한국어": {
+        "1층놀이터(AI·행동·생각 놀이터)": "1층놀이터(AI·행동·생각)",
+        "2층(관찰·탐구 놀이터)": "2층(관찰·탐구)",
+        "천체투영관": "천체투영관",
+        "빛놀이터": "빛놀이터",
+    },
+    "English": {
+        "1층놀이터(AI·행동·생각 놀이터)": "1F (AI / Activity / Thinking)",
+        "2층(관찰·탐구 놀이터)": "2F (Discovery / Exploration)",
+        "천체투영관": "Planetarium",
+        "빛놀이터": "Light Zone",
+    },
+    "日本語": {
+        "1층놀이터(AI·행동·생각 놀이터)": "1階 (AI・うごき・考える)",
+        "2층(관찰·탐구 놀이터)": "2階 (しらべる・たんきゅう)",
+        "천체투영관": "プラネタリウム",
+        "빛놀이터": "ひかりゾーン",
+    },
+    "中文": {
+        "1층놀이터(AI·행동·생각 놀이터)": "1层 (AI·行动·思考)",
+        "2층(관찰·탐구 놀이터)": "2层 (观察·探究)",
+        "천체투영관": "天体投影馆",
+        "빛놀이터": "光区",
+    },
+}
 
-def _select_zones_by_group(prefix_key: str) -> list[str]:
+
+def _select_zones_by_group(prefix_key: str, language_mode: str = "한국어") -> list[str]:
     selected = []
+    label_map = ZONE_GROUP_LABELS.get(language_mode, ZONE_GROUP_LABELS["한국어"])
     for label, zones in ZONE_GROUPS.items():
-        if st.checkbox(label, key=f"{prefix_key}_{label}"):
+        display_label = label_map.get(label, label)
+        if st.checkbox(display_label, key=f"{prefix_key}_{label}"):
             # Only add zones that have data
             for zone in zones:
                 if ZONE_INFO.get(zone, {}).get("has_data", False):
@@ -442,6 +471,16 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
                 "전시물": "Exhibit",
                 "과학원리": "Science principle",
                 "오디오북": "Audiobook",
+                "AI놀이터": "AI Zone",
+                "행동놀이터": "Activity Zone",
+                "생각놀이터": "Thinking Zone",
+                "탐구놀이터": "Discovery Zone",
+                "관찰놀이터": "Discovery Zone",
+                "과학극장": "Science Theater",
+                "빛놀이터": "Interactive Theater",
+                "어린이교실": "Kids Classroom",
+                "천체투영관": "Planetarium",
+                "휴게실": "Lounge",
             }
         }
         if language_mode == "한국어":
@@ -449,9 +488,10 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         lang_terms = glossary.get(language_mode, glossary["English"])
         rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
         return (
-            "\n\nGLOSSARY (must follow exactly):\n"
+            "\n\nGLOSSARY (must follow EXACTLY — these are fixed official names, never translate differently):\n"
             + "\n".join(rule_lines)
             + "\n- Use these terms consistently. Do not mix languages.\n"
+            + "- CRITICAL: place/zone names above are OFFICIAL and FIXED — do NOT invent or alter them.\n"
         )
 
     glossary_rules = _get_ui_glossary_rules(language)
@@ -529,6 +569,16 @@ def _get_ui_glossary_rules(language_mode: str) -> str:
             "전시물": "Exhibit",
             "과학원리": "Science principle",
             "오디오북": "Audiobook",
+            "AI놀이터": "AI Zone",
+            "행동놀이터": "Activity Zone",
+            "생각놀이터": "Thinking Zone",
+            "탐구놀이터": "Discovery Zone",
+            "관찰놀이터": "Discovery Zone",
+            "과학극장": "Science Theater",
+            "빛놀이터": "Interactive Theater",
+            "어린이교실": "Kids Classroom",
+            "천체투영관": "Planetarium",
+            "휴게실": "Lounge",
         }
     }
     if language_mode == "한국어":
@@ -536,9 +586,10 @@ def _get_ui_glossary_rules(language_mode: str) -> str:
     lang_terms = glossary.get(language_mode, glossary["English"])
     rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
     return (
-        "\n\nGLOSSARY (must follow exactly):\n"
+        "\n\nGLOSSARY (must follow EXACTLY — these are fixed official names, never translate differently):\n"
         + "\n".join(rule_lines)
         + "\n- Use these terms consistently. Do not mix languages.\n"
+        + "- CRITICAL: place/zone names above are OFFICIAL and FIXED — do NOT invent or alter them.\n"
     )
 
 
@@ -718,7 +769,8 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
     }
 
     voice = voice_override or voice_map.get(language, "nova")
-    speed = 1.15 if speed_override is None else speed_override
+    # 속도: 기본 1.0 (더 느리고 편안하게)
+    speed = 1.0 if speed_override is None else speed_override
 
     try:
         response = client.audio.speech.create(
@@ -766,12 +818,18 @@ def render_post_visit_learning(
     def _display_zone_name(zone: str) -> str:
         if language_mode == "한국어":
             return zone
+        # 공식 영어 명칭 (고정 — LLM 번역 금지)
         official = {
             "AI놀이터": "AI Zone",
             "행동놀이터": "Activity Zone",
+            "생각놀이터": "Thinking Zone",
+            "탐구놀이터": "Discovery Zone",
             "관찰놀이터": "Discovery Zone",
-            "탐구놀이터": "Exploration Zone",
+            "과학극장": "Science Theater",
+            "빛놀이터": "Interactive Theater",
+            "어린이교실": "Kids Classroom",
             "천체투영관": "Planetarium",
+            "휴게실": "Lounge",
         }
         if zone in official:
             return official[zone]
@@ -1107,13 +1165,26 @@ def render_post_visit_learning(
             bt = _backtranslate_to_korean_cached(text["story_select_heading"], language_mode)
             if bt:
                 st.caption(f"BT: {bt}")
-        selected_zones_story = _select_zones_by_group("story")
-        
-        # Debug: show selected zones
+        selected_zones_story = _select_zones_by_group("story", language_mode=language_mode)
+
+        # 선택된 존 표시 (다국어)
+        selected_disp_names = [_display_zone_name(z) for z in selected_zones_story]
+        selected_label_text = {
+            "한국어": "선택된 놀이터",
+            "English": "Selected zones",
+            "日本語": "選んだゾーン",
+            "中文": "已选区域",
+        }.get(language_mode, "Selected zones")
+        please_select_text = {
+            "한국어": "놀이터를 선택해주세요",
+            "English": "Please select at least one zone.",
+            "日本語": "ゾーンを選んでください。",
+            "中文": "请选择区域。",
+        }.get(language_mode, "Please select at least one zone.")
         if selected_zones_story:
-            st.info(f"선택된 놀이터: {', '.join(selected_zones_story)}")
+            st.info(f"{selected_label_text}: {', '.join(selected_disp_names)}")
         else:
-            st.warning("놀이터를 선택해주세요")
+            st.warning(please_select_text)
 
         if selected_zones_story and st.button(text["generate_story"]):
             with st.spinner(text["story_generating"]):
