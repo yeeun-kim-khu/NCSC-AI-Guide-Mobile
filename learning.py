@@ -113,8 +113,14 @@ def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
     titles = []
     for r in (zone_rows or []):
         t = str(r.get("title", "")).strip()
-        if t and len(t) > 1:
-            titles.append(t)
+        if not t or len(t) <= 1:
+            continue
+        # "체험방법" 제외
+        if "체험방법" in t:
+            continue
+        t = re.sub(r"\s+", " ", t)
+        titles.append(t)
+    titles = list(dict.fromkeys(titles))
     return titles[:top_n]
 
 
@@ -707,47 +713,6 @@ def render_post_visit_learning(
                         # 키워드 추출 및 렌더링 (로컬과 동일)
                         keywords = _get_zone_keywords(zone, zone_rows, language_mode)
                         _render_keyword_tags(zone, keywords, zone_rows)
-                        
-                        # 과학원리 추출
-                        principles, principles_text = extract_principles_from_exhibits(exhibits, llm)
-                        
-                        if principles:
-                            st.markdown("---")
-                            st.markdown("**발견한 과학원리:**")
-                            st.markdown(principles_text)
-                            
-                            if mode == text["quiz_mode"]:
-                                selected_principle = st.selectbox(
-                                    text["select_principle"],
-                                    principles,
-                                    key=f"principle_{zone}"
-                                )
-                                
-                                if st.button(text["make_quiz"], key=f"quiz_{zone}"):
-                                    with st.spinner(text["quiz_generating"]):
-                                        quiz = generate_quiz(zone, selected_principle, llm, language_mode)
-                                        if quiz:
-                                            st.markdown(quiz)
-                            
-                            else:  # 질문 모드
-                                user_question = st.text_input(
-                                    f"{_display_zone_name(zone)}{text['question_prompt']}",
-                                    key=f"question_{zone}"
-                                )
-                                
-                                if user_question:
-                                    context = "\n".join([ex["content"] for ex in exhibits[:5]])
-                                    prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
-{context}
-
-사용자 질문: {user_question}
-
-어린이가 이해하기 쉽게 답변해주세요."""
-                                    
-                                    response = llm.invoke(prompt)
-                                    st.markdown(f"**{text['answer_prefix']}:** {response.content}")
-                        else:
-                            st.info(text["principles_not_found"])
                     else:
                         st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
         else:
