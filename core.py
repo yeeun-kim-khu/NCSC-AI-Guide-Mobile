@@ -1188,6 +1188,71 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
     
     return base_prompt
 
+def load_zone_rows_from_csv(zone_name: str):
+    def load_csv_safe(path: str) -> pd.DataFrame:
+        for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
+            try:
+                return pd.read_csv(path, encoding=enc)
+            except Exception:
+                continue
+        return pd.read_csv(path)
+
+    # Use absolute path for Streamlit Cloud compatibility
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(base_dir, "data")
+    csv_files = glob.glob(os.path.join(data_dir, "*.csv"))
+    target_files = [p for p in csv_files if zone_name in os.path.basename(p)]
+    if not target_files:
+        return []
+
+    path = target_files[0]
+    df = load_csv_safe(path)
+    df.columns = [str(c).strip() for c in df.columns]
+
+    expected_cols = {"title", "content", "detail", "category"}
+    has_expected = len(expected_cols.intersection(set(df.columns))) >= 2
+    has_unnamed = any(str(c).startswith("Unnamed") for c in df.columns)
+    if (not has_expected) and (has_unnamed or df.shape[1] >= 2):
+        try:
+            df.columns = [str(v).strip() for v in df.iloc[0].tolist()]
+            df = df.iloc[1:].reset_index(drop=True)
+            df.columns = [str(c).strip() for c in df.columns]
+        except Exception:
+            pass
+
+    rename_map = {}
+    synonyms = {
+        "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
+        "content": ["content", "내용", "설명", "전시내용", "본문"],
+        "detail": ["detail", "세부설명", "상세", "상세설명"],
+        "category": ["category", "분류", "카테고리", "구분"],
+    }
+    cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
+    for target, candidates in synonyms.items():
+        if target in df.columns:
+            continue
+        found = None
+        for cand in candidates:
+            key = str(cand).strip().lower()
+            if key in cols_lower:
+                found = cols_lower[key]
+                break
+        if found is not None and found != target:
+            rename_map[found] = target
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    rows = []
+    for _, r in df.iterrows():
+        rows.append({
+            "title": "" if pd.isna(r.get("title", "")) else str(r.get("title", "")),
+            "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
+            "detail": "" if pd.isna(r.get("detail", "")) else str(r.get("detail", "")),
+            "category": "" if pd.isna(r.get("category", "")) else str(r.get("category", "")),
+        })
+    rows = [x for x in rows if x.get("title")]
+    return rows
+
 def render_source_buttons(sources: list):
     """출처 버튼 렌더링"""
     if not isinstance(sources, (list, tuple)):
