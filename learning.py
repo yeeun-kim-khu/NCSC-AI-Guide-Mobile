@@ -93,6 +93,136 @@ def _preload_all_zone_csv_rows():
     return data
 
 # ============================================================================
+# 키워드 추출 및 렌더링
+# ============================================================================
+
+def _extract_zone_keywords(zone_rows, top_n=12):
+    text = " ".join(
+        [
+            str(r.get("title", "")) + " " + str(r.get("category", "")) + " " + str(r.get("content", ""))
+            for r in (zone_rows or [])
+        ]
+    )
+    words = re.findall(r"\b\w+\b", text)
+    counter = Counter(words)
+    keywords = [w for w, _ in counter.most_common(top_n * 3) if len(w) > 1]
+    return keywords[:top_n]
+
+
+def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
+    titles = []
+    for r in (zone_rows or []):
+        t = str(r.get("title", "")).strip()
+        if t and len(t) > 1:
+            titles.append(t)
+    return titles[:top_n]
+
+
+@st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
+def _extract_zone_keywords_llm(zone_name: str, language_mode: str, csv_compact_text: str):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+
+    if language_mode == "한국어":
+        prompt = f"""너는 4세~초등 저학년 어린이와 학부모를 위한 전시관 키워드 편집자야.
+
+아래는 '{zone_name}' 전시물 CSV에서 뽑은 제목/설명 일부야.
+이 내용을 보고, 아이가 이해하기 쉬운 '굵직한 키워드'만 8~12개 뽑아줘.
+
+규칙:
+1) 조사/어미/추상어(예: 우리, 해요, 방법, 활동, 체험)는 제외.
+2) 가능한 한 명사 위주.
+3) 너무 전문적인 단어는 쉬운 말로 바꿔.
+4) 결과는 쉼표로 구분한 한 줄.
+
+CSV 요약:
+{csv_compact_text}
+"""
+    else:
+        prompt = f"""You are a keyword editor for young kids and parents.
+
+From the exhibit CSV snippets for '{zone_name}', extract 8-12 big, easy keywords.
+Avoid particles/verbs/very generic words.
+Return a single line, comma-separated.
+
+CSV snippets:
+{csv_compact_text}
+"""
+
+    resp = llm.invoke(prompt)
+    line = (resp.content or "").strip().split("\n")[0]
+    parts = [p.strip() for p in re.split(r"[,，]", line) if p.strip()]
+    uniq = []
+    seen = set()
+    for p in parts:
+        if p not in seen:
+            uniq.append(p)
+            seen.add(p)
+    return uniq[:12]
+
+
+def _get_zone_keywords(zone_name: str, zone_rows, language_mode: str):
+    kws = _extract_zone_keywords_from_titles(zone_rows)
+    if kws:
+        return kws
+
+    compact_lines = []
+    for r in (zone_rows or [])[:40]:
+        title = str(r.get("title", "")).strip()
+        cat = str(r.get("category", "")).strip()
+        content = str(r.get("content", "")).strip()
+        if title or content:
+            compact_lines.append(f"- {title} ({cat}) {content[:120]}")
+    csv_compact_text = "\n".join(compact_lines)[:6000]
+
+    try:
+        kws = _extract_zone_keywords_llm(zone_name, language_mode, csv_compact_text)
+        if kws:
+            return kws
+    except Exception as e:
+        print(f"키워드 LLM 추출 실패: {e}")
+
+    return _extract_zone_keywords(zone_rows)
+
+
+def _render_keyword_tags(zone_name: str, keywords, zone_rows):
+    if not keywords:
+        return
+
+    st.markdown("### 🔑 오늘의 키워드")
+
+    state_key = f"kw_selected_{zone_name}"
+    if state_key not in st.session_state:
+        st.session_state[state_key] = ""
+
+    cols = st.columns(4)
+    for i, kw in enumerate(keywords):
+        with cols[i % 4]:
+            if st.button(kw, key=f"kw_btn_{zone_name}_{kw}"):
+                st.session_state[state_key] = kw
+
+    selected_kw = st.session_state.get(state_key, "")
+    if selected_kw:
+        st.caption(f"선택한 키워드: {selected_kw}")
+        matched = []
+        for r in (zone_rows or []):
+            title = str(r.get("title", ""))
+            content = str(r.get("content", ""))
+            detail = str(r.get("detail", ""))
+            category = str(r.get("category", ""))
+            if selected_kw in (title + " " + category + " " + content + " " + detail):
+                if title:
+                    matched.append(title)
+        matched = list(dict.fromkeys(matched))
+        if matched:
+            st.markdown("**관련 전시물**")
+            st.markdown("\n".join([f"- {t}" for t in matched[:10]]))
+            if len(matched) > 10:
+                st.caption(f"+ {len(matched) - 10}개 더 있음")
+        if st.button("키워드 선택 해제", key=f"kw_clear_{zone_name}"):
+            st.session_state[state_key] = ""
+
+
+# ============================================================================
 # RAG 검색 및 원리 추출
 # ============================================================================
 
@@ -574,9 +704,15 @@ def render_post_visit_learning(
                     print(f"📊 Loaded {len(exhibits)} exhibits for {zone} from CSV")
                     
                     if exhibits:
+                        # 키워드 추출 및 렌더링 (로컬과 동일)
+                        keywords = _get_zone_keywords(zone, zone_rows, language_mode)
+                        _render_keyword_tags(zone, keywords, zone_rows)
+                        
+                        # 과학원리 추출
                         principles, principles_text = extract_principles_from_exhibits(exhibits, llm)
                         
                         if principles:
+                            st.markdown("---")
                             st.markdown("**발견한 과학원리:**")
                             st.markdown(principles_text)
                             
