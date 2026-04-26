@@ -417,8 +417,23 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어"):
-    """과학원리 기반 퀴즈 생성"""
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0):
+    """과학원리 기반 퀴즈 생성 (정답 랜덤 배치 + 매번 다른 문제)"""
+    import random
+
+    # 정답 위치를 무작위로 결정 (1~4)
+    rng = random.Random(variation_seed if variation_seed else random.randint(1, 10**9))
+    correct_pos = rng.randint(1, 4)
+    # 문제 스타일 변주
+    angles = [
+        "일상 생활의 예시로 질문",
+        "원리의 원인을 묻는 질문",
+        "원리의 결과를 묻는 질문",
+        "비슷한 현상을 찾는 질문",
+        "관찰/실험 상황을 상상하는 질문",
+        "왜 그런지 이유를 묻는 질문",
+    ]
+    angle = rng.choice(angles)
 
     def _get_ui_glossary_rules(language_mode: str) -> str:
         glossary = {
@@ -442,44 +457,61 @@ def generate_quiz(zone_name, principle, llm, language="한국어"):
     glossary_rules = _get_ui_glossary_rules(language)
 
     language_prompts = {
-        "한국어": f"""'{zone_name}'의 '{principle}' 원리에 대한 퀴즈를 만들어주세요.
+        "한국어": f"""'{zone_name}'의 '{principle}' 키워드/원리에 대한 어린이용 4지선다 퀴즈를 만들어주세요.
 
-퀴즈 형식:
+이번 퀴즈 스타일(매번 다르게 하기 위한 지시): {angle}
+랜덤 시드: {variation_seed} (같은 키워드라도 매번 다른 질문을 만들 것!)
+
+**매우 중요한 규칙**:
+- 정답은 반드시 **{correct_pos}번**에 위치시키세요.
+- 나머지 3개는 그럴듯한 오답(매력적인 오답)으로 구성.
+- 같은 키워드라도 매번 다른 질문/다른 상황/다른 예시로 작성.
+
+출력 형식(정확히 지킬 것):
 **질문**: [어린이가 이해하기 쉬운 질문]
 
 **선택지**:
-1. [정답]
-2. [오답1]
-3. [오답2]
-4. [오답3]
+1. [선택지1]
+2. [선택지2]
+3. [선택지3]
+4. [선택지4]
 
-**정답**: 1번
+**정답**: {correct_pos}번
 
-**해설**: [정답인 이유를 쉽게 설명]
+**해설**: [왜 {correct_pos}번이 정답인지 쉽게 설명]
 
-어린이 눈높이에 맞춰 재미있고 교육적인 퀴즈를 만들어주세요!""",
-        
-        "English": f"""Create a quiz about '{principle}' from '{zone_name}'.{glossary_rules}
+어린이 눈높이에 맞춰 재미있고 교육적으로!""",
 
-Quiz format:
+        "English": f"""Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
+
+Quiz style this time (to vary each generation): {angle}
+Random seed: {variation_seed} (Create a DIFFERENT question each time, even for the same keyword!)
+
+**VERY IMPORTANT RULES**:
+- The correct answer MUST be placed at position **{correct_pos}**.
+- The other 3 options should be plausible but incorrect.
+- Vary the question/situation/example every time, even for the same keyword.
+
+Format (follow exactly):
 **Question**: [Easy-to-understand question for children]
 
 **Options**:
-1. [Correct answer]
-2. [Wrong answer 1]
-3. [Wrong answer 2]
-4. [Wrong answer 3]
+1. [Option 1]
+2. [Option 2]
+3. [Option 3]
+4. [Option 4]
 
-**Answer**: 1
+**Answer**: {correct_pos}
 
-**Explanation**: [Why this is correct, explained simply]
+**Explanation**: [Why option {correct_pos} is correct, simply explained]
 
 Make it fun and educational for children!"""
     }
-    
+
     prompt = language_prompts.get(language, language_prompts["한국어"])
-    
+
     try:
+        # temperature를 살짝 올려 매번 다양성 확보
         response = llm.invoke(prompt)
         return response.content
     except Exception as e:
@@ -964,14 +996,34 @@ def render_post_visit_learning(
                 selected_kw, selected_disp = _render_zone_header(zone, zone_rows, mode="quiz", llm=llm)
 
                 if selected_kw:
+                    seed_key = f"quiz_seed_{zone}_{selected_kw}"
                     quiz_cache_key = f"quiz_cache_{zone}_{selected_kw}"
+                    if seed_key not in st.session_state:
+                        import random as _rnd
+                        st.session_state[seed_key] = _rnd.randint(1, 10**9)
+
                     if quiz_cache_key not in st.session_state:
                         with st.spinner(text["quiz_generating"]):
-                            quiz = generate_quiz(zone, selected_kw, llm, language_mode)
+                            quiz = generate_quiz(
+                                zone, selected_kw, llm, language_mode,
+                                variation_seed=st.session_state[seed_key],
+                            )
                             st.session_state[quiz_cache_key] = quiz or ""
                     quiz_text = st.session_state.get(quiz_cache_key, "")
                     if quiz_text:
                         st.markdown(quiz_text)
+
+                    new_quiz_label = {
+                        "한국어": "🔄 다른 문제 만들기",
+                        "English": "🔄 Generate another question",
+                        "日本語": "🔄 別の問題をつくる",
+                        "中文": "🔄 换一道题",
+                    }.get(language_mode, "🔄 Generate another question")
+                    if st.button(new_quiz_label, key=f"quiz_refresh_{zone}_{selected_kw}"):
+                        import random as _rnd
+                        st.session_state[seed_key] = _rnd.randint(1, 10**9)
+                        st.session_state.pop(quiz_cache_key, None)
+                        st.rerun()
         else:
             st.info(text["pick_zone_hint"])
 
