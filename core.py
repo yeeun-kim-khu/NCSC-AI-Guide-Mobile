@@ -1176,9 +1176,22 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
     
     language_instruction = {
         "한국어": "**중요: 모든 답변은 한국어로 작성하세요.**",
-        "English": "**IMPORTANT: Respond in English.**",
-        "日本語": "**重要：すべての回答は日本語で書いてください。**",
-        "中文": "**重要：所有回答必须用中文书写。**"
+        "English": (
+            "**CRITICAL LANGUAGE RULE: You MUST respond ENTIRELY in English, "
+            "even if the user's question, FAQ trigger text, or any retrieved RAG content is in Korean. "
+            "Translate all Korean content into English before answering. "
+            "NEVER output Korean text (except official place names inside parentheses as specified in the glossary below).**"
+        ),
+        "日本語": (
+            "**最重要言語ルール：ユーザーの質問やFAQトリガー、RAG検索結果が韓国語であっても、"
+            "必ず回答全体を日本語で書いてください。韓国語の内容は日本語に翻訳してから答えること。"
+            "韓国語をそのまま出力してはいけません（下記グロッサリーで指定された括弧内の英語公式名称のみ例外）。**"
+        ),
+        "中文": (
+            "**最重要语言规则：即使用户的问题、FAQ触发语或RAG检索内容是韩语，"
+            "你也必须完全用中文回答。所有韩语内容必须先翻译成中文。"
+            "绝对不要输出韩语原文（只有下方词汇表中指定的括号内英文官方名称可作为例外）。**"
+        ),
     }
 
     safety_instruction = {
@@ -1232,18 +1245,28 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
    - "정확한 정보는 02-3668-3350으로 문의해주세요."
 
 === OFFICIAL PLACE NAMES (MANDATORY GLOSSARY for non-Korean answers) ===
-When answering in English/Japanese/Chinese, you MUST use EXACTLY these official English names for places. NEVER invent alternative translations. For Japanese/Chinese answers, either keep the English official name or use the Korean original — do not invent localized names.
-- AI놀이터 → "AI Zone"
-- 행동놀이터 → "Activity Zone"
-- 생각놀이터 → "Thinking Zone"
-- 탐구놀이터 → "Discovery Zone"
-- 관찰놀이터 → "Discovery Zone"
-- 과학극장 → "Science Theater"
-- 빛놀이터 → "Interactive Theater"
-- 어린이교실 → "Kids Classroom"
-- 천체투영관 → "Planetarium"
-- 휴게실 → "Lounge"
-CRITICAL: These are the ONLY acceptable English names. Do NOT write "Thought Playground", "Observation Zone", "Light Zone", "Exploration Zone", or any other variant.
+FORMAT RULES by target language:
+- English mode: write ONLY the official English name (e.g., "Thinking Zone").
+- Japanese mode: write the Japanese name, then the official English name in parentheses, e.g., "考えるゾーン (Thinking Zone)".
+- Chinese mode: write the Chinese name, then the official English name in parentheses, e.g., "思考区 (Thinking Zone)".
+- NEVER use the raw Korean name (e.g., "생각놀이터") in non-Korean answers. Always replace with the target-language form.
+
+Mapping table (Korean → Japanese | Chinese | English Official — ALWAYS use English exactly as shown, never invent variants):
+- AI놀이터 → AIゾーン | AI区 | AI Zone
+- 행동놀이터 → アクティブゾーン | 行动区 | Activity Zone
+- 생각놀이터 → 考えるゾーン | 思考区 | Thinking Zone
+- 탐구놀이터 → 探究ゾーン | 探究区 | Discovery Zone
+- 관찰놀이터 → 観察ゾーン | 观察区 | Discovery Zone
+- 과학극장 → 科学劇場 | 科学剧场 | Science Theater
+- 빛놀이터 → ひかりシアター | 光影剧场 | Interactive Theater
+- 어린이교실 → こども教室 | 儿童教室 | Kids Classroom
+- 천체투영관 → プラネタリウム | 天体投影馆 | Planetarium
+- 휴게실 → 休憩室 | 休息室 | Lounge
+
+CRITICAL:
+- The English Official name is FIXED — do NOT invent "Thought Playground", "Observation Zone", "Light Zone", "Exploration Zone" or any other variant.
+- For Japanese/Chinese answers, always append the English Official name in parentheses right after the localized name.
+- For English answers, do NOT append anything extra — just the English Official name.
 """
     
     if mode == "어린이":
