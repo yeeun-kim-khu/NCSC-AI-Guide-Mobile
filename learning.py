@@ -55,6 +55,30 @@ ZONE_INFO = {
     }
 }
 
+ZONE_GROUPS = {
+    "1층놀이터(AI·행동·생각 놀이터)": ["AI놀이터", "행동놀이터", "생각놀이터"],
+    "2층(관찰·탐구 놀이터)": ["관찰놀이터", "탐구놀이터"],
+    "천체투영관": ["천체투영관"],
+    "빛놀이터": ["빛놀이터"],
+}
+
+
+def _select_zones_by_group(prefix_key: str) -> list[str]:
+    selected = []
+    for label, zones in ZONE_GROUPS.items():
+        if st.checkbox(label, key=f"{prefix_key}_{label}"):
+            # Only add zones that have data
+            for zone in zones:
+                if ZONE_INFO.get(zone, {}).get("has_data", False):
+                    selected.append(zone)
+    seen = set()
+    uniq = []
+    for z in selected:
+        if z not in seen:
+            seen.add(z)
+            uniq.append(z)
+    return uniq
+
 # ============================================================================
 # CSV 데이터 로딩
 # ============================================================================
@@ -859,7 +883,7 @@ def render_post_visit_learning(
             st.info(text["pick_zone_hint"])
     
     with tab_story:
-        st.subheader(text["tab2"])
+        st.subheader(text["tab_story"])
         st.markdown(text["story_intro"])
 
         if language_mode != "한국어" and debug_show_korean:
@@ -868,6 +892,10 @@ def render_post_visit_learning(
             bt = _backtranslate_to_korean_cached(text["story_intro"], language_mode)
             if bt:
                 st.caption(f"BT: {bt}")
+
+        story_state_key = "post_learning_story"
+        story_zones_key = "post_learning_story_zones"
+        audio_state_key = "post_learning_story_audio"
         
         selected_zones_story = []
         
@@ -879,11 +907,8 @@ def render_post_visit_learning(
             bt = _backtranslate_to_korean_cached(text["story_select_heading"], language_mode)
             if bt:
                 st.caption(f"BT: {bt}")
-        for zone, info in ZONE_INFO.items():
-            if info["has_data"]:
-                if st.checkbox(zone, key=f"story_{zone}"):
-                    selected_zones_story.append(zone)
-        
+        selected_zones_story = _select_zones_by_group("story")
+
         if selected_zones_story and st.button(text["generate_story"]):
             with st.spinner(text["story_generating"]):
                 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
@@ -903,31 +928,42 @@ def render_post_visit_learning(
                     story = generate_science_story(zone_names, all_exhibits, all_principles, language_mode)
                     
                     if story:
-                        st.markdown(text["story_generated"])
-
-                        if language_mode != "한국어" and debug_show_korean:
-                            st.caption(f"KO: {texts['한국어']['story_generated']}")
-                        if language_mode != "한국어" and debug_backtranslate:
-                            bt = _backtranslate_to_korean_cached(text["story_generated"], language_mode)
-                            if bt:
-                                st.caption(f"BT: {bt}")
-                        st.markdown(story)
-                        
-                        if st.button(text["to_audiobook"]):
-                            with st.spinner(text["audiobook_generating"]):
-                                audio_bytes = text_to_audiobook(story, language_mode)
-                                
-                                if audio_bytes:
-                                    st.audio(audio_bytes, format="audio/mp3")
-                                    st.download_button(
-                                        label=text["audiobook_download"],
-                                        data=audio_bytes,
-                                        file_name="my_science_story.mp3",
-                                        mime="audio/mp3"
-                                    )
-                                else:
-                                    st.error(text["audiobook_fail"])
+                        st.session_state[story_state_key] = story
+                        st.session_state[story_zones_key] = selected_zones_story
+                        if audio_state_key in st.session_state:
+                            del st.session_state[audio_state_key]
                     else:
                         st.error(text["story_fail"])
                 else:
                     st.warning(text["pick_zone_hint"])
+
+        if story_state_key in st.session_state and st.session_state.get(story_state_key):
+            st.markdown(text["story_generated"])
+
+            if language_mode != "한국어" and debug_show_korean:
+                st.caption(f"KO: {texts['한국어']['story_generated']}")
+            if language_mode != "한국어" and debug_backtranslate:
+                bt = _backtranslate_to_korean_cached(text["story_generated"], language_mode)
+                if bt:
+                    st.caption(f"BT: {bt}")
+            st.markdown(st.session_state[story_state_key])
+
+            if st.button(text["to_audiobook"]):
+                with st.spinner(text["audiobook_generating"]):
+                    audio_bytes = text_to_audiobook(
+                        st.session_state[story_state_key],
+                        language_mode,
+                    )
+                    if audio_bytes:
+                        st.session_state[audio_state_key] = audio_bytes
+                    else:
+                        st.error(text["audiobook_fail"])
+
+            if audio_state_key in st.session_state and st.session_state.get(audio_state_key):
+                st.audio(st.session_state[audio_state_key], format="audio/mp3")
+                st.download_button(
+                    label=text["audiobook_download"],
+                    data=st.session_state[audio_state_key],
+                    file_name="my_science_story.mp3",
+                    mime="audio/mp3"
+                )
