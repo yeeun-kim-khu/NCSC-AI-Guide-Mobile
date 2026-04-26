@@ -811,15 +811,7 @@ def render_post_visit_learning(
                 _render_zone_header(zone, zone_rows)
 
                 with st.spinner(text["generating"]):
-                    exhibits = []
-                    for row in zone_rows:
-                        exhibits.append({
-                            "title": row.get("title", ""),
-                            "content": row.get("content", ""),
-                            "detail": row.get("detail", ""),
-                            "category": row.get("category", "")
-                        })
-                    
+                    exhibits = get_zone_exhibits_from_rag(zone, vector_db)
                     if exhibits:
                         principles, principles_text = extract_principles_from_exhibits(exhibits, llm)
                         if principles:
@@ -852,15 +844,7 @@ def render_post_visit_learning(
                 _render_zone_header(zone, zone_rows)
 
                 with st.spinner(text["generating"]):
-                    exhibits = []
-                    for row in zone_rows:
-                        exhibits.append({
-                            "title": row.get("title", ""),
-                            "content": row.get("content", ""),
-                            "detail": row.get("detail", ""),
-                            "category": row.get("category", "")
-                        })
-                    
+                    exhibits = get_zone_exhibits_from_rag(zone, vector_db)
                     if exhibits:
                         user_question = st.text_input(
                             f"{_display_zone_name(zone)}{text['question_prompt']}",
