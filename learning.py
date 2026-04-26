@@ -197,7 +197,7 @@ def _render_keyword_tags(zone_name: str, keywords, zone_rows):
     cols = st.columns(4)
     for i, kw in enumerate(keywords):
         with cols[i % 4]:
-            if st.button(kw, key=f"kw_btn_{zone_name}_{kw}"):
+            if st.button(kw, key=f"kw_btn_{zone_name}_{i}"):
                 st.session_state[state_key] = kw
 
     selected_kw = st.session_state.get(state_key, "")
