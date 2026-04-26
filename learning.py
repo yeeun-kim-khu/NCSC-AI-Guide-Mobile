@@ -606,62 +606,251 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     }
     protagonist = random.choice(protagonist_names.get(language, protagonist_names["한국어"]))
 
-    exhibit_summary = "\n".join([f"- {ex['metadata'].get('title', '')}" for ex in exhibits[:5]])
-    principles_text = ", ".join(principles[:3])
+    # ---- 재료 압축: 전시물 2개 + 원리 1개로 깊이 있게 다루기 ----
+    def _short_desc_from_content(text: str, limit: int = 60) -> str:
+        """page_content('[zone] title\\nCategory:..\\nContent:..\\nDetails:..')에서 Content 한 줄을 짧게 추출"""
+        if not text:
+            return ""
+        for line in text.splitlines():
+            line = line.strip()
+            if line.lower().startswith("content:"):
+                desc = line.split(":", 1)[1].strip()
+                if desc and desc.lower() != "nan":
+                    return (desc[:limit] + "…") if len(desc) > limit else desc
+        # fallback: title 다음 줄
+        parts = [p.strip() for p in text.splitlines() if p.strip()]
+        if len(parts) >= 2:
+            return (parts[1][:limit] + "…") if len(parts[1]) > limit else parts[1]
+        return ""
+
+    exhibit_lines = []
+    for ex in exhibits[:2]:  # 5 → 2로 압축
+        t = ex.get("metadata", {}).get("title", "") or ""
+        d = _short_desc_from_content(ex.get("content", ""))
+        if d:
+            exhibit_lines.append(f"- {t} (특징: {d})")
+        else:
+            exhibit_lines.append(f"- {t}")
+    exhibit_summary = "\n".join(exhibit_lines)
+    principles_text = ", ".join(principles[:1])  # 3 → 1로 압축 (이야기의 핵심 갈등 해결용)
 
     glossary_rules = _get_ui_glossary_rules(language)
 
+    # ---- 동반자 풀 (매번 다른 단짝) ----
+    companion_pool = {
+        "한국어": ["작은 로봇 '삐삐'", "은빛 여우 요정", "꼬마 공룡 친구", "말하는 별똥별", "미니 우주비행사 고양이"],
+        "English": ["a tiny robot named Beep", "a silver fox spirit", "a small talking dinosaur", "a shooting star that can speak", "a mini astronaut cat"],
+        "日本語": ["小さなロボット『ピピ』", "銀色のキツネの妖精", "おしゃべりな子恐竜", "話す流れ星", "ミニ宇宙飛行士のネコ"],
+        "中文": ["小机器人『叮叮』", "银色狐狸精灵", "会说话的小恐龙", "会讲话的流星", "迷你宇航员小猫"],
+    }
+    companion = random.choice(companion_pool.get(language, companion_pool["한국어"]))
+
+    # ---- zone과 어울리는 세계관 매칭 (충돌 방지) ----
+    zone_world_map = {
+        "한국어": {
+            "AI놀이터": ["반짝이는 회로로 가득한 비밀 연구소", "구름 위에 숨은 작은 로봇 마을"],
+            "행동놀이터": ["바람이 살아있는 모험의 숲", "거대한 놀이 기구가 움직이는 마법 공원"],
+            "생각놀이터": ["수수께끼가 떠다니는 별빛 도서관", "거울로 만든 신비한 탑"],
+            "탐구놀이터": ["지하 깊숙이 빛나는 보석 동굴", "낡은 지도로만 갈 수 있는 잊힌 섬"],
+            "관찰놀이터": ["커다란 망원경이 서 있는 언덕 위 정원", "작은 생물들이 노래하는 안개 숲"],
+            "과학극장": ["무대 뒤편의 비밀 무대 마을", "커튼이 살아 움직이는 환상의 극장"],
+            "빛놀이터": ["일곱 빛깔이 흐르는 무지개 궁전", "그림자가 춤추는 빛의 미로"],
+            "어린이교실": ["분필이 스스로 그림을 그리는 작은 마법 학교"],
+            "천체투영관": ["별과 별 사이를 떠다니는 우주 정거장", "달빛 위에 떠 있는 은하 마을"],
+            "휴게실": ["구름 위 포근한 쉼터 정원"],
+        },
+        "English": {
+            "AI놀이터": ["a secret lab full of glowing circuits", "a tiny robot village hidden above the clouds"],
+            "행동놀이터": ["an adventure forest where the wind is alive", "a magical park where giant rides move on their own"],
+            "생각놀이터": ["a starlit library where riddles float in the air", "a mysterious tower made of mirrors"],
+            "탐구놀이터": ["a glittering gem cave deep underground", "a forgotten island reachable only by an old map"],
+            "관찰놀이터": ["a hilltop garden with a giant telescope", "a misty forest where tiny creatures sing"],
+            "과학극장": ["a secret stage village behind the curtains", "an enchanted theater whose curtains dance"],
+            "빛놀이터": ["a rainbow palace flowing with seven colors", "a maze of light where shadows dance"],
+            "어린이교실": ["a tiny magic school where the chalk draws by itself"],
+            "천체투영관": ["a space station drifting between stars", "a galaxy village floating on moonlight"],
+            "휴게실": ["a cozy rest garden above the clouds"],
+        },
+        "日本語": {
+            "AI놀이터": ["きらめく回路でいっぱいの秘密研究所", "雲の上に隠れた小さなロボット村"],
+            "행동놀이터": ["風が生きている冒険の森", "巨大な遊具がひとりでに動く魔法の公園"],
+            "생각놀이터": ["なぞなぞが空に浮かぶ星明かりの図書館", "鏡でできた不思議な塔"],
+            "탐구놀이터": ["深い地下に輝く宝石の洞窟", "古い地図でしか行けない忘れられた島"],
+            "관찰놀이터": ["大きな望遠鏡が立つ丘の上の庭", "小さな生き物たちが歌う霧の森"],
+            "과학극장": ["舞台裏の秘密の村", "カーテンが踊る幻の劇場"],
+            "빛놀이터": ["七色が流れる虹の宮殿", "影が踊る光の迷路"],
+            "어린이교실": ["チョークがひとりでに絵を描く小さな魔法学校"],
+            "천체투영관": ["星と星の間を漂う宇宙ステーション", "月明かりの上に浮かぶ銀河の村"],
+            "휴게실": ["雲の上のあたたかな休息の庭"],
+        },
+        "中文": {
+            "AI놀이터": ["布满闪亮电路的秘密研究所", "藏在云端的小机器人村庄"],
+            "행동놀이터": ["风都活着的冒险森林", "巨大游乐设施自动运转的魔法乐园"],
+            "생각놀이터": ["谜题漂浮在空中的星光图书馆", "用镜子建成的神秘高塔"],
+            "탐구놀이터": ["地下深处闪烁的宝石洞窟", "只能靠古老地图到达的被遗忘之岛"],
+            "관찰놀이터": ["立着大望远镜的山丘花园", "小生物歌唱的雾之森林"],
+            "과학극장": ["幕后的秘密小镇", "幕布翩翩起舞的梦幻剧场"],
+            "빛놀이터": ["流淌着七色光的彩虹宫殿", "影子起舞的光之迷宫"],
+            "어린이교실": ["粉笔会自己画画的小魔法学校"],
+            "천체투영관": ["漂浮在星辰之间的太空站", "悬于月光之上的银河小镇"],
+            "휴게실": ["云端上温暖的休憩花园"],
+        },
+    }
+    fallback_worlds = {
+        "한국어": ["구름 위에 숨겨진 하늘 정원", "별과 별 사이를 떠다니는 도서관"],
+        "English": ["a hidden sky garden above the clouds", "a library drifting between stars"],
+        "日本語": ["雲の上に隠された空の庭園", "星と星の間を漂う図書館"],
+        "中文": ["藏在云上的空中花园", "漂浮在星辰之间的图书馆"],
+    }
+    _zone_map = zone_world_map.get(language, zone_world_map["한국어"])
+    _world_candidates = _zone_map.get(zone_name) or fallback_worlds.get(language, fallback_worlds["한국어"])
+    world = random.choice(_world_candidates)
+
     language_prompts = {
-        "한국어": f"""너는 4세~초등 저학년 어린이를 위한 상상력 풍부한 과학동화 작가야.
+        "한국어": f"""너는 6~8세 어린이를 위한 감성적이고 신비로운 과학동화 작가야.
 
-배경(참고용 재료):
-- 과학 세계의 모티브: '{zone_name}' (이 단어를 직접 쓰지 말고 상상력으로 변형)
-- 전시물(재료로만 사용, 마법 아이템/신비한 장치로 변형):
+[재료]
+- 배경 분위기(직접 이름은 쓰지 말고 분위기만 빌릴 것): {world}
+- 주인공: 호기심 많은 어린이 '{protagonist}'
+- 동반자(주인공과 대화하는 단짝): {companion}
+- 핵심 마법 아이템(아래 전시물을 마법 도구/비밀 장치로 변형해서만 사용. 다른 마법 도구 발명 금지):
 {exhibit_summary}
-- 자연스럽게 녹일 과학 키워드(최대 3개): {principles_text}
+- 이야기의 갈등을 해결하는 단 하나의 과학 현상: {principles_text}
 
-요청:
-체험학습 일기처럼 쓰지 말고, '진짜 동화'처럼 상상력을 크게 펼쳐서 5~7분 분량으로 써줘.
+[개연성 규칙 — 매우 중요]
+1) **간결한 3막 구조 (총 6~8문단)**:
+   - 1막(2문단): {protagonist}의 평범한 순간 → 이상한 사건 발생 → "왜 이런 일이 생겼을까?"라는 **명확한 하나의 목표**.
+   - 2막(3~4문단): 위 [핵심 마법 아이템]을 만지작거리며 시도 → 한 번 실패 → 동반자와 함께 관찰하며 **현상의 패턴을 발견** → 다시 도전.
+   - 3막(1~2문단): 발견한 현상으로 위기 해결 → 1막의 수수께끼가 자연스럽게 **납득되도록 마무리**.
+2) **인과 사슬**: 모든 장면은 "~ 때문에 → ~이 일어났다" 순서. 갑자기 새 도구·새 능력 등장 금지.
+3) **아이템 제한**: 위에 적힌 [핵심 마법 아이템]만으로 위기를 해결. 새로운 마법/도구를 즉석에서 만들지 말 것.
+4) **목표·이름 일관성**: 1막의 목표는 끝까지 유지, 주인공 '{protagonist}'와 동반자 이름은 절대 바뀌지 않음.
+5) **★ 과학 표현 규칙 (가장 중요)**:
+   - **과학 용어 직접 언급 절대 금지** (예: "작용 반작용", "굴절", "마찰력", "전기회로" 같은 단어 금지).
+   - 대신 **현상 자체를 감각으로 묘사**: "밀자 거꾸로 튕겨 나왔어요", "빛이 둥근 물방울을 지나자 무지개로 흩어졌어요" 식.
+   - 동반자를 백과사전처럼 만들지 말 것. 동반자도 "어? 이상하네?" 하고 같이 발견하는 친구.
+   - 주인공이 직접 만지고, 실패하고, 눈과 손으로 깨닫는 과정을 보여주기.
+6) **문체 (6~8세 톤)**:
+   - 의성어·의태어를 최소 3번 사용 (예: 폴짝폴짝, 윙윙, 반짝반짝, 살랑살랑, 또르르).
+   - 짧은 문장 위주, 대사 비중 40% 이상.
+   - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
+7) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
+8) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
 
-동화 규칙:
-1) 주인공은 어린이 '{protagonist}'. {protagonist}의 옆에는 말하는 친구(예: 작은 로봇, 요정, 공룡, 외계인 등) 1명이 동행.
-2) 시작 5문장 안에 사건 발생(미션/수수께끼/위기)으로 몰입.
-3) **중요**: "놀이터에 갔어요", "전시물을 봤어요" 같은 표현 금지! 대신 마법 세계/우주/비밀 연구소 등으로 변형.
-4) 전시물은 '마법 도구/비밀 장치/모험의 관문'처럼 완전히 변형해서 등장.
-5) 과학 설명은 2문장 이내로 짧게, 대사/상황 속에 숨기기(강의처럼 금지).
-6) 대사(따옴표)를 자주 써서 리듬 있게.
-7) 결말은 따뜻하고 희망적. 마지막 문장은 잠자리용 한 줄로 마무리.
-
-출력:
-- 제목 1줄
-- 본문(문단 구분)
+[출력 형식]
+- 첫 줄: 제목 (**굵게**)
+- 빈 줄
+- 본문: 6~8개 문단, 각 문단 2~3문장
+- 총 분량: 약 1000~1400자
 """,
 
-        "English": f"""You are an imaginative bedtime storyteller for young kids.{glossary_rules}
+        "English": f"""You are a tender, imaginative science-fairytale writer for children aged 6–8.{glossary_rules}
 
-**Background:**
-Science world motif: '{zone_name}' (transform this into a magical setting, don't use the word directly)
-Exhibits (use as inspiration for magical items/mysterious devices):
+[Ingredients]
+- Setting atmosphere (don't name it literally, only borrow the mood): {world}
+- Protagonist: a curious child named '{protagonist}'
+- Companion (talks with the hero, but is NOT an encyclopedia): {companion}
+- Core magical items (use ONLY these; transform the exhibits below into magical tools — DO NOT invent new magic items mid-story):
 {exhibit_summary}
+- The single natural phenomenon that resolves the conflict: {principles_text}
 
-Scientific principles to weave in naturally (max 3): {principles_text}
+[Coherence Rules — CRITICAL]
+1) **Compact 3-act structure (6–8 paragraphs total)**:
+   - Act 1 (2 paragraphs): '{protagonist}'s ordinary moment → a strange event → ONE clear goal ("I must find out why…").
+   - Act 2 (3–4 paragraphs): try the magic item → fail once → observe with the companion → discover a PATTERN in how things behave → try again.
+   - Act 3 (1–2 paragraphs): solve the crisis using that discovered pattern → Act-1 mystery feels naturally answered.
+2) **Cause-and-effect**: every scene "because of X → Y happened". No sudden new tools or powers.
+3) **Item discipline**: only the listed magical items solve the crisis. No improvising new magic.
+4) **Goal & name consistency**: Act-1 goal persists; '{protagonist}' and the companion's name NEVER change.
+5) **★ Science-as-phenomenon (most important)**:
+   - **Never write the scientific term itself** (no "friction", "refraction", "Newton's third law", etc.).
+   - Instead, **describe the phenomenon through senses**: "when she pushed it, it bounced back the other way", "the light slipped through the round droplet and split into a rainbow".
+   - The companion is NOT a teacher. Both characters DISCOVER together ("Huh, that's strange…").
+   - Show the hero touching, failing, and realizing with their own eyes and hands.
+6) **Style (ages 6–8)**:
+   - Use at least 3 onomatopoeia / mimetic words (whoosh, sparkle-sparkle, plip-plop, thump-thump).
+   - Short sentences, dialogue ≥ 40%.
+   - At least 2 sensory details (sound, light, smell, texture).
+7) **Forbidden words**: "playground", "exhibit", "field trip", "museum" — write it as a true fantasy adventure.
+8) **Ending**: warm, hopeful, final line suitable for bedtime.
 
-**Request:**
-Write a real fairy-tale-like adventure (NOT a museum visit diary) inspired by the exhibits.
+[Output format]
+- Line 1: **Bold title**
+- Blank line
+- Body: 6–8 paragraphs, each 2–3 sentences
+- Length: about 1000–1400 characters total, child-friendly.""",
 
-**Story Structure:**
-1. Protagonist: A curious child named '{protagonist}' with a talking companion (robot, fairy, alien, etc.)
-2. **Important**: NO phrases like "went to the playground" or "saw exhibits"! Transform into magical world/space/secret lab.
-3. Story: Create a mission/mystery/adventure with a twist
-4. Science: Naturally weave in the principles through dialogue/situations (max 2 sentences each)
-5. Tone: Warm, fun, perfect for bedtime
-5. Length: About 1000-1500 characters
+        "日本語": f"""あなたは6〜8歳の子ども向けに、やさしくて不思議な科学ファンタジーを書く作家です。{glossary_rules}
 
-**Important:**
-- Use simple, child-friendly language
-- Keep science subtle (max 2 sentences each), embedded in dialogues and actions
-- Positive, hopeful ending
-- Calm atmosphere suitable for bedtime listening"""
+[素材]
+- 舞台の雰囲気（言葉自体は使わず、雰囲気だけ借りる）: {world}
+- 主人公: 好奇心いっぱいの子ども『{protagonist}』
+- 相棒（主人公と話す友だち。百科事典ではない）: {companion}
+- 中心となる魔法のアイテム（下の品物だけを魔法の道具に変えて使うこと。新しい魔法を途中で作らない）:
+{exhibit_summary}
+- 物語の事件を解く、たったひとつの自然現象: {principles_text}
+
+[筋の通った物語ルール — 最重要]
+1) **コンパクトな3幕構成（全6〜8段落）**:
+   - 第1幕（2段落）: 『{protagonist}』のふつうの瞬間 → 不思議な出来事 → 「どうしてこんなことが？」というひとつの **明確な目的**。
+   - 第2幕（3〜4段落）: 魔法のアイテムを試す → 一度失敗 → 相棒と観察 → ものの動き方の **パターンに気づく** → もう一度挑戦。
+   - 第3幕（1〜2段落）: 気づいたパターンで危機を解決 → 1幕の謎がしぜんに腑に落ちる結末。
+2) **因果のつながり**: すべての場面は「〜だから → 〜になった」の順。突然の新しい道具・能力は禁止。
+3) **アイテム制限**: 上に挙げた魔法のアイテムだけで危機を解決すること。即興で別の魔法を作らない。
+4) **目的と名前の一貫性**: 1幕の目的は最後まで保たれ、『{protagonist}』と相棒の名前は最後まで変えない。
+5) **★ 科学を「現象」として書く（いちばん大事）**:
+   - **科学用語を直接書かない**（「摩擦」「屈折」「作用反作用」などの単語禁止）。
+   - 代わりに **現象そのものを五感で描写**: 「押すと、ぽいんと逆にはねかえった」「光がまるい水のつぶを通って、虹になって散った」など。
+   - 相棒は先生ではない。二人で「あれっ、ふしぎだね」と一緒に発見していく。
+   - 主人公が自分の目と手で触り、失敗し、気づく過程を見せる。
+6) **文体（6〜8歳向け）**:
+   - 擬音語・擬態語を3回以上使う（ぴょんぴょん、ぴかぴか、ふわふわ、ころころ、ぽとんなど）。
+   - 短い文中心、会話の割合は40%以上。
+   - 五感の描写（音・光・におい・感触）を2つ以上入れる。
+7) **禁句**: 「遊び場」「展示」「体験」「博物館」などは禁止。本物のファンタジー冒険として書く。
+8) **結末**: あたたかく希望的、最後の一行は寝かしつけにふさわしいやさしい言葉。
+
+[出力形式]
+- 1行目: **太字のタイトル**
+- 空行
+- 本文: 6〜8段落、各段落2〜3文
+- 分量: 全体で約1000〜1400字""",
+
+        "中文": f"""你是一位为6〜8岁儿童写作的温柔而充满想象力的科学童话作家。{glossary_rules}
+
+[素材]
+- 场景氛围（不要直接写出这个词，只借用氛围）: {world}
+- 主人公: 好奇心旺盛的孩子『{protagonist}』
+- 伙伴（与主人公对话的朋友，不是百科全书）: {companion}
+- 核心魔法道具（仅用以下展品改写成的魔法道具，禁止中途发明新魔法）:
+{exhibit_summary}
+- 推动并解决故事冲突的唯一自然现象: {principles_text}
+
+[开展规则 — 至关重要]
+1) **紧凑的三幕结构（共6〜8段）**:
+   - 第一幕（2段）: 『{protagonist}』的平凡时刻 → 出现奇怪事件 → 一个 **明确的目标**（"我要弄清楚为什么…"）。
+   - 第二幕（3〜4段）: 摆弄魔法道具 → 失败一次 → 与伙伴一起观察 → 发现事物运行的 **规律** → 再次尝试。
+   - 第三幕（1〜2段）: 用发现的规律化解危机 → 第一幕的谜团自然得到解释。
+2) **因果链条**: 所有情节按"因为……所以……"顺序推进。不可突然出现新道具或新能力。
+3) **道具限制**: 仅用上面列出的魔法道具来解决危机，不要临时发明新的魔法。
+4) **目标与名字一致**: 第一幕设定的目标贯穿到底；『{protagonist}』与伙伴的名字自始至终不变。
+5) **★ 把科学写成"现象"（最重要）**:
+   - **绝不直接写科学术语**（如"摩擦力""折射""作用与反作用"等都禁用）。
+   - 改为 **用五感描写现象本身**: "她一推，它就反方向弹了回去"，"光穿过圆圆的水滴，散成了一道彩虹"。
+   - 伙伴不是老师，两人一起惊呼"咦，好奇怪呀！"共同发现。
+   - 让主人公亲手去摸、去尝试、去失败，用眼睛和手领悟。
+6) **文体（6〜8岁口吻）**:
+   - 至少使用3个拟声词或叠词（蹦蹦跳跳、闪闪、咕噜咕噜、扑通、轻飘飘）。
+   - 以短句为主，对话占比≥40%。
+   - 至少加入2处感官描写（声音、光、气味、触感）。
+7) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇幻冒险。
+8) **结尾**: 温暖且充满希望，最后一句是适合睡前读的温柔话语。
+
+[输出格式]
+- 第1行: **加粗标题**
+- 空行
+- 正文: 6〜8段，每段2〜3句
+- 全文约1000〜1400字""",
     }
 
     prompt = language_prompts.get(language, language_prompts["한국어"])
