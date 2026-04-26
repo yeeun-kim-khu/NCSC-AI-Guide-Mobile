@@ -85,35 +85,10 @@ def _select_zones_by_group(prefix_key: str) -> list[str]:
 
 @st.cache_data(show_spinner=False)
 def _preload_all_zone_csv_rows():
-    """모든 놀이터의 CSV 데이터를 미리 로드"""
-    import os
-    import glob
-    
-    # 디버깅: 현재 디렉토리와 data 폴더 확인
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(current_dir, "data")
-    
-    st.write(f"🔍 **디버깅 정보:**")
-    st.write(f"- 현재 디렉토리: `{current_dir}`")
-    st.write(f"- Data 폴더: `{data_dir}`")
-    st.write(f"- Data 폴더 존재: {os.path.exists(data_dir)}")
-    
-    if os.path.exists(data_dir):
-        csv_files = glob.glob(os.path.join(data_dir, "*.csv"))
-        st.write(f"- 발견된 CSV 파일 수: {len(csv_files)}")
-        st.write(f"- CSV 파일 목록: {[os.path.basename(f) for f in csv_files[:5]]}")
-    
     data = {}
     for zone, info in ZONE_INFO.items():
         if info.get("has_data"):
-            try:
-                rows = load_zone_rows_from_csv(zone)
-                data[zone] = rows
-                st.write(f"✅ **{zone}**: {len(rows)}개 전시물 로드 성공")
-            except Exception as e:
-                st.error(f"❌ **{zone}** 로드 실패: {str(e)}")
-                data[zone] = []
-    
+            data[zone] = load_zone_rows_from_csv(zone)
     return data
 
 # ============================================================================
@@ -232,7 +207,16 @@ def _render_keyword_tags(zone_name: str, keywords, zone_rows):
 
     selected_kw = st.session_state.get(state_key, "")
     if selected_kw:
+        print(f"=== KEYWORD DEBUG ===")
+        print(f"Zone: {zone_name}")
+        print(f"Selected keyword: {selected_kw}")
+        print(f"zone_rows count: {len(zone_rows) if zone_rows else 0}")
+        if zone_rows:
+            print(f"First row sample: {zone_rows[0]}")
+        print(f"=== END DEBUG ===")
+        
         st.caption(f"선택한 키워드: {selected_kw}")
+        st.write(f"**DEBUG: zone_rows 개수 = {len(zone_rows) if zone_rows else 0}개**")
         matched = []
         for r in (zone_rows or []):
             title = str(r.get("title", ""))
@@ -256,17 +240,52 @@ def _render_keyword_tags(zone_name: str, keywords, zone_rows):
 # RAG 검색 및 원리 추출
 # ============================================================================
 
-def get_zone_exhibits_from_rag(zone_name, vector_db):
-    """RAG에서 해당 놀이터의 전시물 정보 가져오기"""
+def _load_exhibits_from_csv_direct(zone_name):
+    """CSV에서 직접 전시물 로드 (RAG fallback)"""
     try:
+        rows = load_zone_rows_from_csv(zone_name)
+        exhibits = []
+        for r in rows:
+            title = r.get("title", "")
+            content = r.get("content", "")
+            detail = r.get("detail", "")
+            category = r.get("category", "")
+            text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
+            exhibits.append({
+                "content": text,
+                "metadata": {
+                    "source": f"csv_{zone_name}",
+                    "title": title,
+                    "category": zone_name,
+                    "subcategory": category,
+                }
+            })
+        print(f"CSV 직접 로드: {zone_name}에서 {len(exhibits)}개 전시물")
+        return exhibits
+    except Exception as e:
+        print(f"CSV 직접 로드 오류: {e}")
+        return []
+
+
+def get_zone_exhibits_from_rag(zone_name, vector_db):
+    """RAG에서 해당 놀이터의 전시물 정보 가져오기 (CSV fallback 포함)"""
+    exhibits = []
+    try:
+        if vector_db is None:
+            print(f"vector_db is None for {zone_name}, falling back to CSV")
+            return _load_exhibits_from_csv_direct(zone_name)
+
         docs = []
         for q in (zone_name, f"[{zone_name}]", f"csv_{zone_name}"):
             try:
-                docs.extend(vector_db.similarity_search(q, k=80))
+                results = vector_db.similarity_search(q, k=80)
+                docs.extend(results)
+                print(f"Query '{q}' returned {len(results)} docs")
             except Exception as e:
                 print(f"RAG 검색 오류(쿼리={q}): {e}")
 
-        exhibits = []
+        print(f"Total docs retrieved: {len(docs)}")
+
         seen_keys = set()
         expected_source = f"csv_{zone_name}"
 
@@ -291,11 +310,18 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
             })
             seen_keys.add(dedup_key)
 
-        print(f"최종 검색 결과: {zone_name}에서 {len(exhibits)}개 전시물 발견")
-        return exhibits
+        print(f"최종 RAG 검색 결과: {zone_name}에서 {len(exhibits)}개 전시물 발견")
     except Exception as e:
         print(f"RAG 검색 오류: {e}")
-        return []
+        import traceback
+        traceback.print_exc()
+
+    # Fallback: RAG 결과가 없으면 CSV에서 직접 로드
+    if not exhibits:
+        print(f"RAG 결과 없음, CSV fallback 사용: {zone_name}")
+        exhibits = _load_exhibits_from_csv_direct(zone_name)
+
+    return exhibits
 
 def extract_principles_from_exhibits(exhibits, llm):
     """전시물에서 과학원리 추출"""

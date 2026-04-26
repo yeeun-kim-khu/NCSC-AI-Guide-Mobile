@@ -14,14 +14,13 @@ from core import get_tools, route_intent, answer_rule_based, get_dynamic_prompt,
 from voice import speech_to_text, text_to_speech, get_language_code, autoplay_audio, get_tts_cache_namespace
 from learning import render_post_visit_learning
 
-# Optimized RAG loading with progress indication
+# RAG loading with session state persistence
 @st.cache_resource
 def load_rag_db():
     """Load RAG database with caching"""
+    from core import initialize_vector_db
     with st.spinner("RAG database loading..."):
-        from core import initialize_vector_db
         vector_db = initialize_vector_db()
-        st.success("RAG database ready!")
     return vector_db
 
 def main():

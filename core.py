@@ -567,63 +567,110 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 def load_csv_data():
     """CSV files from data directory - real-time loading"""
-    base_dir = os.path.dirname(__file__)
+    def load_csv_safe(path: str) -> pd.DataFrame:
+        for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
+            try:
+                return pd.read_csv(path, encoding=enc)
+            except Exception:
+                continue
+        return pd.read_csv(path)
+
+    docs = []
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "data")
     pages_dir = os.path.join(base_dir, "data", "pages")
     
     csv_files = []
-    # Load from data/*.csv
     if os.path.exists(data_dir):
-        csv_files.extend([
-            os.path.join(data_dir, f)
-            for f in os.listdir(data_dir)
-            if f.endswith(".csv") and not f.startswith("국립어린이과학관 전시물품 대장")
-        ])
-    # Load from data/pages/*.csv
+        csv_files.extend(glob.glob(os.path.join(data_dir, "*.csv")))
     if os.path.exists(pages_dir):
-        csv_files.extend([
-            os.path.join(pages_dir, f)
-            for f in os.listdir(pages_dir)
-            if f.endswith(".csv")
-        ])
+        csv_files.extend(glob.glob(os.path.join(pages_dir, "*.csv")))
     
-    docs = []
+    print(f"Base dir: {base_dir}")
+    print(f"Data dir exists: {os.path.exists(data_dir)}")
+    print(f"Pages dir exists: {os.path.exists(pages_dir)}")
+    print(f"Found CSV files: {csv_files}")
     
     for csv_file in csv_files:
-        if os.path.exists(csv_file):
-            try:
-                df = pd.read_csv(csv_file, encoding='utf-8', skiprows=1)
-                print(f"Loading {os.path.basename(csv_file)}: {len(df)} rows")
-                
-                for idx, row in df.iterrows():
-                    category = str(row.get('분류', '')).strip()
-                    title = str(row.get('제목', '')).strip()
-                    content = str(row.get('내용', '')).strip()
-                    detail = str(row.get('세부 설명', '')).strip()
+        try:
+            print(f"Loading CSV: {csv_file}")
+            df = load_csv_safe(csv_file)
+
+            df.columns = [str(c).strip() for c in df.columns]
+            expected_cols = {"title", "content", "detail", "category"}
+            has_expected = len(expected_cols.intersection(set(df.columns))) >= 2
+            has_unnamed = any(str(c).startswith("Unnamed") for c in df.columns)
+
+            if (not has_expected) and (has_unnamed or df.shape[1] >= 2):
+                try:
+                    df.columns = [str(v).strip() for v in df.iloc[0].tolist()]
+                    df = df.iloc[1:].reset_index(drop=True)
+                    df.columns = [str(c).strip() for c in df.columns]
+                except Exception:
+                    pass
+
+            rename_map = {}
+            synonyms = {
+                "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
+                "content": ["content", "내용", "설명", "전시내용", "본문"],
+                "detail": ["detail", "세부설명", "상세", "상세설명"],
+                "category": ["category", "분류", "카테고리", "구분"],
+            }
+
+            cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
+            for target, candidates in synonyms.items():
+                if target in df.columns:
+                    continue
+                found = None
+                for cand in candidates:
+                    key = str(cand).strip().lower()
+                    if key in cols_lower:
+                        found = cols_lower[key]
+                        break
+                if found is not None and found != target:
+                    rename_map[found] = target
+            if rename_map:
+                df = df.rename(columns=rename_map)
+
+            print(f"CSV shape: {df.shape}")
+            print(f"CSV columns: {df.columns.tolist()}")
+            
+            for idx, row in df.iterrows():
+                if pd.isna(row.get('title', '')):
+                    continue
                     
-                    if title and title != 'nan' and len(title) > 0:
-                        zone_name = ""
-                        if "AI놀이터" in csv_file:
-                            zone_name = "AI놀이터"
-                        elif "탐구놀이터" in csv_file:
-                            zone_name = "탐구놀이터"
-                        elif "관찰놀이터" in csv_file:
-                            zone_name = "관찰놀이터"
-                        elif "행동놀이터" in csv_file:
-                            zone_name = "행동놀이터"
-                        
-                        text = f"[{zone_name}] {title}\n분류: {category}\n내용: {content}\n세부설명: {detail}"
-                        metadata = {
-                            "source": f"csv_{zone_name}", 
-                            "title": title, 
-                            "category": zone_name,
-                            "subcategory": category
-                        }
-                        docs.append(Document(page_content=text, metadata=metadata))
-                        
-            except Exception as e:
-                print(f"CSV load error {csv_file}: {e}")
+                title = str(row.get('title', ''))
+                content = str(row.get('content', ''))
+                detail = str(row.get('detail', ''))
+                category = str(row.get('category', ''))
+                
+                # Determine zone name from filename
+                zone_name = os.path.splitext(os.path.basename(csv_file))[0]
+                if "AI놀이터" in csv_file:
+                    zone_name = "AI놀이터"
+                elif "탐구놀이터" in csv_file or "탐구놀이터널" in csv_file:
+                    zone_name = "탐구놀이터"
+                elif "관찰놀이터" in csv_file:
+                    zone_name = "관찰놀이터"
+                elif "행동놀이터" in csv_file:
+                    zone_name = "행동놀이터"
+                
+                text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
+                metadata = {
+                    "source": f"csv_{zone_name}", 
+                    "title": title, 
+                    "category": zone_name,
+                    "subcategory": category
+                }
+                docs.append(Document(page_content=text, metadata=metadata))
+                
+            print(f"Loaded {len(docs)} docs from {csv_file}")
+                
+        except Exception as e:
+            print(f"Error loading {csv_file}: {e}")
     
+    print(f"Total CSV docs: {len(docs)}")
+    print("=== End CSV Loading Debug ===")
     return docs
 
 def load_multilingual_brochures():
@@ -697,41 +744,43 @@ def load_multilingual_brochures():
                         docs.append(Document(page_content=text, metadata=metadata))
                         
                 except Exception as e:
-                    print(f"Error loading {file_path}: {e}")
+                    print(f"Error loading {file_path}: {str(e)}")
     
     return docs
 
 def initialize_vector_db():
-    """정적 전시관 정보를 Chroma Vector DB로 구성합니다."""
-    persist_directory = "./chroma_db"
-    collection_name = "csc_exhibits"
+    """Initialize vector database with exhibit information"""
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     
-    try:
-        vectorstore = Chroma(
-            embedding_function=embeddings
-        )
-        return vectorstore
-    except Exception:
-        docs = []
-        
-        for name, desc in STATIC_EXHIBIT_INFO.items():
-            url = CSC_URLS.get(name, "https://www.csc.go.kr")
-            docs.append(Document(page_content=f"[{name}] {desc}", metadata={"source": url}))
-        
-        csv_docs = load_csv_data()
-        docs.extend(csv_docs)
-        
-        multilingual_docs = load_multilingual_brochures()
-        docs.extend(multilingual_docs)
-        
-        print(f"Loaded {len(csv_docs)} CSV entries + {len(multilingual_docs)} multilingual entries + {len(STATIC_EXHIBIT_INFO)} static entries")
-        
-        vectorstore = Chroma.from_documents(
-            docs, 
-            embeddings
-        )
-        return vectorstore
+    print("=== Vector DB Initialization ===")
+    print("Creating new vector store (Streamlit Cloud - no persistence)...")
+    
+    docs = []
+    
+    # Add static exhibit info
+    for name, desc in STATIC_EXHIBIT_INFO.items():
+        url = CSC_URLS.get(name, "https://www.csc.go.kr")
+        docs.append(Document(page_content=f"[{name}] {desc}", metadata={"source": url}))
+    
+    # Add CSV data
+    csv_docs = load_csv_data()
+    docs.extend(csv_docs)
+    
+    # Add multilingual brochures
+    multilingual_docs = load_multilingual_brochures()
+    docs.extend(multilingual_docs)
+    
+    print(f"Loaded {len(csv_docs)} CSV entries + {len(multilingual_docs)} multilingual entries + {len(STATIC_EXHIBIT_INFO)} static entries")
+    print(f"Total documents: {len(docs)}")
+    
+    # Create new vector store (no persistence for Streamlit Cloud)
+    vectorstore = Chroma.from_documents(
+        docs, 
+        embeddings
+    )
+    
+    print("=== Vector DB Initialization Complete ===")
+    return vectorstore
 
 # ============================================================================
 # LANGCHAIN TOOLS - 웹 크롤링 및 검색 도구
