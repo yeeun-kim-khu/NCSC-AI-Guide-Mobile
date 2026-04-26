@@ -227,7 +227,7 @@ def _render_keyword_tags(zone_name: str, keywords, zone_rows):
     cols = st.columns(4)
     for i, kw in enumerate(keywords):
         with cols[i % 4]:
-            if st.button(kw, key=f"kw_btn_{zone_name}_{i}"):
+            if st.button(kw, key=f"kw_btn_{zone_name}_{kw}"):
                 st.session_state[state_key] = kw
 
     selected_kw = st.session_state.get(state_key, "")
@@ -257,78 +257,44 @@ def _render_keyword_tags(zone_name: str, keywords, zone_rows):
 # ============================================================================
 
 def get_zone_exhibits_from_rag(zone_name, vector_db):
-    """RAG DB: zone_name(='AI/Thinking/Action/Explore/Observe/Light') -> list of exhibits"""
+    """RAG에서 해당 놀이터의 전시물 정보 가져오기"""
     try:
-        print(f"=== RAG Search Debug ===")
-        print(f"Input zone_name: {zone_name}")
-        
-        # zone_name based search terms - match actual CSV data
-        search_terms = []
-        
-        # Map zone names to actual CSV categories
-        csv_zone_mapping = {
-            "AI": "AI놀이터",
-            "Action": "행동놀이터",
-            "Explore": "탐구놀이터",
-            "Observe": "관찰놀이터",
-            "Thinking": "",  # 데이터 없음
-            "Light": ""      # 데이터 없음
-        }
-        
-        mapped_zone = csv_zone_mapping.get(zone_name, zone_name)
-        print(f"Mapped zone: {mapped_zone}")
-        
-        # Skip zones without data
-        if not mapped_zone:
-            print(f"No data available for zone: {zone_name}")
-            return []
-            
-        search_terms.extend([mapped_zone, zone_name])
-        print(f"Search terms: {search_terms}")
-        
-        # Search with multiple terms
-        all_docs = []
-        for term in search_terms:
+        docs = []
+        for q in (zone_name, f"[{zone_name}]", f"csv_{zone_name}"):
             try:
-                docs = vector_db.similarity_search(term, k=30)
-                print(f"Term '{term}' found {len(docs)} docs")
-                all_docs.extend(docs)
+                docs.extend(vector_db.similarity_search(q, k=80))
             except Exception as e:
-                print(f"Search error for term '{term}': {e}")
-                continue
-        
-        print(f"Total docs before filtering: {len(all_docs)}")
-        
-        # Remove duplicates and filter by zone relevance
+                print(f"RAG 검색 오류(쿼리={q}): {e}")
+
         exhibits = []
-        seen_content = set()
-        
-        for doc in all_docs:
-            content = doc.page_content
-            category = doc.metadata.get("category", "")
-            
-            # Check if content is relevant to zone
-            is_relevant = (
-                mapped_zone in content or 
-                zone_name in content or 
-                mapped_zone in category or
-                zone_name in category
-            )
-            
-            print(f"Doc check - Category: '{category}', Relevant: {is_relevant}")
-            
-            if is_relevant and content not in seen_content:
-                exhibits.append({
-                    "content": content,
-                    "metadata": doc.metadata
-                })
-                seen_content.add(content)
-        
-        print(f"Final result: {len(exhibits)} exhibits found in {zone_name}")
-        print(f"=== End RAG Search Debug ===")
+        seen_keys = set()
+        expected_source = f"csv_{zone_name}"
+
+        for doc in docs:
+            metadata = doc.metadata or {}
+            category = metadata.get("category", "")
+            source = metadata.get("source", "")
+            title = metadata.get("title", "")
+            content = doc.page_content or ""
+
+            is_csv_doc_for_zone = (source == expected_source) or (category == zone_name)
+            if not is_csv_doc_for_zone:
+                continue
+
+            dedup_key = (source, category, title, content[:200])
+            if dedup_key in seen_keys:
+                continue
+
+            exhibits.append({
+                "content": content,
+                "metadata": metadata
+            })
+            seen_keys.add(dedup_key)
+
+        print(f"최종 검색 결과: {zone_name}에서 {len(exhibits)}개 전시물 발견")
         return exhibits
     except Exception as e:
-        print(f"RAG search error: {e}")
+        print(f"RAG 검색 오류: {e}")
         return []
 
 def extract_principles_from_exhibits(exhibits, llm):
@@ -892,6 +858,12 @@ def render_post_visit_learning(
             if bt:
                 st.caption(f"BT: {bt}")
         selected_zones_story = _select_zones_by_group("story")
+        
+        # Debug: show selected zones
+        if selected_zones_story:
+            st.info(f"선택된 놀이터: {', '.join(selected_zones_story)}")
+        else:
+            st.warning("놀이터를 선택해주세요")
 
         if selected_zones_story and st.button(text["generate_story"]):
             with st.spinner(text["story_generating"]):
