@@ -43,7 +43,7 @@ ZONE_INFO = {
     "천체투영관": {
         "floor": "1층",
         "description": "우주와 별의 비밀을 알아봐요",
-        "has_data": False
+        "has_data": True
     },
     "탐구놀이터": {
         "floor": "2층",
@@ -739,6 +739,7 @@ def render_post_visit_learning(
             "행동놀이터": "Activity Zone",
             "관찰놀이터": "Discovery Zone",
             "탐구놀이터": "Exploration Zone",
+            "천체투영관": "Planetarium",
         }
         if zone in official:
             return official[zone]
