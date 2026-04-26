@@ -1002,10 +1002,32 @@ def render_post_visit_learning(
                         import random as _rnd
                         st.session_state[seed_key] = _rnd.randint(1, 10**9)
 
+                    # 천체투영관: 영상 제목을 키워드로 받아 영상 내용을 원리로 변환
+                    quiz_principle = selected_kw
+                    if zone == "천체투영관":
+                        try:
+                            from core import PLANETARIUM_VIDEO_INFO
+                            info = PLANETARIUM_VIDEO_INFO.get(selected_kw)
+                            if info:
+                                # 영상 row에서 description도 같이 첨부
+                                vid_row = next(
+                                    (r for r in zone_rows if r.get("title") == selected_kw),
+                                    None,
+                                )
+                                desc = vid_row.get("content", "") if vid_row else ""
+                                quiz_principle = (
+                                    f"천체투영관 상영 영상 '{selected_kw}'에서 배우는 내용\n"
+                                    f"줄거리: {desc}\n"
+                                    f"학습 주제: {info.get('themes', '')}\n"
+                                    f"(이 영상의 내용/주제를 바탕으로 퀴즈를 만들 것)"
+                                )
+                        except Exception as e:
+                            print(f"천투 영상 컨텍스트 조회 실패: {e}")
+
                     if quiz_cache_key not in st.session_state:
                         with st.spinner(text["quiz_generating"]):
                             quiz = generate_quiz(
-                                zone, selected_kw, llm, language_mode,
+                                zone, quiz_principle, llm, language_mode,
                                 variation_seed=st.session_state[seed_key],
                             )
                             st.session_state[quiz_cache_key] = quiz or ""

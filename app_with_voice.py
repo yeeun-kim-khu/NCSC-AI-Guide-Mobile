@@ -10,7 +10,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from audio_recorder_streamlit import audio_recorder
 import base64
 
-from core import get_tools, route_intent, answer_rule_based, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS
+from core import get_tools, route_intent, answer_rule_based, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
 from voice import speech_to_text, text_to_speech, get_language_code, autoplay_audio, get_tts_cache_namespace
 from learning import render_post_visit_learning
 
@@ -598,6 +598,9 @@ def main():
                     # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
                     with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["spinner_rule"]):
                         answer = answer_rule_based(intent, user_input, user_mode)
+                    # 한국어가 아니면 답변 번역
+                    if language_mode != "한국어":
+                        answer = translate_answer_cached(answer, language_mode)
                     st.markdown(answer)
                     rule_sources = []
                     lowered = user_input.lower()
@@ -613,7 +616,7 @@ def main():
                         else:
                             rule_sources = [CSC_URLS.get("이용안내")]
                     rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
-                    render_source_buttons(rule_sources)
+                    render_source_buttons(rule_sources, language_mode=language_mode)
                     render_tts_for_answer(answer)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
@@ -652,7 +655,7 @@ def main():
                                 debug_info += str(msg.content) + "\n\n"
                         
                     st.markdown(answer)
-                    render_source_buttons(rag_sources)
+                    render_source_buttons(rag_sources, language_mode=language_mode)
                     render_tts_for_answer(answer)
                     
                     # 디버깅 정보 표시 (답변 뒤)

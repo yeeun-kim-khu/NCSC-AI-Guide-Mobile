@@ -1237,7 +1237,82 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
     
     return base_prompt
 
+PLANETARIUM_VIDEO_INFO = {
+    "코코몽 우주탐험": {
+        "themes": "토성, 위성 타이탄, 태양계 행성, 우주여행, 모험",
+        "fulldomedb_url": "https://www.fddb.org/fulldome-shows/cocomong-space-adventure/",
+    },
+    "길냥이 키츠 슈퍼문 대모험": {
+        "themes": "달, 슈퍼문, 아폴로 미션, 달 기지, 미래 우주 탐사",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "바니 앤 비니": {
+        "themes": "바다 생태계, 별과 별자리, 해양 생물, 자연의 신비",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "다이노소어": {
+        "themes": "공룡, 중생대, 시간여행, 멸종, 지구의 역사",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "길냥이 키츠 우주정거장의 비밀": {
+        "themes": "국제우주정거장(ISS), 무중력, 인공지능(A.I.), 우주생활",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+}
+
+
+def _load_planetarium_videos():
+    """천체투영관 CSV에서 상영 영상 5개를 표준 row 형식으로 반환"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(base_dir, "data")
+    csv_path = os.path.join(data_dir, "천체투영관.csv")
+    if not os.path.exists(csv_path):
+        return []
+
+    for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
+        try:
+            df = pd.read_csv(csv_path, encoding=enc)
+            break
+        except Exception:
+            continue
+    else:
+        return []
+
+    df.columns = [str(c).strip() for c in df.columns]
+    rows = []
+    seen_titles = set()
+    for _, r in df.iterrows():
+        cat = str(r.get("category", "")).strip()
+        if not cat.startswith("프로그램_"):
+            continue
+        answer = str(r.get("answer", "")).strip()
+        # 영상 제목은 PLANETARIUM_VIDEO_INFO 키 중 answer/category에 매칭되는 것을 찾음
+        title = None
+        for video_title in PLANETARIUM_VIDEO_INFO.keys():
+            if video_title in answer or video_title.replace(" ", "") in cat.replace("_", "").replace(" ", ""):
+                title = video_title
+                break
+        if not title:
+            continue
+        if title in seen_titles:
+            continue
+        seen_titles.add(title)
+
+        info = PLANETARIUM_VIDEO_INFO.get(title, {})
+        rows.append({
+            "title": title,
+            "content": answer,
+            "detail": f"학습 주제: {info.get('themes', '')} | 참고: {info.get('fulldomedb_url', '')}",
+            "category": "상영영상",
+        })
+    return rows
+
+
 def load_zone_rows_from_csv(zone_name: str):
+    # 천체투영관: 상영 영상을 전시물로 사용
+    if zone_name == "천체투영관":
+        return _load_planetarium_videos()
+
     def load_csv_safe(path: str) -> pd.DataFrame:
         for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
             try:
@@ -1302,12 +1377,72 @@ def load_zone_rows_from_csv(zone_name: str):
     rows = [x for x in rows if x.get("title")]
     return rows
 
-def render_source_buttons(sources: list):
-    """출처 버튼 렌더링"""
-    if not isinstance(sources, (list, tuple)):
-        return
-    if sources:
-        st.markdown("**📚 참고 자료:**")
-        for i, source in enumerate(sources[:3]):
-            if source.startswith("http"):
-                st.markdown(f"[🔗 출처 {i+1}]({source})")
+PLANETARIUM_VIDEO_INFO = {
+    "코코몽 우주탐험": {
+        "themes": "토성, 위성 타이탄, 태양계 행성, 우주여행, 모험",
+        "fulldomedb_url": "https://www.fddb.org/fulldome-shows/cocomong-space-adventure/",
+    },
+    "길냥이 키츠 슈퍼문 대모험": {
+        "themes": "달, 슈퍼문, 아폴로 미션, 달 기지, 미래 우주 탐사",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "바니 앤 비니": {
+        "themes": "바다 생태계, 별과 별자리, 해양 생물, 자연의 신비",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "다이노소어": {
+        "themes": "공룡, 중생대, 시간여행, 멸종, 지구의 역사",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+    "길냥이 키츠 우주정거장의 비밀": {
+        "themes": "국제우주정거장(ISS), 무중력, 인공지능(A.I.), 우주생활",
+        "fulldomedb_url": "https://www.fddb.org/",
+    },
+}
+
+
+def _load_planetarium_videos():
+    """천체투영관 CSV에서 상영 영상 5개를 표준 row 형식으로 반환"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(base_dir, "data")
+    csv_path = os.path.join(data_dir, "천체투영관.csv")
+    if not os.path.exists(csv_path):
+        return []
+
+    for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
+        try:
+            df = pd.read_csv(csv_path, encoding=enc)
+            break
+        except Exception:
+            continue
+    else:
+        return []
+
+    df.columns = [str(c).strip() for c in df.columns]
+    rows = []
+    seen_titles = set()
+    for _, r in df.iterrows():
+        cat = str(r.get("category", "")).strip()
+        if not cat.startswith("프로그램_"):
+            continue
+        answer = str(r.get("answer", "")).strip()
+        # 영상 제목은 PLANETARIUM_VIDEO_INFO 키 중 answer/category에 매칭되는 것을 찾음
+        title = None
+        for video_title in PLANETARIUM_VIDEO_INFO.keys():
+            if video_title in answer or video_title.replace(" ", "") in cat.replace("_", "").replace(" ", ""):
+                title = video_title
+                break
+        if not title:
+            continue
+        if title in seen_titles:
+            continue
+        seen_titles.add(title)
+
+        info = PLANETARIUM_VIDEO_INFO.get(title, {})
+        rows.append({
+            "title": title,
+            "content": answer,
+            "detail": f"학습 주제: {info.get('themes', '')} | 참고: {info.get('fulldomedb_url', '')}",
+            "category": "상영영상",
+        })
+    return rows
