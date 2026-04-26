@@ -649,17 +649,17 @@ def render_post_visit_learning(
     
     # CSV 데이터 미리 로드
     all_zone_rows = _preload_all_zone_csv_rows()
-    
-    learning_tab1, learning_tab2 = st.tabs([text["tab1"], text["tab2"]])
-    
-    with learning_tab1:
+
+    tab_quiz, tab_question, tab_story = st.tabs([text["tab_quiz"], text["tab_question"], text["tab_story"]])
+
+    def _render_zone_selector(key_prefix: str):
         st.subheader(text["select_zone"])
-        
-        selected_zones = []
-        
+
+        selected = []
+
         st.markdown(f"### {text['floor1']}")
         col1, col2 = st.columns(2)
-        
+
         floor1_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"]
         for i, zone in enumerate(floor1_zones):
             col = col1 if i % 2 == 0 else col2
@@ -667,12 +667,12 @@ def render_post_visit_learning(
                 disabled = not ZONE_INFO[zone]["has_data"]
                 zone_disp = _display_zone_name(zone)
                 label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
-                if st.checkbox(label, key=f"zone_{zone}", disabled=disabled):
-                    selected_zones.append(zone)
-        
+                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
+                    selected.append(zone)
+
         st.markdown(f"### {text['floor2']}")
         col3, col4 = st.columns(2)
-        
+
         floor2_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
         for i, zone in enumerate(floor2_zones):
             col = col3 if i % 2 == 0 else col4
@@ -680,24 +680,33 @@ def render_post_visit_learning(
                 disabled = not ZONE_INFO[zone]["has_data"]
                 zone_disp = _display_zone_name(zone)
                 label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
-                if st.checkbox(label, key=f"zone_{zone}", disabled=disabled):
-                    selected_zones.append(zone)
-        
+                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
+                    selected.append(zone)
+
+        return selected
+
+    def _render_zone_header(zone: str, zone_rows):
+        st.markdown(f"## 🎯 {_display_zone_name(zone)}")
+        st.caption(f"전시물 {len(zone_rows)}개")
+        keywords = _get_zone_keywords(zone, zone_rows, language_mode)
+        _render_keyword_tags(zone, keywords, zone_rows)
+        with st.expander(text["expander_parent"], expanded=False):
+            if zone_rows:
+                st.dataframe(zone_rows, use_container_width=True, hide_index=True)
+            else:
+                st.info(text["csv_not_found"])
+
+    with tab_quiz:
+        selected_zones = _render_zone_selector("quiz")
+
         if selected_zones:
             st.markdown("---")
-            
-            mode = st.radio("학습 모드 선택", [text["quiz_mode"], text["chat_mode"]], horizontal=True)
-            
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
-            
             for zone in selected_zones:
-                st.markdown(f"## 🎯 {_display_zone_name(zone)}")
-                
+                zone_rows = all_zone_rows.get(zone, [])
+                _render_zone_header(zone, zone_rows)
+
                 with st.spinner(text["generating"]):
-                    # CSV에서 직접 데이터 로드
-                    zone_rows = all_zone_rows.get(zone, [])
-                    
-                    # CSV 데이터를 exhibits 형식으로 변환
                     exhibits = []
                     for row in zone_rows:
                         exhibits.append({
@@ -707,18 +716,69 @@ def render_post_visit_learning(
                             "category": row.get("category", "")
                         })
                     
-                    print(f"📊 Loaded {len(exhibits)} exhibits for {zone} from CSV")
+                    if exhibits:
+                        principles, principles_text = extract_principles_from_exhibits(exhibits, llm)
+                        if principles:
+                            selected_principle = st.selectbox(
+                                text["select_principle"],
+                                principles,
+                                key=f"principle_{zone}"
+                            )
+
+                            if st.button(text["make_quiz"], key=f"quiz_{zone}"):
+                                with st.spinner(text["quiz_generating"]):
+                                    quiz = generate_quiz(zone, selected_principle, llm, language_mode)
+                                    if quiz:
+                                        st.markdown(quiz)
+                        else:
+                            st.info(text["principles_not_found"])
+                    else:
+                        st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
+        else:
+            st.info(text["pick_zone_hint"])
+
+    with tab_question:
+        selected_zones = _render_zone_selector("question")
+
+        if selected_zones:
+            st.markdown("---")
+            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+            for zone in selected_zones:
+                zone_rows = all_zone_rows.get(zone, [])
+                _render_zone_header(zone, zone_rows)
+
+                with st.spinner(text["generating"]):
+                    exhibits = []
+                    for row in zone_rows:
+                        exhibits.append({
+                            "title": row.get("title", ""),
+                            "content": row.get("content", ""),
+                            "detail": row.get("detail", ""),
+                            "category": row.get("category", "")
+                        })
                     
                     if exhibits:
-                        # 키워드 추출 및 렌더링 (로컬과 동일)
-                        keywords = _get_zone_keywords(zone, zone_rows, language_mode)
-                        _render_keyword_tags(zone, keywords, zone_rows)
+                        user_question = st.text_input(
+                            f"{_display_zone_name(zone)}{text['question_prompt']}",
+                            key=f"question_input_{zone}"
+                        )
+
+                        if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
+                            context = "\n".join([ex["content"] for ex in exhibits[:5]])
+                            prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
+{context}
+
+사용자 질문: {user_question}
+
+어린이가 이해하기 쉽게 답변해주세요."""
+                            response = llm.invoke(prompt)
+                            st.markdown(f"**{text['answer_prefix']}:** {response.content}")
                     else:
                         st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
         else:
             st.info(text["pick_zone_hint"])
     
-    with learning_tab2:
+    with tab_story:
         st.subheader(text["tab2"])
         st.markdown(text["story_intro"])
 
