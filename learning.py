@@ -13,6 +13,13 @@ from core import initialize_vector_db, load_zone_rows_from_csv
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
+
+def _safe_secret_get(key: str, default: str = "") -> str:
+    try:
+        return st.secrets.get(key, default)
+    except Exception:
+        return default
+
 # ============================================================================
 # 놀이터 정보
 # ============================================================================
@@ -165,75 +172,122 @@ CSV snippets:
     return uniq[:12]
 
 
+@st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
+def _translate_keywords_cached(keywords_tuple: tuple, target_language: str) -> list:
+    """한국어 키워드를 다른 언어로 번역 (캐시됨)"""
+    if target_language == "한국어" or not keywords_tuple:
+        return list(keywords_tuple)
+    lang_label = {
+        "English": "English",
+        "日本語": "Japanese (in 日本語 / kana/kanji only)",
+        "中文": "Simplified Chinese (中文 only)",
+    }.get(target_language, "English")
+    try:
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        joined = ", ".join(keywords_tuple)
+        prompt = (
+            f"Translate each Korean keyword into {lang_label}. "
+            f"Keep them concise (1-3 words). Output ONLY a comma-separated single line, "
+            f"in the same order, with the same number of items. Do not add explanations.\n\n"
+            f"Keywords: {joined}"
+        )
+        resp = llm.invoke(prompt)
+        line = (resp.content or "").strip().split("\n")[0]
+        parts = [p.strip() for p in re.split(r"[,，、]", line) if p.strip()]
+        if len(parts) == len(keywords_tuple):
+            return parts
+        # length mismatch: pad/truncate gracefully
+        if parts:
+            if len(parts) < len(keywords_tuple):
+                parts = parts + list(keywords_tuple[len(parts):])
+            return parts[:len(keywords_tuple)]
+    except Exception as e:
+        print(f"키워드 번역 실패: {e}")
+    return list(keywords_tuple)
+
+
 def _get_zone_keywords(zone_name: str, zone_rows, language_mode: str):
     kws = _extract_zone_keywords_from_titles(zone_rows)
-    if kws:
-        return kws
+    if not kws:
+        compact_lines = []
+        for r in (zone_rows or [])[:40]:
+            title = str(r.get("title", "")).strip()
+            cat = str(r.get("category", "")).strip()
+            content = str(r.get("content", "")).strip()
+            if title or content:
+                compact_lines.append(f"- {title} ({cat}) {content[:120]}")
+        csv_compact_text = "\n".join(compact_lines)[:6000]
 
-    compact_lines = []
-    for r in (zone_rows or [])[:40]:
-        title = str(r.get("title", "")).strip()
-        cat = str(r.get("category", "")).strip()
-        content = str(r.get("content", "")).strip()
-        if title or content:
-            compact_lines.append(f"- {title} ({cat}) {content[:120]}")
-    csv_compact_text = "\n".join(compact_lines)[:6000]
+        try:
+            kws = _extract_zone_keywords_llm(zone_name, language_mode, csv_compact_text)
+        except Exception as e:
+            print(f"키워드 LLM 추출 실패: {e}")
+            kws = []
 
-    try:
-        kws = _extract_zone_keywords_llm(zone_name, language_mode, csv_compact_text)
-        if kws:
-            return kws
-    except Exception as e:
-        print(f"키워드 LLM 추출 실패: {e}")
+        if not kws:
+            kws = _extract_zone_keywords(zone_rows)
 
-    return _extract_zone_keywords(zone_rows)
+    # 언어별 번역 적용
+    if language_mode != "한국어" and kws:
+        translated = _translate_keywords_cached(tuple(kws), language_mode)
+        # 원본 한국어 키워드와 병행 반환 (퀴즈 생성용 원본 유지)
+        return list(zip(kws, translated))
+    return [(k, k) for k in kws]
 
 
-def _render_keyword_tags(zone_name: str, keywords, zone_rows):
-    if not keywords:
-        return
+def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode: str = "한국어", mode: str = "exhibits", llm=None):
+    """키워드 버튼 렌더링.
+    keyword_pairs: list of (kr_keyword, display_keyword) tuples
+    mode: 'exhibits' (기존: 관련 전시물 표시) | 'quiz' (바로 퀴즈 생성) | 'question' (질문 입력)
+    """
+    if not keyword_pairs:
+        return None, None
 
-    st.markdown("### 🔑 오늘의 키워드")
+    heading_text = {
+        "한국어": "#### 🔑 오늘의 키워드",
+        "English": "#### 🔑 Today's keywords",
+        "日本語": "#### 🔑 きょうのキーワード",
+        "中文": "#### 🔑 今日的关键词",
+    }.get(language_mode, "#### 🔑 Today's keywords")
+    st.markdown(heading_text)
 
-    state_key = f"kw_selected_{zone_name}"
+    state_key = f"kw_selected_{zone_name}_{mode}"
     if state_key not in st.session_state:
         st.session_state[state_key] = ""
 
     cols = st.columns(4)
-    for i, kw in enumerate(keywords):
+    for i, (kw_kr, kw_disp) in enumerate(keyword_pairs):
         with cols[i % 4]:
-            if st.button(kw, key=f"kw_btn_{zone_name}_{kw}"):
-                st.session_state[state_key] = kw
+            if st.button(kw_disp, key=f"kw_btn_{zone_name}_{mode}_{kw_kr}"):
+                st.session_state[state_key] = kw_kr
 
     selected_kw = st.session_state.get(state_key, "")
+    selected_disp = selected_kw
+    for kw_kr, kw_disp in keyword_pairs:
+        if kw_kr == selected_kw:
+            selected_disp = kw_disp
+            break
+
+    clear_label = {
+        "한국어": "키워드 선택 해제",
+        "English": "Clear keyword",
+        "日本語": "キーワード解除",
+        "中文": "清除关键词",
+    }.get(language_mode, "Clear keyword")
+    selected_label = {
+        "한국어": "선택한 키워드",
+        "English": "Selected keyword",
+        "日本語": "選んだキーワード",
+        "中文": "已选关键词",
+    }.get(language_mode, "Selected keyword")
+
     if selected_kw:
-        print(f"=== KEYWORD DEBUG ===")
-        print(f"Zone: {zone_name}")
-        print(f"Selected keyword: {selected_kw}")
-        print(f"zone_rows count: {len(zone_rows) if zone_rows else 0}")
-        if zone_rows:
-            print(f"First row sample: {zone_rows[0]}")
-        print(f"=== END DEBUG ===")
-        
-        st.caption(f"선택한 키워드: {selected_kw}")
-        st.write(f"**DEBUG: zone_rows 개수 = {len(zone_rows) if zone_rows else 0}개**")
-        matched = []
-        for r in (zone_rows or []):
-            title = str(r.get("title", ""))
-            content = str(r.get("content", ""))
-            detail = str(r.get("detail", ""))
-            category = str(r.get("category", ""))
-            if selected_kw in (title + " " + category + " " + content + " " + detail):
-                if title:
-                    matched.append(title)
-        matched = list(dict.fromkeys(matched))
-        if matched:
-            st.markdown("**관련 전시물**")
-            st.markdown("\n".join([f"- {t}" for t in matched[:10]]))
-            if len(matched) > 10:
-                st.caption(f"+ {len(matched) - 10}개 더 있음")
-        if st.button("키워드 선택 해제", key=f"kw_clear_{zone_name}"):
+        st.caption(f"{selected_label}: {selected_disp}")
+        if st.button(clear_label, key=f"kw_clear_{zone_name}_{mode}"):
             st.session_state[state_key] = ""
+            selected_kw = ""
+
+    return selected_kw, selected_disp
 
 
 # ============================================================================
@@ -436,87 +490,99 @@ Make it fun and educational for children!"""
 # 오디오북 생성
 # ============================================================================
 
+def _get_ui_glossary_rules(language_mode: str) -> str:
+    glossary = {
+        "English": {
+            "놀이터": "Zone",
+            "전시물": "Exhibit",
+            "과학원리": "Science principle",
+            "오디오북": "Audiobook",
+        }
+    }
+    if language_mode == "한국어":
+        return ""
+    lang_terms = glossary.get(language_mode, glossary["English"])
+    rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
+    return (
+        "\n\nGLOSSARY (must follow exactly):\n"
+        + "\n".join(rule_lines)
+        + "\n- Use these terms consistently. Do not mix languages.\n"
+    )
+
+
 def generate_science_story(zone_name, exhibits, principles, language="한국어"):
-    """방문한 놀이터 기반 과학동화 생성"""
-    
+    """방문한 놀이터 기반 과학동화 생성 (상상력 강화 버전)"""
+    import random
+
+    # 랜덤 주인공 이름 선택
+    protagonist_names = {
+        "한국어": ["지우", "서연", "민준", "하은", "도윤", "수아", "예준", "시우"],
+        "English": ["Alex", "Emma", "Noah", "Olivia", "Liam", "Sophia", "Lucas", "Mia"],
+        "日本語": ["ゆうと", "さくら", "はると", "ひまり", "そうた", "あおい"],
+        "中文": ["小明", "小华", "小芳", "小杰", "小美", "小强"]
+    }
+    protagonist = random.choice(protagonist_names.get(language, protagonist_names["한국어"]))
+
     exhibit_summary = "\n".join([f"- {ex['metadata'].get('title', '')}" for ex in exhibits[:5]])
     principles_text = ", ".join(principles[:3])
 
-    def _get_ui_glossary_rules(language_mode: str) -> str:
-        glossary = {
-            "English": {
-                "놀이터": "Zone",
-                "전시물": "Exhibit",
-                "과학원리": "Science principle",
-                "오디오북": "Audiobook",
-            }
-        }
-        if language_mode == "한국어":
-            return ""
-        lang_terms = glossary.get(language_mode, glossary["English"])
-        rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
-        return (
-            "\n\nGLOSSARY (must follow exactly):\n"
-            + "\n".join(rule_lines)
-            + "\n- Use these terms consistently. Do not mix languages.\n"
-        )
-
     glossary_rules = _get_ui_glossary_rules(language)
-    
+
     language_prompts = {
-        "한국어": f"""당신은 어린이를 위한 과학동화 작가입니다.
+        "한국어": f"""너는 4세~초등 저학년 어린이를 위한 상상력 풍부한 과학동화 작가야.
 
-**배경:**
-오늘 어린이가 '{zone_name}'에서 다음 전시물들을 체험했습니다:
+배경(참고용 재료):
+- 과학 세계의 모티브: '{zone_name}' (이 단어를 직접 쓰지 말고 상상력으로 변형)
+- 전시물(재료로만 사용, 마법 아이템/신비한 장치로 변형):
 {exhibit_summary}
+- 자연스럽게 녹일 과학 키워드(최대 3개): {principles_text}
 
-이 전시물들에는 다음과 같은 과학원리가 담겨 있습니다:
-{principles_text}
+요청:
+체험학습 일기처럼 쓰지 말고, '진짜 동화'처럼 상상력을 크게 펼쳐서 5~7분 분량으로 써줘.
 
-**요청:**
-이 체험을 바탕으로 5-7분 분량의 과학동화를 만들어주세요.
+동화 규칙:
+1) 주인공은 어린이 '{protagonist}'. {protagonist}의 옆에는 말하는 친구(예: 작은 로봇, 요정, 공룡, 외계인 등) 1명이 동행.
+2) 시작 5문장 안에 사건 발생(미션/수수께끼/위기)으로 몰입.
+3) **중요**: "놀이터에 갔어요", "전시물을 봤어요" 같은 표현 금지! 대신 마법 세계/우주/비밀 연구소 등으로 변형.
+4) 전시물은 '마법 도구/비밀 장치/모험의 관문'처럼 완전히 변형해서 등장.
+5) 과학 설명은 2문장 이내로 짧게, 대사/상황 속에 숨기기(강의처럼 금지).
+6) 대사(따옴표)를 자주 써서 리듬 있게.
+7) 결말은 따뜻하고 희망적. 마지막 문장은 잠자리용 한 줄로 마무리.
 
-**동화 구성:**
-1. 주인공: 호기심 많은 어린이 (이름: 지우)
-2. 스토리: 지우가 '{zone_name}'에서 체험한 내용을 모험 이야기로 구성
-3. 과학원리: 자연스럽게 녹여서 설명
-4. 톤: 따뜻하고 재미있게, 잠들기 전 듣기 좋은 분위기
-5. 길이: 약 1000-1500자
+출력:
+- 제목 1줄
+- 본문(문단 구분)
+""",
 
-**중요:**
-- 어린이가 이해하기 쉬운 단어 사용
-- 과학원리를 억지로 설명하지 말고 이야기 속에 자연스럽게 녹이기
-- 긍정적이고 희망찬 결말
-- 잠들기 전 듣기 좋은 차분한 분위기""",
-
-        "English": f"""You are a children's science storyteller.{glossary_rules}
+        "English": f"""You are an imaginative bedtime storyteller for young kids.{glossary_rules}
 
 **Background:**
-Today, a child visited '{zone_name}' and experienced these exhibits:
+Science world motif: '{zone_name}' (transform this into a magical setting, don't use the word directly)
+Exhibits (use as inspiration for magical items/mysterious devices):
 {exhibit_summary}
 
-These exhibits contain the following scientific principles:
-{principles_text}
+Scientific principles to weave in naturally (max 3): {principles_text}
 
 **Request:**
-Create a 5-7 minute science bedtime story based on this experience.
+Write a real fairy-tale-like adventure (NOT a museum visit diary) inspired by the exhibits.
 
 **Story Structure:**
-1. Protagonist: A curious child (Name: Jiwoo)
-2. Story: Turn Jiwoo's experience at '{zone_name}' into an adventure
-3. Science: Naturally weave in the scientific principles
-4. Tone: Warm, fun, perfect for bedtime
+1. Protagonist: A curious child named '{protagonist}' with a talking companion (robot, fairy, alien, etc.)
+2. **Important**: NO phrases like "went to the playground" or "saw exhibits"! Transform into magical world/space/secret lab.
+3. Story: Create a mission/mystery/adventure with a twist
+4. Science: Naturally weave in the principles through dialogue/situations (max 2 sentences each)
+5. Tone: Warm, fun, perfect for bedtime
 5. Length: About 1000-1500 characters
 
 **Important:**
 - Use simple, child-friendly language
-- Don't force science explanations - make them natural
+- Keep science subtle (max 2 sentences each), embedded in dialogues and actions
 - Positive, hopeful ending
 - Calm atmosphere suitable for bedtime listening"""
     }
-    
+
     prompt = language_prompts.get(language, language_prompts["한국어"])
-    
+
     try:
         llm = ChatOpenAI(model="gpt-4o", temperature=0.8)
         response = llm.invoke(prompt)
@@ -525,26 +591,111 @@ Create a 5-7 minute science bedtime story based on this experience.
         print(f"동화 생성 오류: {e}")
         return None
 
-def text_to_audiobook(story_text, language="한국어"):
-    """텍스트를 오디오북으로 변환"""
-    
+
+def text_to_audiobook(story_text, language="한국어", voice_override=None, speed_override=None):
+    """텍스트를 오디오북으로 변환 (ElevenLabs > Naver > OpenAI fallback)"""
+
+    eleven_key = os.environ.get("ELEVENLABS_API_KEY")
+    if (not eleven_key) and hasattr(st, "secrets"):
+        eleven_key = _safe_secret_get("ELEVENLABS_API_KEY", "")
+
+    eleven_voice_id = os.environ.get("ELEVENLABS_VOICE_ID")
+    if (not eleven_voice_id) and hasattr(st, "secrets"):
+        eleven_voice_id = _safe_secret_get("ELEVENLABS_VOICE_ID", "")
+    if not eleven_voice_id:
+        eleven_voice_id = "21m00Tcm4TlvDq8ikWAM"
+
+    eleven_model_id = os.environ.get("ELEVENLABS_MODEL_ID")
+    if (not eleven_model_id) and hasattr(st, "secrets"):
+        eleven_model_id = _safe_secret_get("ELEVENLABS_MODEL_ID", "")
+    if not eleven_model_id:
+        eleven_model_id = "eleven_multilingual_v2"
+
+    if eleven_key:
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{eleven_voice_id}"
+        headers = {
+            "xi-api-key": eleven_key,
+            "accept": "audio/mpeg",
+            "content-type": "application/json",
+        }
+
+        stability = 0.45
+        similarity_boost = 0.75
+        style = 0.35
+        if isinstance(speed_override, (int, float)):
+            stability = max(0.1, min(0.9, 0.65 - (float(speed_override) - 1.0) * 0.2))
+
+        payload = {
+            "text": story_text,
+            "model_id": eleven_model_id,
+            "voice_settings": {
+                "stability": stability,
+                "similarity_boost": similarity_boost,
+                "style": style,
+                "use_speaker_boost": True,
+            },
+        }
+
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=90)
+            if resp.status_code == 200 and resp.content:
+                return resp.content
+            print(f"ElevenLabs TTS 오류: status={resp.status_code}, body={resp.text[:500]}")
+            return None
+        except Exception as e:
+            print(f"ElevenLabs TTS 호출 오류: {e}")
+            return None
+
+    ncp_key_id = os.environ.get("X_NCP_APIGW_API_KEY_ID") or os.environ.get("X-NCP-APIGW-API-KEY-ID")
+    ncp_key = os.environ.get("X_NCP_APIGW_API_KEY") or os.environ.get("X-NCP-APIGW-API-KEY")
+    if (not ncp_key_id) and hasattr(st, "secrets"):
+        ncp_key_id = _safe_secret_get("X_NCP_APIGW_API_KEY_ID", "") or _safe_secret_get("X-NCP-APIGW-API-KEY-ID", "")
+    if (not ncp_key) and hasattr(st, "secrets"):
+        ncp_key = _safe_secret_get("X_NCP_APIGW_API_KEY", "") or _safe_secret_get("X-NCP-APIGW-API-KEY", "")
+
+    if ncp_key_id and ncp_key and language == "한국어":
+        url = "https://naveropenapi.apigw.ntruss.com/voice/v1/tts"
+        headers = {
+            "X-NCP-APIGW-API-KEY-ID": ncp_key_id,
+            "X-NCP-APIGW-API-KEY": ncp_key,
+        }
+
+        speaker = voice_override or "nara"
+        speed = "1" if speed_override is None else str(speed_override)
+        data = {
+            "speaker": speaker,
+            "speed": speed,
+            "text": story_text,
+        }
+
+        try:
+            resp = requests.post(url, headers=headers, data=data, timeout=60)
+            if resp.status_code == 200 and resp.content:
+                return resp.content
+            print(f"네이버 TTS 오류: status={resp.status_code}, body={resp.text[:500]}")
+            return None
+        except Exception as e:
+            print(f"네이버 TTS 호출 오류: {e}")
+            return None
+
     voice_map = {
-        "한국어": "nova",
+        "한국어": "alloy",
         "English": "alloy",
         "日本語": "shimmer",
         "中文": "fable"
     }
-    
-    voice = voice_map.get(language, "nova")
-    
+
+    voice = voice_override or voice_map.get(language, "nova")
+    speed = 1.15 if speed_override is None else speed_override
+
     try:
         response = client.audio.speech.create(
             model="tts-1-hd",
             voice=voice,
             input=story_text,
-            speed=0.9
+            speed=speed
         )
-        
+
         return response.content
     except Exception as e:
         print(f"오디오 생성 오류: {e}")
@@ -749,11 +900,11 @@ def render_post_visit_learning(
     tab_quiz, tab_question, tab_story = st.tabs([text["tab_quiz"], text["tab_question"], text["tab_story"]])
 
     def _render_zone_selector(key_prefix: str):
-        st.subheader(text["select_zone"])
+        st.markdown(f"#### {text['select_zone']}")
 
         selected = []
 
-        st.markdown(f"### {text['floor1']}")
+        st.markdown(f"##### {text['floor1']}")
         col1, col2 = st.columns(2)
 
         floor1_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"]
@@ -766,7 +917,7 @@ def render_post_visit_learning(
                 if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
                     selected.append(zone)
 
-        st.markdown(f"### {text['floor2']}")
+        st.markdown(f"##### {text['floor2']}")
         col3, col4 = st.columns(2)
 
         floor2_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
@@ -781,16 +932,25 @@ def render_post_visit_learning(
 
         return selected
 
-    def _render_zone_header(zone: str, zone_rows):
-        st.markdown(f"## 🎯 {_display_zone_name(zone)}")
-        st.caption(f"전시물 {len(zone_rows)}개")
-        keywords = _get_zone_keywords(zone, zone_rows, language_mode)
-        _render_keyword_tags(zone, keywords, zone_rows)
+    def _render_zone_header(zone: str, zone_rows, mode: str = "exhibits", llm=None):
+        st.markdown(f"#### 🎯 {_display_zone_name(zone)}")
+        exhibit_label = {
+            "한국어": f"전시물 {len(zone_rows)}개",
+            "English": f"{len(zone_rows)} exhibits",
+            "日本語": f"展示 {len(zone_rows)}件",
+            "中文": f"展品 {len(zone_rows)}件",
+        }.get(language_mode, f"{len(zone_rows)} exhibits")
+        st.caption(exhibit_label)
+        keyword_pairs = _get_zone_keywords(zone, zone_rows, language_mode)
+        selected_kw, selected_disp = _render_keyword_tags(
+            zone, keyword_pairs, zone_rows, language_mode=language_mode, mode=mode, llm=llm
+        )
         with st.expander(text["expander_parent"], expanded=False):
             if zone_rows:
                 st.dataframe(zone_rows, use_container_width=True, hide_index=True)
             else:
                 st.info(text["csv_not_found"])
+        return selected_kw, selected_disp
 
     with tab_quiz:
         selected_zones = _render_zone_selector("quiz")
@@ -800,28 +960,17 @@ def render_post_visit_learning(
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
-                _render_zone_header(zone, zone_rows)
+                selected_kw, selected_disp = _render_zone_header(zone, zone_rows, mode="quiz", llm=llm)
 
-                with st.spinner(text["generating"]):
-                    exhibits = get_zone_exhibits_from_rag(zone, vector_db)
-                    if exhibits:
-                        principles, principles_text = extract_principles_from_exhibits(exhibits, llm)
-                        if principles:
-                            selected_principle = st.selectbox(
-                                text["select_principle"],
-                                principles,
-                                key=f"principle_{zone}"
-                            )
-
-                            if st.button(text["make_quiz"], key=f"quiz_{zone}"):
-                                with st.spinner(text["quiz_generating"]):
-                                    quiz = generate_quiz(zone, selected_principle, llm, language_mode)
-                                    if quiz:
-                                        st.markdown(quiz)
-                        else:
-                            st.info(text["principles_not_found"])
-                    else:
-                        st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
+                if selected_kw:
+                    quiz_cache_key = f"quiz_cache_{zone}_{selected_kw}"
+                    if quiz_cache_key not in st.session_state:
+                        with st.spinner(text["quiz_generating"]):
+                            quiz = generate_quiz(zone, selected_kw, llm, language_mode)
+                            st.session_state[quiz_cache_key] = quiz or ""
+                    quiz_text = st.session_state.get(quiz_cache_key, "")
+                    if quiz_text:
+                        st.markdown(quiz_text)
         else:
             st.info(text["pick_zone_hint"])
 
@@ -833,7 +982,7 @@ def render_post_visit_learning(
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
-                _render_zone_header(zone, zone_rows)
+                _render_zone_header(zone, zone_rows, mode="question", llm=llm)
 
                 with st.spinner(text["generating"]):
                     exhibits = get_zone_exhibits_from_rag(zone, vector_db)
