@@ -24,12 +24,18 @@ def load_rag_db():
     return vector_db
 
 def _render_mascot_animation() -> None:
-    """어린이 모드용 마스코트 캐릭터를 CSS 애니메이션으로 렌더링.
+    """어린이 모드용 마스코트를 본문 글자 뒤 워터마크 배경으로 렌더링.
 
     - 파일: assets/NCSC_character.png
-    - 효과: 둥실둥실 상하 이동 + 좌우 기울임 + 호버 시 살짝 커짐
+    - 효과: 화면 중앙에 고정된 반투명 배경 (스크롤해도 따라옴)
+    - 가독성을 위해 OPACITY는 0.22 권장 (0.6~0.7은 글자 읽기 어려움)
     """
     from pathlib import Path
+    # 워터마크 불투명도 — 글자 가독성과 캐릭터 존재감 사이 균형
+    # 살짝 더 진하게: 0.30 / 더 옅게: 0.15 / 사용자 요청 70%: 0.70 (글자 안 보임 주의)
+    OPACITY = 0.22
+    SIZE_VMIN = 60  # 화면 짧은 변의 60% 크기
+
     mascot_path = Path(__file__).parent / "assets" / "NCSC_character.png"
     if not mascot_path.exists():
         return
@@ -39,48 +45,36 @@ def _render_mascot_animation() -> None:
         return
     html = f"""
     <style>
-      @keyframes ncsc-mascot-float {{
-        0%   {{ transform: translateY(0px)   rotate(-3deg); }}
-        50%  {{ transform: translateY(-14px) rotate(3deg);  }}
-        100% {{ transform: translateY(0px)   rotate(-3deg); }}
+      @keyframes ncsc-mascot-bg-float {{
+        0%   {{ transform: translate(-50%, -50%) translateY(0px); }}
+        50%  {{ transform: translate(-50%, -50%) translateY(-12px); }}
+        100% {{ transform: translate(-50%, -50%) translateY(0px); }}
       }}
-      @keyframes ncsc-mascot-shadow {{
-        0%   {{ transform: scale(1);   opacity: 0.25; }}
-        50%  {{ transform: scale(0.8); opacity: 0.12; }}
-        100% {{ transform: scale(1);   opacity: 0.25; }}
+      .ncsc-mascot-bg {{
+        position: fixed;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: {SIZE_VMIN}vmin;
+        height: {SIZE_VMIN}vmin;
+        max-width: 600px;
+        max-height: 600px;
+        background-image: url("data:image/png;base64,{b64}");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: {OPACITY};
+        pointer-events: none;
+        z-index: 0;
+        animation: ncsc-mascot-bg-float 5s ease-in-out infinite;
       }}
-      .ncsc-mascot-wrap {{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 8px 0 16px 0;
-      }}
-      .ncsc-mascot-img {{
-        width: 180px;
-        height: auto;
-        animation: ncsc-mascot-float 3.2s ease-in-out infinite;
-        transition: transform 0.25s ease;
-        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
-        cursor: pointer;
-      }}
-      .ncsc-mascot-img:hover {{
-        transform: scale(1.08) rotate(0deg) !important;
-        animation-play-state: paused;
-      }}
-      .ncsc-mascot-shadow {{
-        width: 120px;
-        height: 14px;
-        margin-top: -8px;
-        background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 70%);
-        border-radius: 50%;
-        animation: ncsc-mascot-shadow 3.2s ease-in-out infinite;
+      /* 본문이 워터마크 위에 오도록 */
+      [data-testid="stAppViewContainer"] .main .block-container {{
+        position: relative;
+        z-index: 1;
       }}
     </style>
-    <div class="ncsc-mascot-wrap">
-      <img class="ncsc-mascot-img" src="data:image/png;base64,{b64}" alt="국립어린이과학관 마스코트"/>
-      <div class="ncsc-mascot-shadow"></div>
-    </div>
+    <div class="ncsc-mascot-bg" aria-hidden="true"></div>
     """
     st.markdown(html, unsafe_allow_html=True)
 
