@@ -1132,7 +1132,14 @@ _OPERATING_HOURS_TEMPLATE = {
 
 
 def get_operating_hours_text(language: str, mode: str, ko_status: str) -> Optional[str]:
-    """운영시간 답변. status는 한국어 동적 텍스트 → 언어별 매핑 후 템플릿에 주입."""
+    """운영시간 답변. status는 한국어 동적 텍스트 → 언어별 매핑 후 템플릿에 주입.
+
+    NOTE: 2026-04 이후 core.py 의 한국어 operating_hours 답변이 크게 풍부화되어,
+    이 짧은 템플릿은 더 이상 동등한 번역을 제공하지 못한다. 따라서 비활성화하여
+    answer_rule_based_localized 가 translate_answer_cached(LLM) 로 폴백하도록 한다.
+    향후 4언어 풍부화 작업이 끝나면 아래 줄을 제거하고 새 템플릿으로 교체할 것.
+    """
+    return None  # ← LLM 번역 폴백 강제 (풍부화된 KO 동기화 보장)
     template_lang = _OPERATING_HOURS_TEMPLATE.get(language)
     if not template_lang:
         return None
@@ -1166,7 +1173,8 @@ STATIC_FAQ_ANSWERS = {
     "planetarium_timetable": _PLANETARIUM_TIMETABLE,
     "floor_guide": _FLOOR_GUIDE,
     "facility_amenities": _FACILITY,
-    "exhibit_guide": _EXHIBIT_GUIDE,
-    "route_by_age": _ROUTE_BY_AGE,
+    # exhibit_guide / route_by_age 는 core.py 에서 풍부화되어 정적 번역과 길이가 크게 어긋남.
+    # → 의도적으로 dict 에서 제외하여 translate_answer_cached(LLM, 24h 캐시) 로 폴백.
+    # _EXHIBIT_GUIDE / _ROUTE_BY_AGE 는 보존하지만 사용되지 않음 (향후 4언어 동기화 시 재활성화).
     "reservation_guide": _RESERVATION,
 }
