@@ -79,8 +79,69 @@ def _render_mascot_animation() -> None:
     st.markdown(html, unsafe_allow_html=True)
 
 
+def _render_privacy_notice_gate() -> None:
+    """첫 진입 시 개인정보 처리 안내 팝업.
+
+    - 세션당 1회만 표시 (확인 누르면 다시 안 뜸)
+    - 동의 전에는 본문 렌더링 차단 (st.stop)
+    - st.dialog 사용 (Streamlit 1.31+); 미지원 환경에서는 본문 상단 배너로 폴백
+    """
+    if st.session_state.get("privacy_notice_acknowledged"):
+        return
+
+    notice_md = """
+**🛡️ 서비스 이용 안내 (개인정보 처리)**
+
+안녕하세요! 이용 전에 짧은 안내 한 가지만 드릴게요.
+
+**📡 답변을 만들기 위해 외부 서비스로 일시 전송되는 정보**
+- 채팅 입력 / 음성 녹음 → **OpenAI**(답변 생성·음성 인식)
+- 답변 음성 → **ElevenLabs / OpenAI**(음성 합성)
+- 길찾기 출발지 → **네이버 지도 API**(경로 검색)
+
+**💾 저장 정책**
+- 위 정보는 **답변 생성 직후 폐기**되며, 별도 서버에 저장하지 않습니다.
+- 대화 기록은 사용자 브라우저 세션에만 유지되고, 새로고침 시 초기화됩니다.
+
+**🙅 입력 자제 권장**
+- 정확한 집 주소·전화번호·주민번호 등 **민감한 개인정보는 입력하지 마세요.**
+- 길찾기는 "○○역 근처", "○○동" 정도로 충분히 안내됩니다.
+
+**👶 어린이 이용자께**
+- 만 14세 미만은 **보호자와 함께** 이용해 주세요.
+- 음성 기능 사용 전 보호자 동의를 권장합니다.
+
+확인 후 서비스를 이용하실 수 있어요.
+"""
+
+    def _ack() -> None:
+        st.session_state["privacy_notice_acknowledged"] = True
+        st.rerun()
+
+    # st.dialog (Streamlit 1.31+) 우선 사용
+    if hasattr(st, "dialog"):
+        @st.dialog("이용 안내", width="large")
+        def _privacy_dialog():
+            st.markdown(notice_md)
+            if st.button("확인하고 시작하기 ✨", type="primary", use_container_width=True):
+                _ack()
+
+        _privacy_dialog()
+        # dialog가 닫히기 전엔 본문 렌더링 차단
+        st.stop()
+    else:
+        # 폴백: 페이지 상단 카드 형태
+        st.warning(notice_md)
+        if st.button("확인하고 시작하기 ✨", type="primary"):
+            _ack()
+        st.stop()
+
+
 def main():
     warnings.filterwarnings("ignore", message=r".*create_react_agent has been moved to `langchain\.agents`\..*")
+
+    # 첫 진입 시 개인정보 안내 팝업 (동의 전 본문 차단)
+    _render_privacy_notice_gate()
 
     if "language_mode" not in st.session_state:
         st.session_state["language_mode"] = "한국어"
@@ -374,6 +435,13 @@ def main():
                 icon_name="microphone",
                 icon_size="2x",
                 key=st.session_state["audio_recorder_key"],
+                # 모바일에서 1초 컷 방지:
+                # - pause_threshold: 무음 감지 자동종료까지의 시간 (기본 2.0s, 모바일에선 너무 짧음)
+                # - energy_threshold: 침묵 판단 임계값 (낮출수록 작은 소리도 발화로 인식)
+                # - sample_rate: 모바일 호환성 위해 41100 → 16000으로 낮춤 (Whisper에 충분)
+                pause_threshold=4.0,
+                energy_threshold=(-1.0, 1.0),
+                sample_rate=16000,
             )
 
             if audio_bytes:
@@ -405,9 +473,8 @@ def main():
 
     st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
 
-    # 🎨 어린이 모드 마스코트 (PNG + CSS 둥실둥실 애니메이션)
-    if user_mode == "어린이":
-        _render_mascot_animation()
+    # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
+    _render_mascot_animation()
 
     intro_text_map = {
         "한국어": (

@@ -5,8 +5,26 @@ import tempfile
 import streamlit as st
 import base64
 import re
+import requests
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+
+def _safe_secret_get(key: str, default: str = "") -> str:
+    try:
+        return st.secrets.get(key, default)
+    except Exception:
+        return default
+
+
+def _get_secret(key: str, default: str = "") -> str:
+    """환경변수 → st.secrets 순으로 조회."""
+    val = os.environ.get(key)
+    if val:
+        return val
+    if hasattr(st, "secrets"):
+        return _safe_secret_get(key, default)
+    return default
 
 def speech_to_text(audio_bytes):
     """Convert speech to text using OpenAI Whisper"""
@@ -54,42 +72,85 @@ def speech_to_text(audio_bytes):
             pass
         return None
 
-def text_to_speech(text, language="ko"):
-    """Convert text to speech using OpenAI TTS"""
-    text = preprocess_tts_text(text, language=language)
+def _tts_elevenlabs(text: str) -> bytes | None:
+    """ElevenLabs TTS 호출. 키가 없거나 실패하면 None."""
+    eleven_key = _get_secret("ELEVENLABS_API_KEY")
+    if not eleven_key:
+        return None
+
+    voice_id = _get_secret("ELEVENLABS_VOICE_ID") or "21m00Tcm4TlvDq8ikWAM"
+    model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "xi-api-key": eleven_key,
+        "accept": "audio/mpeg",
+        "content-type": "application/json",
+    }
+    payload = {
+        "text": text,
+        "model_id": model_id,
+        "voice_settings": {
+            "stability": 0.45,
+            "similarity_boost": 0.75,
+            "style": 0.0,
+            "use_speaker_boost": True,
+        },
+    }
     try:
-        # Select voice based on language
-        voice_map = {
-            "ko": "alloy",  # Korean - natural voice
-            "en": "nova",   # English
-            "ja": "shimmer", # Japanese
-            "zh": "fable"   # Chinese
-        }
-        
-        voice = voice_map.get(language, "alloy")
-        
-        # Generate speech
-        response = client.audio.speech.create(
-            model="tts-1",
-            voice=voice,
-            input=text
-        )
-        
-        # Return audio bytes
-        return response.content
-    
+        resp = requests.post(url, headers=headers, json=payload, timeout=60)
+        if resp.status_code == 200 and resp.content:
+            print(f"[TTS] ElevenLabs voice_id={voice_id} model={model_id} ok ({len(resp.content)} bytes)")
+            return resp.content
+        print(f"[TTS] ElevenLabs error status={resp.status_code} body={resp.text[:300]}")
+        return None
     except Exception as e:
-        print(f"Text-to-speech error: {e}")
+        print(f"[TTS] ElevenLabs exception: {e}")
         return None
 
 
-def get_tts_cache_namespace(language: str = "ko") -> str:
+def _tts_openai(text: str, language: str = "ko") -> bytes | None:
+    """OpenAI TTS 폴백."""
     voice_map = {
         "ko": "alloy",
         "en": "nova",
         "ja": "shimmer",
         "zh": "fable",
     }
+    voice = voice_map.get(language, "alloy")
+    try:
+        response = client.audio.speech.create(model="tts-1", voice=voice, input=text)
+        print(f"[TTS] OpenAI voice={voice} ok")
+        return response.content
+    except Exception as e:
+        print(f"[TTS] OpenAI exception: {e}")
+        return None
+
+
+def text_to_speech(text, language="ko"):
+    """TTS 우선순위: ElevenLabs(키 있을 때) → OpenAI 폴백."""
+    text = preprocess_tts_text(text, language=language)
+    if not text:
+        return None
+
+    # 1) ElevenLabs (사용자 설정 음성)
+    audio = _tts_elevenlabs(text)
+    if audio:
+        return audio
+
+    # 2) OpenAI 폴백
+    return _tts_openai(text, language=language)
+
+
+def get_tts_cache_namespace(language: str = "ko") -> str:
+    """캐시 키. ElevenLabs 사용 시 voice_id를 키에 포함해야 음성 변경 시 재생성됨."""
+    eleven_key = _get_secret("ELEVENLABS_API_KEY")
+    if eleven_key:
+        voice_id = _get_secret("ELEVENLABS_VOICE_ID") or "21m00Tcm4TlvDq8ikWAM"
+        model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
+        return f"elevenlabs::{model_id}::{voice_id}"
+
+    voice_map = {"ko": "alloy", "en": "nova", "ja": "shimmer", "zh": "fable"}
     voice = voice_map.get(language, "alloy")
     return f"openai::tts-1::{voice}"
 
