@@ -19,6 +19,9 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
 
+# 정적 사전 번역 (4개 언어 핵심 FAQ) — LLM 번역 우회용
+from static_translations import get_static_answer, get_operating_hours_text
+
 # SSL 경고 무시
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -91,47 +94,93 @@ STATIC_EXHIBIT_INFO = {
 # ============================================================================
 
 def route_intent(text: str) -> str:
-    """사용자 질문의 의도를 파악하여 라우팅"""
+    """사용자 질문의 의도를 파악하여 라우팅.
+
+    반환 값:
+    - "notice": 공지사항 조회 (크롤링 + 텍스트 가공)
+    - "basic": 정적 FAQ (answer_rule_based 의 정형 답변)
+    - "llm_agent": LangGraph ReAct 에이전트 (RAG + 도구 호출 필요한 동적 질의)
+    """
     lowered = text.lower().strip()
 
+    # 길찾기 2단계: 이전 답변이 출발지를 물어본 상태
     if st.session_state.get("awaiting_directions_origin") and lowered:
         st.session_state["awaiting_directions_origin"] = False
         st.session_state["directions_origin"] = text.strip()
-        return "llm_agent"
+        return "llm_agent"  # search_directions 툴 호출 필요
 
+    # 공지사항 → 전용 크롤러 경로
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
-    if ("집" in lowered or "우리집" in lowered or "집에서" in lowered) and any(token in lowered for token in ["어떻게 가", "가는", "가야", "가려고", "길", "오려", "가고"]):
+
+    # ── 동적 질의 (LLM 에이전트로 보내야 하는 케이스) ────────────────────────
+    # 1) 길찾기에 출발지가 명시 → search_directions 툴 필요
+    has_origin = bool(re.search(r"(에서|출발|출발지|역에서|집에서)", text)) or bool(re.search(r"[가-힣A-Za-z0-9]{2,}역", text))
+    if has_origin and any(token in lowered for token in ["가", "길", "오", "교통", "어떻게"]):
         return "llm_agent"
-    if any(token in lowered for token in ["층별", "1층", "2층", "층 안내", "동선", "연령", "나이", "프로그램", "오늘의 프로그램"]):
+
+    # 2) 특정 날짜 휴관 여부 → check_museum_closed_date 툴 필요
+    if re.search(r"(\d+월\s*\d+일|\d{4}-\d{2}-\d{2}|내일|모레|이번\s*주|다음\s*주)", text) and any(
+        t in lowered for t in ["열", "휴관", "운영", "여나", "여는", "쉬"]
+    ):
         return "llm_agent"
-    if any(token in lowered for token in ["오시는길", "오는길", "교통", "길찾기", "주소", "어떻게 가", "어디", "위치"]):
-        if re.search(r"(에서|출발|출발지|역에서)", text) or re.search(r"[가-힣A-Za-z0-9]{2,}역", text):
-            return "llm_agent"
+
+    # 3) 천체투영관 영상/줄거리 자세히 → 동적 RAG 답변
+    if "천체투영관" in lowered and any(t in lowered for t in ["뭐", "내용", "줄거리", "어떤", "코코몽", "키츠", "다이노소어", "바니"]):
         return "llm_agent"
-    if any(token in lowered for token in ["운영", "시간", "휴관", "입장료", "관람료", "주차"]):
-        return "llm_agent"
-    if any(token in lowered for token in ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]):
-        return "llm_agent"
-    if any(token in lowered for token in ["시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관", "보관함", "락커", "유모차", "휠체어", "대여", "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상", "시간표", "상영", "회차"]):
-        return "llm_agent"
+
+    # ── 정적 FAQ 키워드 (basic 라우팅) ───────────────────────────────────────
+    basic_keywords = [
+        # 층/시설
+        "층별", "1층", "2층", "층 안내", "게이트", "입구", "출구",
+        "시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관",
+        "보관함", "락커", "유모차", "휠체어", "대여",
+        "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상",
+        # 전시관/동선
+        "전시관", "놀이터 안내", "동선", "연령", "나이", "추천", "유아", "초등", "저학년", "고학년", "4~7",
+        # 프로그램/시간표
+        "오늘의 프로그램", "오늘 프로그램", "프로그램", "과학쇼", "전시해설",
+        "천체투영관 시간", "투영관 시간", "시간표", "상영", "회차", "빛놀이터",
+        # 예약
+        "예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약",
+        "모바일 qr", "입장권", "정원", "1600",
+        # 운영시간
+        "운영", "휴관", "몇 시", "마감", "여나", "닫나", "열어", "여는 시간", "운영시간",
+        # 가격
+        "관람료", "입장료", "요금", "가격", "얼마",
+        # 주차
+        "주차", "주차장",
+        # 길찾기 (출발지 없는 일반 질문 → directions 카테고리가 출발지 묻기)
+        "오시는길", "오는길", "교통", "길찾기", "주소", "위치", "어디",
+    ]
+    if any(token in lowered for token in basic_keywords):
+        return "basic"
+
+    # 자유 질문, 전시물 상세, 과학 원리 등 → LLM + RAG
     return "llm_agent"
 
 def classify_basic_category(message: str) -> str:
-    """기본 질문 카테고리 분류"""
+    """기본 질문 카테고리 분류.
+
+    우선순위: 구체적 키워드를 가진 카테고리가 앞에 와야 '얼마', '시간' 같은
+    범용 키워드로 잘못 분류되는 것을 막을 수 있다.
+    특히 parking 을 admission_fee 앞에 두어 "주차비 얼마?" → parking 으로 분류되게 한다.
+    """
     lowered = message.lower()
     rules = [
-        ("floor_guide",     ["층별", "층 안내", "1층", "2층", "게이트", "입구", "출구"]),
-        ("facility_amenities", ["시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관", "보관함", "락커", "유모차", "휠체어", "대여", "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상"]),
-        ("exhibit_guide",   ["전시관", "전시관 안내", "놀이터 안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터", "빛놀이터"]),
-        ("route_by_age",    ["동선", "연령", "나이", "추천", "4~7", "유아", "초등", "저학년", "고학년"]),
-        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "프로그램", "과학쇼", "전시해설", "천체투영관", "빛놀이터"]),
-        ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "시간표", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노"]),
+        # 가장 구체적인 카테고리 먼저
         ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
-        ("operating_hours", ["운영", "시간", "휴관", "몇 시", "마감"]),
-        ("admission_fee",   ["관람료", "입장료", "요금", "가격", "얼마"]),
-        ("parking",         ["주차", "주차장"]),
-        ("directions",      ["오시는길", "오는길", "교통", "길찾기", "주소", "위치", "어떻게 가", "어디"]),
+        ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "천체투영관 시간", "투영관 시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노"]),
+        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "빛놀이터"]),
+        # parking 은 admission_fee 앞에 위치 (주차비/주차료의 '비/료' 를 admission 이 먹지 않도록)
+        ("parking",         ["주차", "주차장", "주차비", "주차료", "주차 요금", "주차 되", "주차되", "파킹", "parking", "car park"]),
+        ("admission_fee",   ["관람료", "입장료", "요금", "가격", "얼마", "얼만", "비용", "유료", "무료", "할인", "티켓값", "표값"]),
+        ("exhibit_guide",   ["전시관", "전시관 안내", "놀이터 안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터"]),
+        ("directions",      ["오시는길", "오는길", "오시는 길", "오는 길", "교통", "길찾기", "길 찾", "주소", "위치", "어떻게 가", "어떻게 오", "어디에 있", "어디야", "가는 방법", "가는길"]),
+        ("facility_amenities", ["시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관", "보관함", "락커", "유모차", "휠체어", "대여", "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상", "화장실"]),
+        ("route_by_age",    ["동선", "연령별", "연령", "나이", "추천 코스", "추천 동선", "추천해", "4~7", "7세", "유아", "초등", "저학년", "고학년", "몇 살", "몇살"]),
+        ("floor_guide",     ["층별", "층 안내", "1층", "2층", "3층", "게이트", "입구", "출구", "어느 층", "무슨 층"]),
+        ("operating_hours", ["운영시간", "운영 시간", "운영", "휴관", "휴무", "몇 시", "몇시", "마감", "언제 열", "언제 닫", "여는 시간", "닫는 시간", "개관", "폐관", "여나요", "여나"]),
     ]
     for category, keywords in rules:
         if any(keyword in lowered for keyword in keywords):
@@ -539,7 +588,75 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
             prefix = "관람료를 보기 쉽게 정리해드릴게요! 💸\n" if mode == "어린이" else "관람료 안내입니다.\n"
             return f"{prefix}{exhibit_table}\n\n{planet_table}\n\n{notes}"
         elif category == "parking":
-            return ""
+            if mode == "어린이":
+                return """🚗 주차 안내
+
+### 핵심만 먼저!
+- **국립어린이과학관 건물 안에는 주차장이 없어요.**
+- 그래서 **지하철이나 버스**로 오는 게 제일 편해요!
+- 차로 오게 되면 근처 유료 주차장을 써야 해요.
+
+### 🚇 지하철로 오는 방법
+- **4호선 혜화역 4번 출구** → 걸어서 약 10~15분
+  - 혜화역에서 나오면 창경궁 방향(북쪽)으로 쭉 걸어오면 돼요!
+- **1호선 종로5가역 2번 출구** → 걸어서 약 20분
+
+### 🚌 버스로 오는 방법
+- **창경궁 앞(홍화문)** 정류장에서 내려서 5분 정도 걸어오세요.
+- 지나가는 버스 번호(예): 101, 102, 104, 106, 107, 108, 140, 150, 160 등
+
+### 🅿️ 꼭 차로 와야 한다면
+- **창경궁 주차장**(가장 가까워요) — 창경궁 홍화문 바로 옆
+- **서울대학교병원 주차장** — 대학로 쪽
+- **종로구청 주차장** — 종로3가 근처
+- 주말이나 공휴일에는 주차장이 꽉 차 있을 수 있어요. 조금 일찍 오거나 대중교통을 추천해요!
+
+### ♿ 도움이 필요하다면
+- 혜화역 4번 출구에는 엘리베이터가 있어요.
+- 과학관 1층 안내데스크에서 **유모차(5대)**, **휠체어(2대)**를 빌릴 수 있어요. (신분증 꼭 챙겨오기!)
+
+### 📍 주소 & 연락처
+- **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
+- **전화**: 02-3668-3350
+
+⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.csc.go.kr)에서 한 번 더 확인해줘!"""
+
+            return """🚗 주차 안내
+
+### 핵심 안내
+- **국립어린이과학관은 전용 주차장이 없습니다.**
+- 차량으로 오시는 경우 인근 유료 주차장을 이용하셔야 하며, **가능하면 대중교통 이용을 권장드립니다.**
+
+### 🚇 지하철 (가장 빠르고 편리한 방법)
+- **4호선 혜화역 4번 출구** → 도보 약 10~15분
+  - 혜화역 4번 출구로 나와 창경궁로를 따라 북쪽(창경궁 방향)으로 직진하시면 됩니다.
+- **1호선 종로5가역 2번 출구** → 도보 약 20분
+
+### 🚌 버스
+- **창경궁 정문(홍화문)** 정류장 하차 후 도보 약 5분
+- 경유 노선(일부): 101, 102, 104, 106, 107, 108, 140, 150, 160 등
+- 버스 도착 정보는 서울 버스 앱이나 정류장 전광판에서 확인 가능합니다.
+
+### 🅿️ 차량 이용 시 (인근 유료 주차장)
+- **창경궁 주차장** (가장 가까움) — 창경궁 홍화문 옆
+  - 소액 단위 요금제 / **주말·공휴일에는 만차 가능성이 높습니다.**
+- **서울대학교병원 주차장** — 대학로 방면
+- **종로구청 주차장** — 종로3가 인근
+
+※ 주차 요금·운영시간은 주차장별로 상이하니 방문 전 확인을 권장드립니다.
+
+### ♿ 장애인·교통약자 편의
+- **혜화역 4번 출구**에는 엘리베이터가 설치되어 있습니다.
+- 창경궁 주차장에는 장애인 주차구역이 마련되어 있습니다.
+- 과학관 1층 안내데스크에서 **유모차(5대)** 및 **휠체어(2대)** 대여 가능 (신분증 지참).
+- 의무실은 1층에 있으며 일반의약품을 구비하고 있습니다.
+
+### 📍 주소 및 문의
+- **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
+- **대표전화**: 02-3668-3350
+- **공식 홈페이지**: https://www.csc.go.kr
+
+⚠️ 주차장 및 교통편 관련 최신 안내는 방문 전 공식 홈페이지 '오시는 길' 페이지에서 꼭 확인해 주세요."""
 
         elif category == "directions":
             has_origin = (
@@ -560,6 +677,43 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
             return (base or "오시는 길 안내입니다.") + verify
             
     return ""
+
+
+def answer_rule_based_localized(intent: str, message: str, mode: str, language: str) -> tuple[str, str]:
+    """규칙 기반 답변을 사용자 언어로 반환.
+
+    반환: (answer_in_target_language, ko_original)
+
+    동작:
+    1) 한국어 원문은 항상 answer_rule_based 로 생성
+    2) language == "한국어" → 그대로 반환
+    3) basic intent + 정적 번역 보유 → static_translations 즉시 사용 (LLM 우회)
+    4) operating_hours → 동적 status 부분만 매핑 후 템플릿 주입
+    5) 정적 번역 미보유 → translate_answer_cached (LLM, 24h 캐시) 폴백
+    """
+    ko_answer = answer_rule_based(intent, message, mode)
+    if not ko_answer:
+        return "", ""
+
+    if language == "한국어":
+        return ko_answer, ko_answer
+
+    if intent == "basic":
+        category = classify_basic_category(message)
+        # 운영시간: 동적 status 부분 별도 매핑 (시간/휴관 메시지 그대로 보존)
+        if category == "operating_hours":
+            ko_status = get_today_status()
+            translated = get_operating_hours_text(language, mode, ko_status)
+            if translated:
+                return translated, ko_answer
+        else:
+            static = get_static_answer(category, language, mode)
+            if static:
+                return static, ko_answer
+
+    # 폴백: LLM 번역
+    translated = translate_answer_cached(ko_answer, language)
+    return translated, ko_answer
 
 # ============================================================================
 # RAG SYSTEM - Vector DB 및 데이터 로딩
@@ -845,6 +999,41 @@ def check_museum_closed_date(date_str: str) -> str:
         return f"Observation: {date_display}({weekday_kr}요일)은 정기휴관일입니다."
     
     return f"Observation: {date_display}({weekday_kr}요일)은 정상 운영일입니다."
+
+@tool
+def search_directions(origin: str, destination: str = "국립어린이과학관") -> str:
+    """
+    출발지에서 목적지까지의 대중교통 경로를 검색합니다.
+    
+    [언제 사용하는가]
+    - 사용자가 "어떻게 가?", "길 알려줘", "교통편" 같은 질문을 할 때
+    - 출발지와 목적지가 명확할 때만 사용
+    
+    [입력 형식]
+    - origin: 출발지 (예: "강남역", "잠실", "종로구")
+    - destination: 목적지 (기본값: "국립어린이과학관")
+    
+    [무엇을 반환하는가]
+    - 지하철/버스 경로, 소요시간, 환승 정보
+    """
+    try:
+        result = f"""Observation: {origin}에서 {destination}까지의 경로 안내
+
+정확한 실시간 경로는 다음 방법으로 확인하세요:
+1. 네이버 지도 앱/웹사이트에서 '{origin}'에서 '{destination}' 검색
+2. 카카오맵에서 '{origin}'에서 '{destination}' 검색
+3. 대중교통 앱 (지하철, 버스) 이용
+
+일반적인 안내:
+- {destination} 주소: 서울특별시 종로구 창경궁로 215
+- 가까운 지하철역: 4호선 혜화역 4번 출구 (도보 15분)
+- 국립어린이과학관은 전용 주차장이 없으므로 대중교통 이용을 권장합니다.
+
+※ 정확한 버스 노선, 소요시간, 환승 정보는 위 지도 앱에서 실시간으로 확인해주세요.
+※ 교통 상황에 따라 소요시간이 달라질 수 있습니다."""
+        return result
+    except Exception as e:
+        return f"Observation: 경로 검색 중 오류가 발생했습니다: {str(e)}\n네이버 지도나 카카오맵에서 '{origin}'에서 '{destination}'을 직접 검색해주세요."
 
 @tool
 def search_csc_live_info(keyword: str) -> str:
@@ -1159,6 +1348,7 @@ def get_tools():
     """LangChain agent에서 사용할 도구 목록 반환"""
     return [
         check_museum_closed_date,
+        search_directions,
         search_csc_live_info,
         fetch_latest_notices,
     ]
@@ -1243,6 +1433,37 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 - 운영시간, 입장료, 휴관일 → 반드시 RAG 또는 도구 결과 기반
 - RAG/도구에 없는 정보 → "공식 홈페이지(www.csc.go.kr)에서 확인해주세요"
    - "정확한 정보는 02-3668-3350으로 문의해주세요."
+- **주차 안내**: 국립어린이과학관은 **전용 주차장이 없습니다**. "주차 가능", "주차장 마련" 같은 말은 절대 하지 말 것. 자가용 이용 권장 금지. 대중교통 이용 안내 필수.
+
+=== 국립어린이과학관 위치 정보 (고정값) ===
+**주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
+**가까운 지하철역**: 
+- 4호선 혜화역 4번 출구 (도보 15분)
+- 1호선 종로5가역 2번 출구 (도보 20분)
+**주요 버스 정류장**: 창경궁 앞 정류장
+**대표 전화**: 02-3668-3350
+
+=== 길찾기 응대 규칙 ===
+1. **과학관에서 집으로 가는 경우**
+   - 사용자가 "과학관에서 우리집으로", "여기서 집으로" 같은 표현을 쓰면
+   - 출발지는 **국립어린이과학관(혜화역 근처)**으로 자동 설정
+   - 도착지만 물어보세요: "어느 구/어느 동(또는 지하철역 이름)으로 가나요?"
+
+2. **집에서 과학관으로 오는 경우**
+   - 사용자가 "집에서 어떻게 가?", "우리집에서 과학관까지" 처럼 출발지가 불명확하면
+   - 출발지를 물어보세요: "어느 구/어느 동(또는 지하철역 이름)에서 출발하나요?"
+   - 도착지는 **국립어린이과학관**으로 자동 설정
+
+3. **경로 안내 원칙 (매우 중요!)**
+   - **정확한 집 주소/상세 위치는 입력하지 말아달라**고 안내하세요 (개인정보 보호)
+   - **반드시 search_directions 도구를 사용**하여 경로 안내를 제공하세요
+   - 도구 없이 추측으로 버스 노선이나 소요시간을 말하지 마세요
+   - **자가용/주차 안내 금지** — 과학관에 주차장이 없음을 반드시 안내
+
+4. **안내 방법**
+   - search_directions(origin="출발지", destination="국립어린이과학관") 도구를 먼저 호출
+   - 도구 결과에 나온 지하철/버스 안내를 기반으로 친절하게 정리
+   - 출발지가 모호하면 도구를 부르지 말고 먼저 출발지를 물어볼 것
 
 === OFFICIAL PLACE NAMES (MANDATORY GLOSSARY for non-Korean answers) ===
 FORMAT RULES by target language:

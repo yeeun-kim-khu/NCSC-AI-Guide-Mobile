@@ -10,9 +10,9 @@ from langgraph.checkpoint.memory import MemorySaver
 from audio_recorder_streamlit import audio_recorder
 import base64
 
-from core import get_tools, route_intent, answer_rule_based, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
+from core import get_tools, route_intent, answer_rule_based, answer_rule_based_localized, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
 from voice import speech_to_text, text_to_speech, get_language_code, autoplay_audio, get_tts_cache_namespace
-from learning import render_post_visit_learning
+from learning import render_post_visit_learning, _backtranslate_to_korean_cached
 
 # RAG loading with session state persistence
 @st.cache_resource
@@ -519,6 +519,15 @@ def main():
                 with st.chat_message(msg["role"]):
                     st.markdown(msg["content"])
 
+                    # 디버그: 어시스턴트 답변에 KO 원문 / 역번역 캡션 (외국어 모드 전용)
+                    if msg["role"] == "assistant" and language_mode != "한국어" and msg.get("content"):
+                        if debug_show_ko and msg.get("ko_original"):
+                            st.caption(f"KO: {msg['ko_original']}")
+                        if debug_backtranslate:
+                            bt = _backtranslate_to_korean_cached(msg["content"], language_mode)
+                            if bt:
+                                st.caption(f"BT: {bt}")
+
                     if msg.get("ui") == "program_buttons":
                         col1, col2, col3, col4 = st.columns(4)
                         with col1:
@@ -596,12 +605,20 @@ def main():
             with st.chat_message("assistant"):
                 if intent in ["notice", "basic"]:
                     # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
+                    # answer_rule_based_localized: 정적 사전 번역 우선 → 폴백 LLM 번역
                     with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["spinner_rule"]):
-                        answer = answer_rule_based(intent, user_input, user_mode)
-                    # 한국어가 아니면 답변 번역
-                    if language_mode != "한국어":
-                        answer = translate_answer_cached(answer, language_mode)
+                        answer, ko_original = answer_rule_based_localized(
+                            intent, user_input, user_mode, language_mode
+                        )
+                    if language_mode == "한국어":
+                        ko_original = ""
                     st.markdown(answer)
+                    if language_mode != "한국어" and debug_show_ko and ko_original:
+                        st.caption(f"KO: {ko_original}")
+                    if language_mode != "한국어" and debug_backtranslate:
+                        bt = _backtranslate_to_korean_cached(answer, language_mode)
+                        if bt:
+                            st.caption(f"BT: {bt}")
                     rule_sources = []
                     lowered = user_input.lower()
                     if intent == "notice":
@@ -665,6 +682,10 @@ def main():
                                 debug_info += str(msg.content) + "\n\n"
                         
                     st.markdown(answer)
+                    if language_mode != "한국어" and debug_backtranslate:
+                        bt = _backtranslate_to_korean_cached(answer, language_mode)
+                        if bt:
+                            st.caption(f"BT: {bt}")
                     render_source_buttons(rag_sources, language_mode=language_mode)
                     render_tts_for_answer(answer)
                     
@@ -677,6 +698,13 @@ def main():
 
             assistant_msg = {"role": "assistant", "content": answer}
             assistant_msg["tts_autoplayed"] = False
+            # 디버그용 KO 원문 캐시 (rule-based 경로에서만 채워짐)
+            if intent in ["notice", "basic"] and language_mode != "한국어":
+                try:
+                    if ko_original:
+                        assistant_msg["ko_original"] = ko_original
+                except NameError:
+                    pass
             if st.session_state.get("pending_ui_program_buttons"):
                 assistant_msg["ui"] = "program_buttons"
                 del st.session_state["pending_ui_program_buttons"]
