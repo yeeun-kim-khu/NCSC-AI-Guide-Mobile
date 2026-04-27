@@ -23,6 +23,68 @@ def load_rag_db():
         vector_db = initialize_vector_db()
     return vector_db
 
+def _render_mascot_animation() -> None:
+    """어린이 모드용 마스코트 캐릭터를 CSS 애니메이션으로 렌더링.
+
+    - 파일: assets/NCSC_character.png
+    - 효과: 둥실둥실 상하 이동 + 좌우 기울임 + 호버 시 살짝 커짐
+    """
+    from pathlib import Path
+    mascot_path = Path(__file__).parent / "assets" / "NCSC_character.png"
+    if not mascot_path.exists():
+        return
+    try:
+        b64 = base64.b64encode(mascot_path.read_bytes()).decode("ascii")
+    except Exception:
+        return
+    html = f"""
+    <style>
+      @keyframes ncsc-mascot-float {{
+        0%   {{ transform: translateY(0px)   rotate(-3deg); }}
+        50%  {{ transform: translateY(-14px) rotate(3deg);  }}
+        100% {{ transform: translateY(0px)   rotate(-3deg); }}
+      }}
+      @keyframes ncsc-mascot-shadow {{
+        0%   {{ transform: scale(1);   opacity: 0.25; }}
+        50%  {{ transform: scale(0.8); opacity: 0.12; }}
+        100% {{ transform: scale(1);   opacity: 0.25; }}
+      }}
+      .ncsc-mascot-wrap {{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 8px 0 16px 0;
+      }}
+      .ncsc-mascot-img {{
+        width: 180px;
+        height: auto;
+        animation: ncsc-mascot-float 3.2s ease-in-out infinite;
+        transition: transform 0.25s ease;
+        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+        cursor: pointer;
+      }}
+      .ncsc-mascot-img:hover {{
+        transform: scale(1.08) rotate(0deg) !important;
+        animation-play-state: paused;
+      }}
+      .ncsc-mascot-shadow {{
+        width: 120px;
+        height: 14px;
+        margin-top: -8px;
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 70%);
+        border-radius: 50%;
+        animation: ncsc-mascot-shadow 3.2s ease-in-out infinite;
+      }}
+    </style>
+    <div class="ncsc-mascot-wrap">
+      <img class="ncsc-mascot-img" src="data:image/png;base64,{b64}" alt="국립어린이과학관 마스코트"/>
+      <div class="ncsc-mascot-shadow"></div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
 def main():
     warnings.filterwarnings("ignore", message=r".*create_react_agent has been moved to `langchain\.agents`\..*")
 
@@ -348,6 +410,10 @@ def main():
             st.rerun()
 
     st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
+
+    # 🎨 어린이 모드 마스코트 (PNG + CSS 둥실둥실 애니메이션)
+    if user_mode == "어린이":
+        _render_mascot_animation()
 
     intro_text_map = {
         "한국어": (

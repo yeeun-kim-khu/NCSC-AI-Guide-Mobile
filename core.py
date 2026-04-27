@@ -774,6 +774,9 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 인터넷 예매: 관람일 **2주(14일) 전 00:00 오픈**
 - 평일 예약 가능 (주말·공휴일 단체 예약 불가)
 
+## 위치
+- **1층 상설전시관 안쪽**
+
 ## 📵 관람 매너
 - 음료·음식물 반입 금지
 - 휴대전화는 **진동 모드** 설정
@@ -2129,6 +2132,77 @@ def _fetch_html_bytes(
     raise RuntimeError(str(last_err) if last_err else "unknown error")
 
 
+def _extract_notice_body_text(substance) -> str:
+    """공지 상세 본문 텍스트를 자손 노드 순회 방식으로 추출.
+
+    개선점(클로드 제안 중 유효한 부분만 적용):
+    1) p/span/li 일괄 select() 대신 트리를 한 번만 순회 → 중첩 텍스트 중복 추출 방지
+       (예: <p>안녕<span>하세요</span></p> 가 두 번 나오는 문제)
+    2) <br>는 줄바꿈으로 처리
+    3) div.txc-textbox(점선 강조 박스)는 📌 프리픽스로 강조
+    4) 블록 요소(p/li/div/h*) 경계마다 줄바꿈 추가
+    """
+    BLOCK_TAGS = {"p", "li", "div", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "blockquote", "pre"}
+    SKIP_TAGS = {"script", "style", "noscript"}
+
+    lines: list[str] = []
+    buf: list[str] = []
+
+    def flush(prefix: str = "") -> None:
+        text = "".join(buf).strip()
+        buf.clear()
+        if text:
+            lines.append((prefix + text) if prefix else text)
+
+    def walk(node, in_textbox: bool = False) -> None:
+        from bs4 import NavigableString, Tag
+        for child in node.children:
+            if isinstance(child, NavigableString):
+                buf.append(str(child))
+                continue
+            if not isinstance(child, Tag):
+                continue
+            tag = (child.name or "").lower()
+            if tag in SKIP_TAGS:
+                continue
+            if tag == "br":
+                flush("📌 " if in_textbox else "")
+                continue
+            classes = child.get("class") or []
+            is_textbox = "txc-textbox" in classes
+            if is_textbox:
+                # 텍스트박스 진입 전 현재 버퍼 flush
+                flush()
+                walk(child, in_textbox=True)
+                flush("📌 ")
+                continue
+            if tag in BLOCK_TAGS:
+                flush("📌 " if in_textbox else "")
+                walk(child, in_textbox=in_textbox)
+                flush("📌 " if in_textbox else "")
+            else:
+                walk(child, in_textbox=in_textbox)
+
+    walk(substance)
+    flush()
+
+    # 공백 정리 + 빈 줄 압축
+    cleaned = []
+    prev_blank = False
+    for line in lines:
+        s = re.sub(r"\s+", " ", line).strip()
+        if not s:
+            if not prev_blank and cleaned:
+                cleaned.append("")
+                prev_blank = True
+            continue
+        cleaned.append(s)
+        prev_blank = False
+    merged = "\n".join(cleaned).strip()
+    merged = re.sub(r"\n{3,}", "\n\n", merged)
+    return merged
+
+
 def get_notice_detail_text(pkid: str) -> str:
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
@@ -2154,15 +2228,7 @@ def get_notice_detail_text(pkid: str) -> str:
         if not substance:
             return f"공지 본문을 찾지 못했어요.\n- {url}"
 
-        lines = []
-        for el in substance.select("p, span, li"):
-            t = el.get_text(" ", strip=True)
-            if not t:
-                continue
-            lines.append(t)
-
-        merged = "\n".join(lines)
-        merged = re.sub(r"\n{3,}", "\n\n", merged).strip()
+        merged = _extract_notice_body_text(substance)
         if not merged:
             merged = substance.get_text("\n", strip=True)
 
