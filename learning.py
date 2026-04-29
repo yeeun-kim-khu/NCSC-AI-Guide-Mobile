@@ -144,19 +144,59 @@ def _extract_zone_keywords(zone_rows, top_n=12):
     return keywords[:top_n]
 
 
+def _split_title_ko_en(raw_title: str):
+    """CSV 제목 셀이 '한국어\\n영문' 형태로 합쳐진 경우 분리.
+
+    반환: (kr, en) — 영문이 없으면 en은 빈 문자열.
+    한글이 없는 경우(영문 전용 전시) kr=영문, en="" 로 반환.
+    """
+    if not raw_title:
+        return "", ""
+    parts = [p.strip() for p in re.split(r"[\r\n]+", str(raw_title)) if p.strip()]
+    if not parts:
+        return "", ""
+
+    KOR_RE = re.compile(r"[\uac00-\ud7a3]")
+    kr = ""
+    en = ""
+    for p in parts:
+        if KOR_RE.search(p):
+            if not kr:
+                kr = p
+        else:
+            if not en:
+                en = p
+    if not kr and parts:
+        # 한글 없는 행 → 첫 줄을 kr 자리에 둔다 (다국어 번역의 소스 텍스트로 사용)
+        kr = parts[0]
+        if len(parts) > 1 and not en:
+            en = parts[1]
+    kr = re.sub(r"\s+", " ", kr).strip()
+    en = re.sub(r"\s+", " ", en).strip()
+    return kr, en
+
+
 def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
-    titles = []
+    """제목을 한/영 쌍으로 추출.
+
+    반환: list of (kr, en) tuples — kr은 항상 채워져 있음, en은 비어있을 수 있음.
+    """
+    pairs = []
+    seen_kr = set()
     for r in (zone_rows or []):
-        t = str(r.get("title", "")).strip()
-        if not t or len(t) <= 1:
+        raw = str(r.get("title", "")).strip()
+        if not raw or len(raw) <= 1:
             continue
-        # "체험방법" 제외
-        if "체험방법" in t:
+        if "체험방법" in raw:
             continue
-        t = re.sub(r"\s+", " ", t)
-        titles.append(t)
-    titles = list(dict.fromkeys(titles))
-    return titles[:top_n]
+        kr, en = _split_title_ko_en(raw)
+        if not kr or len(kr) <= 1:
+            continue
+        if kr in seen_kr:
+            continue
+        seen_kr.add(kr)
+        pairs.append((kr, en))
+    return pairs[:top_n]
 
 
 @st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
@@ -236,31 +276,58 @@ def _translate_keywords_cached(keywords_tuple: tuple, target_language: str) -> l
 
 
 def _get_zone_keywords(zone_name: str, zone_rows, language_mode: str):
-    kws = _extract_zone_keywords_from_titles(zone_rows)
+    """전시관 키워드를 (한국어 원본, 표시 문자열) 튜플 리스트로 반환.
+
+    - 1순위: CSV 제목에서 한/영 분리 추출 → English 모드에서는 CSV 영문 그대로 사용
+    - 2순위: LLM 키워드 추출(이미 언어 모드 반영) → kr 자리에도 동일 텍스트 사용 (퀴즈용)
+    - 3순위: 단어 빈도 기반 폴백 → 필요 시 번역
+    """
+    pairs = _extract_zone_keywords_from_titles(zone_rows)  # list of (kr, en)
+    if pairs:
+        # 한국어
+        if language_mode == "한국어":
+            return [(kr, kr) for kr, _ in pairs]
+        # English: CSV 영문이 있으면 그대로, 없으면 번역
+        if language_mode == "English":
+            need_translate_idx = [i for i, (_, en) in enumerate(pairs) if not en]
+            if need_translate_idx:
+                src = tuple(pairs[i][0] for i in need_translate_idx)
+                translated = _translate_keywords_cached(src, "English")
+                trans_map = dict(zip(need_translate_idx, translated))
+            else:
+                trans_map = {}
+            out = []
+            for i, (kr, en) in enumerate(pairs):
+                disp = en if en else trans_map.get(i, kr)
+                out.append((kr, disp))
+            return out
+        # 日本語 / 中文: 한국어 원본을 번역
+        kr_list = [kr for kr, _ in pairs]
+        translated = _translate_keywords_cached(tuple(kr_list), language_mode)
+        return list(zip(kr_list, translated))
+
+    # 폴백: LLM 키워드 추출 (언어 모드 반영하여 직접 생성)
+    compact_lines = []
+    for r in (zone_rows or [])[:40]:
+        title = str(r.get("title", "")).strip()
+        cat = str(r.get("category", "")).strip()
+        content = str(r.get("content", "")).strip()
+        if title or content:
+            compact_lines.append(f"- {title} ({cat}) {content[:120]}")
+    csv_compact_text = "\n".join(compact_lines)[:6000]
+
+    kws: list = []
+    try:
+        kws = _extract_zone_keywords_llm(zone_name, language_mode, csv_compact_text)
+    except Exception as e:
+        print(f"키워드 LLM 추출 실패: {e}")
+
     if not kws:
-        compact_lines = []
-        for r in (zone_rows or [])[:40]:
-            title = str(r.get("title", "")).strip()
-            cat = str(r.get("category", "")).strip()
-            content = str(r.get("content", "")).strip()
-            if title or content:
-                compact_lines.append(f"- {title} ({cat}) {content[:120]}")
-        csv_compact_text = "\n".join(compact_lines)[:6000]
+        kws = _extract_zone_keywords(zone_rows)
+        if language_mode != "한국어" and kws:
+            translated = _translate_keywords_cached(tuple(kws), language_mode)
+            return list(zip(kws, translated))
 
-        try:
-            kws = _extract_zone_keywords_llm(zone_name, language_mode, csv_compact_text)
-        except Exception as e:
-            print(f"키워드 LLM 추출 실패: {e}")
-            kws = []
-
-        if not kws:
-            kws = _extract_zone_keywords(zone_rows)
-
-    # 언어별 번역 적용
-    if language_mode != "한국어" and kws:
-        translated = _translate_keywords_cached(tuple(kws), language_mode)
-        # 원본 한국어 키워드와 병행 반환 (퀴즈 생성용 원본 유지)
-        return list(zip(kws, translated))
     return [(k, k) for k in kws]
 
 
