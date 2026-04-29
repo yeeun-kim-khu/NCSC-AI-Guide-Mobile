@@ -346,7 +346,7 @@ def main():
     vector_db = load_rag_db()
 
     with st.sidebar:
-        st.title(t("sidebar_title"))
+        st.header(t("sidebar_title"))
 
         user_mode_display = st.selectbox(
             t("user_mode_label"),

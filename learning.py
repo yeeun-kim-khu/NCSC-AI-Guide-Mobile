@@ -386,6 +386,135 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
     return selected_kw, selected_disp
 
 
+def _render_quiz_card(zone_name: str, keyword: str, quiz_obj, language_mode: str = "한국어"):
+    """4지선다 퀴즈 카드 렌더링.
+
+    - 정답은 expander 안에 숨김 → 사용자가 직접 펼쳐야 정답·해설 확인.
+    - 문제 음성 듣기 / 정답 음성 듣기 별도 버튼 (정답 음성은 expander 안에 위치하여 자동 재생되지 않음).
+    - quiz_obj 가 비어있거나 폴백(raw만 존재)이면 그대로 markdown 출력.
+    """
+    if not quiz_obj:
+        return
+
+    labels = {
+        "한국어": {
+            "question": "📘 문제",
+            "listen_q": "🔊 문제 듣기",
+            "reveal": "🎁 정답 보기",
+            "answer": "✅ 정답",
+            "explain": "💡 해설",
+            "listen_a": "🔊 정답 듣기",
+            "tts_fail": "음성 생성에 실패했어요.",
+        },
+        "English": {
+            "question": "📘 Question",
+            "listen_q": "🔊 Listen to question",
+            "reveal": "🎁 Show answer",
+            "answer": "✅ Answer",
+            "explain": "💡 Explanation",
+            "listen_a": "🔊 Listen to answer",
+            "tts_fail": "TTS generation failed.",
+        },
+        "日本語": {
+            "question": "📘 問題",
+            "listen_q": "🔊 問題を聞く",
+            "reveal": "🎁 答えを見る",
+            "answer": "✅ 答え",
+            "explain": "💡 解説",
+            "listen_a": "🔊 答えを聞く",
+            "tts_fail": "音声の生成に失敗しました。",
+        },
+        "中文": {
+            "question": "📘 题目",
+            "listen_q": "🔊 听题目",
+            "reveal": "🎁 查看答案",
+            "answer": "✅ 答案",
+            "explain": "💡 解析",
+            "listen_a": "🔊 听答案",
+            "tts_fail": "语音生成失败。",
+        },
+    }
+    L = labels.get(language_mode, labels["한국어"])
+
+    # JSON 파싱 실패 폴백: raw만 출력
+    if not isinstance(quiz_obj, dict) or "question" not in quiz_obj:
+        raw = quiz_obj.get("raw") if isinstance(quiz_obj, dict) else None
+        if raw:
+            st.markdown(raw)
+        return
+
+    question = quiz_obj.get("question", "")
+    options = quiz_obj.get("options", [])
+    correct_index = quiz_obj.get("correct_index", 0)
+    explanation = quiz_obj.get("explanation", "")
+
+    # 문제 + 선택지 표시
+    st.markdown(f"**{L['question']}**: {question}")
+    options_md = "\n".join(f"{i + 1}. {opt}" for i, opt in enumerate(options))
+    st.markdown(options_md)
+
+    # 문제 TTS (정답 제외)
+    try:
+        from voice import text_to_speech, get_language_code
+    except Exception:
+        text_to_speech = None
+        get_language_code = None
+
+    q_audio_key = f"quiz_audio_q_{zone_name}_{keyword}"
+    if text_to_speech is not None:
+        if st.button(L["listen_q"], key=f"btn_q_tts_{zone_name}_{keyword}"):
+            with st.spinner("..."):
+                try:
+                    lang_code = get_language_code(language_mode) if get_language_code else "ko"
+                    tts_text = f"{question}. " + ". ".join(
+                        f"{i + 1}번, {opt}" if language_mode == "한국어" else f"{i + 1}. {opt}"
+                        for i, opt in enumerate(options)
+                    )
+                    audio = text_to_speech(tts_text, language=lang_code)
+                    if audio:
+                        st.session_state[q_audio_key] = audio
+                    else:
+                        st.warning(L["tts_fail"])
+                except Exception as e:
+                    print(f"문제 TTS 오류: {e}")
+                    st.warning(L["tts_fail"])
+        if st.session_state.get(q_audio_key):
+            st.audio(st.session_state[q_audio_key], format="audio/mp3")
+
+    # 정답: expander 로 숨김 (사용자가 펼쳐야 보임)
+    with st.expander(L["reveal"], expanded=False):
+        if 0 <= correct_index < len(options):
+            st.markdown(f"**{L['answer']}**: {correct_index + 1}. {options[correct_index]}")
+        if explanation:
+            st.markdown(f"**{L['explain']}**: {explanation}")
+
+        # 정답 음성: expander 내부 → 자동 재생되지 않으며 사용자가 별도로 버튼 클릭해야 재생
+        a_audio_key = f"quiz_audio_a_{zone_name}_{keyword}"
+        if text_to_speech is not None:
+            if st.button(L["listen_a"], key=f"btn_a_tts_{zone_name}_{keyword}"):
+                with st.spinner("..."):
+                    try:
+                        lang_code = get_language_code(language_mode) if get_language_code else "ko"
+                        ans_text = ""
+                        if 0 <= correct_index < len(options):
+                            ans_text = (
+                                f"정답은 {correct_index + 1}번, {options[correct_index]} 입니다. "
+                                if language_mode == "한국어"
+                                else f"The answer is number {correct_index + 1}, {options[correct_index]}. "
+                            )
+                        ans_text += explanation
+                        audio = text_to_speech(ans_text, language=lang_code)
+                        if audio:
+                            st.session_state[a_audio_key] = audio
+                        else:
+                            st.warning(L["tts_fail"])
+                    except Exception as e:
+                        print(f"정답 TTS 오류: {e}")
+                        st.warning(L["tts_fail"])
+            if st.session_state.get(a_audio_key):
+                st.audio(st.session_state[a_audio_key], format="audio/mp3")
+
+
 # ============================================================================
 # RAG 검색 및 원리 추출
 # ============================================================================
@@ -514,20 +643,24 @@ def extract_principles_from_exhibits(exhibits, llm):
 # ============================================================================
 
 def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0):
-    """과학원리 기반 퀴즈 생성 (정답 랜덤 배치 + 매번 다른 문제)"""
-    import random
+    """과학원리 기반 4지선다 퀴즈 생성.
 
-    # 정답 위치를 무작위로 결정 (1~4)
+    LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
+    클라이언트에서 옵션을 **항상** 무작위로 셔플 → 정답 위치 편향(LLM의 1번 선호)을 원천 제거.
+    반환: dict {question, options[4], correct_index(0-3), explanation, raw}
+    실패 시: {raw: 원문 텍스트} 만 담긴 dict (호출 측에서 markdown으로 폴백 표시)
+    """
+    import random
+    import json as _json
+
     rng = random.Random(variation_seed if variation_seed else random.randint(1, 10**9))
-    correct_pos = rng.randint(1, 4)
-    # 문제 스타일 변주
     angles = [
-        "일상 생활의 예시로 질문",
-        "원리의 원인을 묻는 질문",
-        "원리의 결과를 묻는 질문",
-        "비슷한 현상을 찾는 질문",
-        "관찰/실험 상황을 상상하는 질문",
-        "왜 그런지 이유를 묻는 질문",
+        "일상 생활의 구체적 상황(놀이, 음식, 날씨, 동물)으로 직관적으로 묻기",
+        "원인을 묻는 형태",
+        "결과/예측을 묻는 형태",
+        "유사한 현상을 비교/대조",
+        "관찰·실험 상황을 상상하게 하는 형태",
+        "전시물 체험과 직접 연결된 시나리오",
     ]
     angle = rng.choice(angles)
 
@@ -563,64 +696,151 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 
     glossary_rules = _get_ui_glossary_rules(language)
 
+    quality_rules_ko = """
+[문제 품질 규칙 — 반드시 지킬 것]
+1) 사실 검증: 과학적으로 명백히 참인 정답 1개, 명백히 거짓인 오답 3개. 애매하거나 둘 다 맞을 수 있는 표현 금지.
+2) 구체성: "맞다/아니다"처럼 추상적인 선택지 금지. 각 선택지는 명사구 또는 짧은 문장으로 의미가 분명해야 함.
+3) 어휘 수준: 6~10세 어린이가 이해할 수 있는 단어. 학술 용어는 풀어서 설명.
+4) 일관성: 4개 선택지의 문법 형태/길이를 비슷하게 맞추기 (정답만 길거나 짧으면 안 됨).
+5) 함정 주의: 오답은 흔한 오개념이나 비슷한 다른 현상에서 가져오기 (무관한 단어 나열 금지).
+6) 질문은 한 가지만 묻기. 이중 부정, 복수 조건 금지.
+7) 실제 전시 체험과 연관된 장면을 1개 이상 사용.
+"""
+    quality_rules_en = """
+[Quality rules — MUST follow]
+1) Factual: exactly 1 clearly correct answer; 3 clearly wrong distractors. No ambiguous wording.
+2) Concrete: each option must be a meaningful phrase, not vague yes/no.
+3) Vocabulary for ages 6–10. Avoid jargon.
+4) Consistent length/form across the 4 options.
+5) Distractors should be common misconceptions, not random unrelated words.
+6) Single, clear question. Avoid double negatives or compound conditions.
+7) Tie at least one element to actual exhibit experience.
+"""
+
     language_prompts = {
-        "한국어": f"""'{zone_name}'의 '{principle}' 키워드/원리에 대한 어린이용 4지선다 퀴즈를 만들어주세요.
+        "한국어": f"""'{zone_name}'의 '{principle}' 주제로 4지선다 퀴즈를 만들어주세요.
 
-이번 퀴즈 스타일(매번 다르게 하기 위한 지시): {angle}
-랜덤 시드: {variation_seed} (같은 키워드라도 매번 다른 질문을 만들 것!)
+이번 스타일: {angle}
+랜덤 시드: {variation_seed} (매번 다른 질문!)
 
-**매우 중요한 규칙**:
-- 정답은 반드시 **{correct_pos}번**에 위치시키세요.
-- 나머지 3개는 그럴듯한 오답(매력적인 오답)으로 구성.
-- 같은 키워드라도 매번 다른 질문/다른 상황/다른 예시로 작성.
+{quality_rules_ko}
 
-출력 형식(정확히 지킬 것):
-**질문**: [어린이가 이해하기 쉬운 질문]
-
-**선택지**:
-1. [선택지1]
-2. [선택지2]
-3. [선택지3]
-4. [선택지4]
-
-**정답**: {correct_pos}번
-
-**해설**: [왜 {correct_pos}번이 정답인지 쉽게 설명]
-
-어린이 눈높이에 맞춰 재미있고 교육적으로!""",
+[출력 형식 — JSON만, 다른 텍스트 금지]
+다음 스키마의 JSON 객체 한 개를 출력하세요. 코드블록(```)도 붙이지 마세요.
+{{
+  "question": "어린이가 이해할 수 있는 질문 (1문장)",
+  "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
+  "correct_index": 0,
+  "explanation": "왜 이 답이 맞는지 쉬운 말로 2~3문장. 오답이 왜 틀렸는지도 한 줄 언급."
+}}
+- correct_index 는 0~3 정수, options 배열에서 정답 위치.
+- options 는 정확히 4개.
+- 따옴표/JSON 문법 정확히 지킬 것.""",
 
         "English": f"""Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
 
-Quiz style this time (to vary each generation): {angle}
-Random seed: {variation_seed} (Create a DIFFERENT question each time, even for the same keyword!)
+Style this time: {angle}
+Random seed: {variation_seed}
 
-**VERY IMPORTANT RULES**:
-- The correct answer MUST be placed at position **{correct_pos}**.
-- The other 3 options should be plausible but incorrect.
-- Vary the question/situation/example every time, even for the same keyword.
+{quality_rules_en}
 
-Format (follow exactly):
-**Question**: [Easy-to-understand question for children]
-
-**Options**:
-1. [Option 1]
-2. [Option 2]
-3. [Option 3]
-4. [Option 4]
-
-**Answer**: {correct_pos}
-
-**Explanation**: [Why option {correct_pos} is correct, simply explained]
-
-Make it fun and educational for children!"""
+[Output format — JSON only, no other text]
+Output a single JSON object with this schema. No code fences.
+{{
+  "question": "Single, clear question kids can understand",
+  "options": ["option 1", "option 2", "option 3", "option 4"],
+  "correct_index": 0,
+  "explanation": "2-3 short sentences explaining why the answer is correct, plus one note on why a tempting distractor is wrong."
+}}
+- correct_index is an integer 0-3 indexing the options array.
+- Exactly 4 options.
+- Strict JSON syntax."""
     }
+
+    # 日本語 / 中文 prompts (간단하게 영어 베이스에서 파생)
+    if language == "日本語":
+        language_prompts[language] = f"""'{zone_name}'の'{principle}'をテーマに、子ども向け4択クイズを作ってください。
+
+スタイル: {angle}
+ランダムシード: {variation_seed}
+{quality_rules_en}
+
+[出力形式 — JSONのみ、他のテキスト禁止]
+{{
+  "question": "子どもが分かる1文の質問",
+  "options": ["選択肢1", "選択肢2", "選択肢3", "選択肢4"],
+  "correct_index": 0,
+  "explanation": "正解の理由を2-3文で。間違いやすい選択肢の理由も一言。"
+}}
+"""
+    elif language == "中文":
+        language_prompts[language] = f"""请围绕'{zone_name}'中的'{principle}'，为儿童设计一道四选一测验。
+
+风格: {angle}
+随机种子: {variation_seed}
+{quality_rules_en}
+
+[输出格式 — 只输出JSON，不要任何其他文本]
+{{
+  "question": "孩子能理解的一句话提问",
+  "options": ["选项1", "选项2", "选项3", "选项4"],
+  "correct_index": 0,
+  "explanation": "用2-3句话解释为什么正确，并简单点出一个常见错误选项为何不对。"
+}}
+"""
 
     prompt = language_prompts.get(language, language_prompts["한국어"])
 
+    def _parse_json_relaxed(s: str):
+        if not s:
+            return None
+        s = s.strip()
+        # 코드펜스 제거
+        s = re.sub(r"^```(?:json)?\s*", "", s)
+        s = re.sub(r"\s*```$", "", s)
+        # 첫 { 부터 마지막 } 까지 추출
+        start = s.find("{")
+        end = s.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            return None
+        candidate = s[start:end + 1]
+        try:
+            return _json.loads(candidate)
+        except Exception:
+            # trailing comma 등 흔한 오류 보정
+            try:
+                fixed = re.sub(r",\s*([}\]])", r"\1", candidate)
+                return _json.loads(fixed)
+            except Exception:
+                return None
+
     try:
-        # temperature를 살짝 올려 매번 다양성 확보
         response = llm.invoke(prompt)
-        return response.content
+        raw = response.content if hasattr(response, "content") else str(response)
+        data = _parse_json_relaxed(raw)
+        if (
+            data
+            and isinstance(data.get("options"), list)
+            and len(data["options"]) == 4
+            and isinstance(data.get("correct_index"), int)
+            and 0 <= data["correct_index"] <= 3
+            and data.get("question")
+        ):
+            # 클라이언트 셔플 — 정답 위치 편향 제거
+            options = [str(o) for o in data["options"]]
+            correct_text = options[data["correct_index"]]
+            shuffled = list(options)
+            rng.shuffle(shuffled)
+            new_idx = shuffled.index(correct_text)
+            return {
+                "question": str(data["question"]).strip(),
+                "options": shuffled,
+                "correct_index": new_idx,
+                "explanation": str(data.get("explanation", "")).strip(),
+                "raw": raw,
+            }
+        # 폴백: JSON 파싱 실패
+        return {"raw": raw}
     except Exception as e:
         print(f"퀴즈 생성 오류: {e}")
         return None
@@ -1409,10 +1629,9 @@ def render_post_visit_learning(
                                 zone, quiz_principle, llm, language_mode,
                                 variation_seed=st.session_state[seed_key],
                             )
-                            st.session_state[quiz_cache_key] = quiz or ""
-                    quiz_text = st.session_state.get(quiz_cache_key, "")
-                    if quiz_text:
-                        st.markdown(quiz_text)
+                            st.session_state[quiz_cache_key] = quiz or {}
+                    quiz_obj = st.session_state.get(quiz_cache_key, {})
+                    _render_quiz_card(zone, selected_kw, quiz_obj, language_mode)
 
                     new_quiz_label = {
                         "한국어": "🔄 다른 문제 만들기",
@@ -1424,6 +1643,11 @@ def render_post_visit_learning(
                         import random as _rnd
                         st.session_state[seed_key] = _rnd.randint(1, 10**9)
                         st.session_state.pop(quiz_cache_key, None)
+                        # 새 문제 생성 시 정답/오디오 상태도 초기화
+                        for k in list(st.session_state.keys()):
+                            if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
+                               k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
+                                st.session_state.pop(k, None)
                         st.rerun()
         else:
             st.info(text["pick_zone_hint"])
