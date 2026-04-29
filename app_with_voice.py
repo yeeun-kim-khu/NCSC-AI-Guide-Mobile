@@ -471,64 +471,82 @@ def main():
     # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
     _render_mascot_animation()
 
-    intro_text_map = {
-        "한국어": (
-            "과학이 기쁨이 되는 어린이과학관에 오신 여러분들 환영합니다!\n\n"
-            "저는 **국립어린이과학관 AI 가이드**예요. 어린이과학관에 대해서 궁금한 점이 있나요?\n"
-            "아래 채팅으로 질문하거나, 왼쪽 사이드바에서 **음성으로 질문**해도 좋아요.\n"
-            "필요하면 전시/프로그램/이용 안내까지 제가 차근차근 도와드릴게요~"
-        ),
-        "English": (
-            "Welcome to the National Children's Science Center!\n\n"
-            "I'm your **AI Guide**. Have any questions about exhibits, programs, or visiting tips?\n"
-            "Ask in the chat below, or use **voice input** from the left sidebar."
-        ),
-        "日本語": (
-            "国立こども科学館へようこそ！\n\n"
-            "私は **AIガイド** です。展示・プログラム・利用案内など、気になることはありますか？\n"
-            "下のチャット、または左のサイドバーの **音声入力** で質問できます。"
-        ),
-        "中文": (
-            "欢迎来到国立儿童科学馆！\n\n"
-            "我是你的 **AI 导览**。关于展览、节目或参观方式，有什么想了解的吗？\n"
-            "你可以在下方聊天提问，也可以在左侧栏使用 **语音提问**。"
-        ),
-    }
     language_mode = st.session_state.get("language_mode", "한국어")
-    
-    # Enhanced app description
+
+    # 메인 화면 앱 소개 (탭 위에 표시) — 사용자 모드(어린이/청소년·성인)별로 톤 분기
     intro_enhanced = {
-        "한국어": (
-            "과학이 기쁨이 되는 **국립어린이과학관**에 오신 걸 환영해요! 🎉\n\n"
-            "**🤖 안내 모드** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 답해드려요. "
-            "아래 채팅창에 입력하거나, 왼쪽 사이드바에서 🎤 음성으로도 질문할 수 있어요.\n\n"
-            "**📚 또만나 놀이터 모드** — 다녀온 전시관 키워드로 **퀴즈**를 풀고, 관람한 내용을 바탕으로 "
-            "**과학 동화 + 오디오북**까지 만들어주는 사후 복습 모드예요. 위 탭에서 전환할 수 있어요!"
-        ),
-        "English": (
-            "Welcome to the **National Children's Science Center**! 🎉\n\n"
-            "**🤖 Guide Mode** — Ask anything about floors, programs, fees, reservations, or directions. "
-            "Type below, or use 🎤 voice input on the left sidebar.\n\n"
-            "**� 또만나 (See-You-Again) Zone Mode** — A post-visit review mode: pick exhibit keywords from "
-            "the zones you visited, take **quizzes**, and turn what you learned into a **science story + audiobook**. "
-            "Switch via the tabs above!"
-        ),
-        "日本語": (
-            "**国立こども科学館** へようこそ！🎉\n\n"
-            "**🤖 案内モード** — フロア案内・プログラム・料金・予約・アクセスなど、来館前後の質問にお答えします。"
-            "下のチャットに入力、または左サイドバーから 🎤 音声でどうぞ。\n\n"
-            "**📚 또만나 (またね) ゾーンモード** — 訪問した展示のキーワードから **クイズ** を解き、見学内容をもとに "
-            "**サイエンス童話 + オーディオブック** を作る復習モードです。上のタブから切り替えできます！"
-        ),
-        "中文": (
-            "欢迎来到 **国立儿童科学馆**！🎉\n\n"
-            "**🤖 导览模式** — 楼层、节目、门票、预约、交通等参观相关问题随时问我。"
-            "在下方聊天框输入，或在侧边栏使用 🎤 语音提问。\n\n"
-            "**📚 또만나 (再见) 展区模式** — 参观后复习模式：从你去过的展区挑选关键词，完成 **测验**，"
-            "并把学到的内容变成 **科学童话 + 有声书**。可在上方标签切换！"
-        ),
+        "한국어": {
+            "어린이": (
+                "**국립어린이과학관**에 와줘서 정말 반가워! 🎉\n\n"
+                "**🏙️ 과학관 안내** — 어디로 갈지 모르겠어? 무슨 프로그램이 있는지 궁금해? 아래 채팅에 물어봐 줘! 🎤 사이드바에서 말로도 물어볼 수 있어.\n\n"
+                "**🥰 또만나 놀이터** — 오늘 본 전시물, 다시 만나러 가볼까?! 재밌는 **퀴즈**도 풀고, 궁금한 거 **질문**도 하고, 인공지능이 만들어주는 신기한 **과학동화**까지 들어볼 수 있어~ 밑에 탭을 눌러봐!"
+            ),
+            "청소년/성인": (
+                "과학이 기쁨이 되는 **국립어린이과학관**에 오신 걸 환영해요! 🎉\n\n"
+                "**🏙️ 과학관 안내** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 답해드려요. "
+                "아래 채팅창에 입력하거나, 왼쪽 사이드바에서 🎤 음성으로도 질문할 수 있어요.\n\n"
+                "**🥰 또만나 놀이터** — 재미있었던 과학관 놀이터, 다시 즐겨볼까?! 과학전시물에 담긴 원리를 바탕으로 **퀴즈**를 풀고, 궁금한 내용은 **질문**하고, 인공지능이 실시간으로 만들어주는 신비한 **과학동화**까지 들어보자구요~ "
+                "밑에 탭을 전환해보세요!"
+            ),
+        },
+        "English": {
+            "어린이": (
+                "Welcome to the **National Children's Science Center**! 🎉\n\n"
+                "**🏙️ Museum Guide** — Don't know where to go? Wondering what's on today? Just ask me "
+                "in the chat below! 🎤 You can also ask out loud using the sidebar.\n\n"
+                "**🥰 또만나 (See-You-Again) Zone** — Want to play with today's exhibits again?! Take fun "
+                "**quizzes**, ask **questions** about anything you're curious about, and listen to magical "
+                "AI-made **science stories**~ Tap the tab below!"
+            ),
+            "청소년/성인": (
+                "Welcome to the **National Children's Science Center**! 🎉\n\n"
+                "**🏙️ Museum Guide** — I'll answer questions about floors, programs, fees, reservations, "
+                "and directions before or after your visit. Type in the chat below, or use 🎤 voice input "
+                "from the left sidebar.\n\n"
+                "**🥰 또만나 (See-You-Again) Zone** — Want to relive the fun?! Take **quizzes** on the "
+                "science behind the exhibits, ask **questions** about anything you're still curious about, "
+                "and listen to magical AI-generated **science stories** in real time~ Switch using the tab below!"
+            ),
+        },
+        "日本語": {
+            "어린이": (
+                "**国立こども科学館** へようこそ！🎉\n\n"
+                "**🏙️ 科学館案内** — どこに行こうか迷ってる？今日のプログラムが知りたい？下のチャットで聞いてみてね！"
+                "🎤 サイドバーから声でも聞けるよ。\n\n"
+                "**🥰 또만나 (またね) ゾーン** — 今日見た展示、もう一度遊びに行こうよ！楽しい **クイズ** に答えて、"
+                "気になることを **質問** して、AIが作る不思議な **サイエンス童話** まで聞いてみよう〜 下のタブを押してみてね！"
+            ),
+            "청소년/성인": (
+                "**国立こども科学館** へようこそ！🎉\n\n"
+                "**🏙️ 科学館案内** — フロア案内・プログラム・料金・予約・アクセスなど、来館前後の疑問にお答えします。"
+                "下のチャットに入力、または左サイドバーから 🎤 音声でどうぞ。\n\n"
+                "**🥰 또만나 (またね) ゾーン** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
+                "**クイズ** を解いて、気になることを **質問** して、AIがリアルタイムで作る不思議な **サイエンス童話** "
+                "まで聴いてみよう〜 下のタブで切り替えてみてね！"
+            ),
+        },
+        "中文": {
+            "어린이": (
+                "欢迎来到 **国立儿童科学馆**！🎉\n\n"
+                "**🏙️ 科学馆导览** — 不知道去哪儿？想知道今天有什么节目？在下方聊天框问我吧！"
+                "🎤 也可以从侧边栏用语音问哦。\n\n"
+                "**🥰 또만나 (再见) 展区** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
+                "**提问** 感兴趣的内容、还能听AI做的奇妙 **科学故事** 哦~ 点点下面的标签试试！"
+            ),
+            "청소년/성인": (
+                "欢迎来到 **国立儿童科学馆**！🎉\n\n"
+                "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等参观前后的问题随时为你解答。"
+                "在下方聊天框输入，或在侧边栏使用 🎤 语音提问。\n\n"
+                "**🥰 또만나 (再见) 展区** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
+                "自由 **提问** 感兴趣的内容、还能听到AI实时创作的奇妙 **科学故事** 哦~ 请切换下方标签试试！"
+            ),
+        },
     }
-    st.markdown(intro_enhanced.get(language_mode, intro_enhanced["한국어"]))
+    intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
+    if isinstance(intro_dict, dict):
+        st.markdown(intro_dict.get(user_mode, intro_dict["청소년/성인"]))
+    else:
+        st.markdown(intro_dict)
 
     if st.session_state.get("mode_language_changed"):
         st.info(ui_text.get(language_mode, ui_text["한국어"])["mode_lang_changed"])
