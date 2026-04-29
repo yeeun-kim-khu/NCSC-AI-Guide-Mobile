@@ -340,11 +340,11 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
         return None, None
 
     heading_text = {
-        "한국어": "#### 🔑 오늘의 키워드",
-        "English": "#### 🔑 Today's keywords",
-        "日本語": "#### 🔑 きょうのキーワード",
-        "中文": "#### 🔑 今日的关键词",
-    }.get(language_mode, "#### 🔑 Today's keywords")
+        "한국어": "##### 🔑 키워드",
+        "English": "##### 🔑 Keywords",
+        "日本語": "##### 🔑 キーワード",
+        "中文": "##### 🔑 关键词",
+    }.get(language_mode, "##### 🔑 Keywords")
     st.markdown(heading_text)
 
     state_key = f"kw_selected_{zone_name}_{mode}"
