@@ -482,26 +482,48 @@ def _render_quiz_card(zone_name: str, keyword: str, quiz_obj, language_mode: str
             st.audio(st.session_state[q_audio_key], format="audio/mp3")
 
     # 정답: expander 로 숨김 (사용자가 펼쳐야 보임)
-    with st.expander(L["reveal"], expanded=False):
+    # 정답 토글: 문제(question) 텍스트의 해시를 키에 포함 → 새 문제마다 자동으로 닫힘 상태로 시작
+    import hashlib as _hashlib
+    qid = _hashlib.md5(str(question).encode("utf-8")).hexdigest()[:8] if question else "0"
+    reveal_key = f"quiz_reveal_{zone_name}_{keyword}_{qid}"
+    if reveal_key not in st.session_state:
+        st.session_state[reveal_key] = False
+
+    hide_label = {
+        "한국어": "🙈 정답 숨기기",
+        "English": "🙈 Hide answer",
+        "日本語": "🙈 答えを隠す",
+        "中文": "🙈 隐藏答案",
+    }.get(language_mode, "🙈 Hide answer")
+
+    btn_label = hide_label if st.session_state[reveal_key] else L["reveal"]
+    if st.button(btn_label, key=f"btn_reveal_{zone_name}_{keyword}_{qid}"):
+        st.session_state[reveal_key] = not st.session_state[reveal_key]
+        st.rerun()
+
+    if st.session_state[reveal_key]:
         if 0 <= correct_index < len(options):
-            st.markdown(f"**{L['answer']}**: {correct_index + 1}. {options[correct_index]}")
+            st.success(f"**{L['answer']}**: {correct_index + 1}. {options[correct_index]}")
         if explanation:
             st.markdown(f"**{L['explain']}**: {explanation}")
 
-        # 정답 음성: expander 내부 → 자동 재생되지 않으며 사용자가 별도로 버튼 클릭해야 재생
-        a_audio_key = f"quiz_audio_a_{zone_name}_{keyword}"
+        # 정답 음성: 정답이 펼쳐진 상태에서만 노출 → 자동 재생 없음, 사용자가 명시적으로 클릭해야 재생
+        a_audio_key = f"quiz_audio_a_{zone_name}_{keyword}_{qid}"
         if text_to_speech is not None:
-            if st.button(L["listen_a"], key=f"btn_a_tts_{zone_name}_{keyword}"):
+            if st.button(L["listen_a"], key=f"btn_a_tts_{zone_name}_{keyword}_{qid}"):
                 with st.spinner("..."):
                     try:
                         lang_code = get_language_code(language_mode) if get_language_code else "ko"
                         ans_text = ""
                         if 0 <= correct_index < len(options):
-                            ans_text = (
-                                f"정답은 {correct_index + 1}번, {options[correct_index]} 입니다. "
-                                if language_mode == "한국어"
-                                else f"The answer is number {correct_index + 1}, {options[correct_index]}. "
-                            )
+                            if language_mode == "한국어":
+                                ans_text = f"정답은 {correct_index + 1}번, {options[correct_index]} 입니다. "
+                            elif language_mode == "日本語":
+                                ans_text = f"答えは{correct_index + 1}番、{options[correct_index]} です。"
+                            elif language_mode == "中文":
+                                ans_text = f"答案是第{correct_index + 1}个，{options[correct_index]}。"
+                            else:
+                                ans_text = f"The answer is number {correct_index + 1}, {options[correct_index]}. "
                         ans_text += explanation
                         audio = text_to_speech(ans_text, language=lang_code)
                         if audio:
@@ -696,6 +718,14 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 
     glossary_rules = _get_ui_glossary_rules(language)
 
+    # 출력 언어 강제 (principle 이 한국어여도 답변 언어를 지정)
+    output_lang_instruction = {
+        "한국어": "[출력 언어: 한국어] question, options, explanation 모든 텍스트는 반드시 한국어로 작성.",
+        "English": "[OUTPUT LANGUAGE: English] question, all 4 options, and explanation MUST be written in English. Do NOT use Korean. Translate any Korean topic into English. ALL TEXT IN ENGLISH ONLY.",
+        "日本語": "[出力言語: 日本語] question, options, explanation のすべてを日本語（漢字・かな）で記述。韓国語禁止。トピックが韓国語でも日本語に翻訳すること。",
+        "中文": "[输出语言: 简体中文] question, options, explanation 必须全部使用简体中文。禁止使用韩文。即使主题是韩文，也必须翻译成中文。",
+    }.get(language, "")
+
     quality_rules_ko = """
 [문제 품질 규칙 — 반드시 지킬 것]
 1) 사실 검증: 과학적으로 명백히 참인 정답 1개, 명백히 거짓인 오답 3개. 애매하거나 둘 다 맞을 수 있는 표현 금지.
@@ -718,7 +748,9 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 """
 
     language_prompts = {
-        "한국어": f"""'{zone_name}'의 '{principle}' 주제로 4지선다 퀴즈를 만들어주세요.
+        "한국어": f"""{output_lang_instruction}
+
+'{zone_name}'의 '{principle}' 주제로 4지선다 퀴즈를 만들어주세요.
 
 이번 스타일: {angle}
 랜덤 시드: {variation_seed} (매번 다른 질문!)
@@ -737,7 +769,9 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 - options 는 정확히 4개.
 - 따옴표/JSON 문법 정확히 지킬 것.""",
 
-        "English": f"""Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
+        "English": f"""{output_lang_instruction}
+
+Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
 
 Style this time: {angle}
 Random seed: {variation_seed}
@@ -774,7 +808,9 @@ Output a single JSON object with this schema. No code fences.
 }}
 """
     elif language == "中文":
-        language_prompts[language] = f"""请围绕'{zone_name}'中的'{principle}'，为儿童设计一道四选一测验。
+        language_prompts[language] = f"""{output_lang_instruction}
+
+请围绕'{zone_name}'中的'{principle}'，为儿童设计一道四选一测验。
 
 风格: {angle}
 随机种子: {variation_seed}
@@ -830,7 +866,8 @@ Output a single JSON object with this schema. No code fences.
             options = [str(o) for o in data["options"]]
             correct_text = options[data["correct_index"]]
             shuffled = list(options)
-            rng.shuffle(shuffled)
+            # 시스템 random 사용 (시드 비종속) → 정답 위치 진짜 무작위화
+            random.SystemRandom().shuffle(shuffled)
             new_idx = shuffled.index(correct_text)
             return {
                 "question": str(data["question"]).strip(),
@@ -1769,11 +1806,13 @@ def render_post_visit_learning(
                 if bt:
                     st.caption(f"BT: {bt}")
             st.markdown(st.session_state[story_state_key])
-            # 동화 본문 역번역 (외국어 모드 전용; KO 원문은 동화가 직접 생성된 언어라 N/A)
-            if language_mode != "한국어" and debug_backtranslate:
+            # 동화는 외국어 모드에서 직접 그 언어로 생성되므로 별도의 KO 원문이 없음.
+            # → debug_show_korean 또는 debug_backtranslate 가 켜지면 한국어 역번역본을 노출 (사실상 동일한 자료).
+            if language_mode != "한국어" and (debug_show_korean or debug_backtranslate):
                 bt_story = _backtranslate_to_korean_cached(st.session_state[story_state_key], language_mode)
                 if bt_story:
-                    with st.expander("BT (동화 본문 역번역)", expanded=False):
+                    label = "🇰🇷 한국어로 보기 (디버그)" if debug_show_korean else "BT (동화 본문 역번역)"
+                    with st.expander(label, expanded=False):
                         st.markdown(bt_story)
 
             if st.button(text["to_audiobook"]):
