@@ -192,8 +192,12 @@ def preprocess_tts_text(text: str, language: str = "ko") -> str:
         return f"{h}시 {m}분"
 
     def _repl(match: re.Match) -> str:
-        h1, m1 = match.group(1), match.group(2)
-        h2, m2 = match.group(3), match.group(4)
+        # 두 정규식이 이 함수를 공유: 범위(HH:MM~HH:MM, 4그룹) / 단일(HH:MM, 2그룹)
+        # 단일 매치에서는 group(3)/group(4) 가 없어 IndexError 발생 → groups() 기반으로 안전 접근.
+        groups = match.groups()
+        h1, m1 = groups[0], groups[1]
+        h2 = groups[2] if len(groups) >= 4 else None
+        m2 = groups[3] if len(groups) >= 4 else None
         if h2 and m2:
             return f"{_format_time(h1, m1)}부터 {_format_time(h2, m2)}까지"
         return _format_time(h1, m1)
