@@ -2447,7 +2447,16 @@ def _load_planetarium_videos():
         # 영상 제목은 PLANETARIUM_VIDEO_INFO 키 중 answer/category에 매칭되는 것을 찾음
         title = None
         for video_title in PLANETARIUM_VIDEO_INFO.keys():
-            if video_title in answer or video_title.replace(" ", "") in cat.replace("_", "").replace(" ", ""):
+            # 1. answer에 완전한 영상 제목이 포함되는지 확인
+            if video_title in answer:
+                title = video_title
+                break
+            # 2. category에서 '프로그램_' 제거 후 비교 (예: "프로그램_코코몽" → "코코몽")
+            cat_clean = cat.replace("프로그램_", "").replace("_", "")
+            # video_title에서 공백 제거 (예: "코코몽 우주탐험" → "코코몽우주탐험")
+            # 또는 첫 단어만 비교 (예: "코코몽")
+            vt_no_space = video_title.replace(" ", "")
+            if cat_clean in vt_no_space or vt_no_space.startswith(cat_clean):
                 title = video_title
                 break
         if not title:
