@@ -262,7 +262,7 @@ def main():
             "voice_ask": "### 🎤 음성으로 질문하기",
             "voice_rec_fail": "음성 인식에 실패했습니다. 다시 시도해주세요.",
             "refresh": "대화 새로고침 🔄",
-            "refresh_hint": "처음부터 다시 시작할 때",
+            "refresh_hint": "사용 중 문제가 발생했다면?",
             "faq_header": "### ❓ 자주 묻는 질문",
             "faq_floor": "🏢 층별 안내",
             "faq_programs": "🎭 오늘의 프로그램",
