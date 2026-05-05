@@ -566,6 +566,8 @@ def main():
                             st.error(t("voice_rec_fail"))
                             st.session_state["audio_recorder_key"] = uuid.uuid4().hex
                             st.rerun()
+
+        st.markdown("---")
         
         if st.button(t("refresh")):
             st.session_state.messages = []
