@@ -9,6 +9,7 @@ from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from audio_recorder_streamlit import audio_recorder
 import base64
+import html
 import json
 import time
 from datetime import datetime, timezone, timedelta
@@ -860,17 +861,7 @@ def main():
                     log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
                     if language_mode == "한국어":
                         ko_original = ""
-                    col_char, col_text = st.columns([1, 3])
-                    with col_char:
-                        st.image("assets/NCSC_character.png", width=120)
-                    with col_text:
-                        st.markdown(answer)
-                    if language_mode != "한국어" and debug_show_ko and ko_original:
-                        st.caption(f"KO: {ko_original}")
-                    if language_mode != "한국어" and debug_backtranslate:
-                        bt = _backtranslate_to_korean_cached(answer, language_mode)
-                        if bt:
-                            st.caption(f"BT: {bt}")
+                    # Compute sources before bubble
                     rule_sources = []
                     lowered = user_input.lower()
                     if intent == "notice":
@@ -885,8 +876,73 @@ def main():
                         else:
                             rule_sources = [CSC_URLS.get("이용안내")]
                     rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
-                    render_source_buttons(rule_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
+
+                    # Get TTS audio
+                    tts_html = ""
+                    if enable_voice_output and answer:
+                        lang_code = get_language_code(language_mode)
+                        tts_ns = get_tts_cache_namespace(language=lang_code)
+                        tts_text = answer[:1200]
+                        cache_key = f"{language_mode}::{tts_ns}::" + str(hash(tts_text))
+                        if cache_key not in st.session_state.tts_cache:
+                            with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
+                                audio_bytes = text_to_speech(tts_text, language=lang_code)
+                                if audio_bytes:
+                                    st.session_state.tts_cache[cache_key] = audio_bytes
+                        audio_bytes = st.session_state.tts_cache.get(cache_key)
+                        if audio_bytes:
+                            b64 = base64.b64encode(audio_bytes).decode('ascii')
+                            tts_html = f'<audio controls style="margin-top:8px;width:100%;" src="data:audio/mp3;base64,{b64}"></audio>'
+
+                    # Build source links HTML
+                    source_html = ""
+                    if rule_sources:
+                        expander_label = {
+                            "한국어": "📚 참고 홈페이지 자세히 보기",
+                            "English": "📚 More info",
+                            "日本語": "📚 参考サイトを詳しく見る",
+                            "中文": "📚 查看参考网站",
+                        }.get(language_mode, "📚 More info")
+                        link_label = {
+                            "한국어": "🔗 참고 홈페이지",
+                            "English": "🔗 Reference",
+                            "日本語": "🔗 参考サイト",
+                            "中文": "🔗 参考网站",
+                        }.get(language_mode, "🔗 Reference")
+                        source_html = f'<details style="margin-top:8px;"><summary>{expander_label}</summary>'
+                        for i, src in enumerate(rule_sources[:5]):
+                            if isinstance(src, str) and src.startswith("http"):
+                                source_html += f'<a href="{src}" target="_blank">{link_label} {i+1}</a><br>'
+                        source_html += '</details>'
+
+                    # Build debug captions HTML
+                    debug_html = ""
+                    if language_mode != "한국어" and debug_show_ko and ko_original:
+                        debug_html += f'<div style="margin-top:4px;font-size:0.85em;color:#666;">KO: {html.escape(ko_original)}</div>'
+                    if language_mode != "한국어" and debug_backtranslate:
+                        bt = _backtranslate_to_korean_cached(answer, language_mode)
+                        if bt:
+                            debug_html += f'<div style="margin-top:4px;font-size:0.85em;color:#666;">BT: {html.escape(bt)}</div>'
+
+                    # Convert answer markdown to HTML
+                    try:
+                        import markdown
+                        answer_html = markdown.markdown(answer)
+                    except ImportError:
+                        import re
+                        answer_html = answer.replace('\n\n', '</p><p>').replace('\n', '<br>')
+                        answer_html = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', answer_html)
+                        answer_html = re.sub(r'__(.*?)__', r'<b>\1</b>', answer_html)
+                        answer_html = f'<p>{answer_html}</p>'
+
+                    # Render character + bubble
+                    col_char, col_bubble = st.columns([1, 3])
+                    with col_char:
+                        st.image("assets/NCSC_character.png", width=120)
+                    with col_bubble:
+                        right_content = f'{answer_html}{source_html}{tts_html}{debug_html}'
+                        bubble_html = f'<div style="background:#E3F2FD;border-radius:16px;padding:12px 16px;">{right_content}</div>'
+                        st.markdown(bubble_html, unsafe_allow_html=True)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
                     _t0 = time.time()
@@ -937,24 +993,84 @@ def main():
                         elif hasattr(msg, 'content'):
                             debug_info += str(msg.content) + "\n\n"
 
-                    col_char, col_text = st.columns([1, 3])
-                    with col_char:
-                        st.image("assets/NCSC_character.png", width=120)
-                    with col_text:
-                        st.markdown(answer)
+                    # Get TTS audio
+                    tts_html = ""
+                    if enable_voice_output and answer:
+                        lang_code = get_language_code(language_mode)
+                        tts_ns = get_tts_cache_namespace(language=lang_code)
+                        tts_text = answer[:1200]
+                        cache_key = f"{language_mode}::{tts_ns}::" + str(hash(tts_text))
+                        if cache_key not in st.session_state.tts_cache:
+                            with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
+                                audio_bytes = text_to_speech(tts_text, language=lang_code)
+                                if audio_bytes:
+                                    st.session_state.tts_cache[cache_key] = audio_bytes
+                        audio_bytes = st.session_state.tts_cache.get(cache_key)
+                        if audio_bytes:
+                            b64 = base64.b64encode(audio_bytes).decode('ascii')
+                            tts_html = f'<audio controls style="margin-top:8px;width:100%;" src="data:audio/mp3;base64,{b64}"></audio>'
+
+                    # Build source links HTML
+                    source_html = ""
+                    if rag_sources:
+                        expander_label = {
+                            "한국어": "📚 참고 홈페이지 자세히 보기",
+                            "English": "📚 More info",
+                            "日本語": "📚 参考サイトを詳しく見る",
+                            "中文": "📚 查看参考网站",
+                        }.get(language_mode, "📚 More info")
+                        link_label = {
+                            "한국어": "🔗 참고 홈페이지",
+                            "English": "🔗 Reference",
+                            "日本語": "🔗 参考サイト",
+                            "中文": "🔗 参考网站",
+                        }.get(language_mode, "🔗 Reference")
+                        source_html = f'<details style="margin-top:8px;"><summary>{expander_label}</summary>'
+                        for i, src in enumerate(rag_sources[:5]):
+                            if isinstance(src, str) and src.startswith("http"):
+                                source_html += f'<a href="{src}" target="_blank">{link_label} {i+1}</a><br>'
+                            else:
+                                source_html += f'<span>{src}</span><br>'
+                        source_html += '</details>'
+
+                    # Build BT caption HTML
+                    bt_html = ""
                     if language_mode != "한국어" and debug_backtranslate:
                         bt = _backtranslate_to_korean_cached(answer, language_mode)
                         if bt:
-                            st.caption(f"BT: {bt}")
-                    render_source_buttons(rag_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
-                    
-                    # 디버깅 정보 표시 (답변 뒤)
+                            bt_html = f'<div style="margin-top:4px;font-size:0.85em;color:#666;">BT: {html.escape(bt)}</div>'
+
+                    # Build debug HTML
+                    debug_html = ""
                     if debug_info.strip():
-                        with st.expander(ui_text.get(language_mode, ui_text["한국어"])["debug_tool_calls_after"]):
-                            with st.container(height=400):
-                                st.text(debug_info)
+                        debug_label = {
+                            "한국어": "🔍 디버깅 정보",
+                            "English": "🔍 Debug info",
+                            "日本語": "🔍 デバッグ情報",
+                            "中文": "🔍 调试信息",
+                        }.get(language_mode, "🔍 Debug")
+                        debug_html = f'<details style="margin-top:8px;"><summary>{debug_label}</summary><pre style="white-space:pre-wrap;font-size:0.8em;">{html.escape(debug_info)}</pre></details>'
                         st.session_state.messages.append({"role": "debug", "content": debug_info})
+
+                    # Convert answer markdown to HTML
+                    try:
+                        import markdown
+                        answer_html = markdown.markdown(answer)
+                    except ImportError:
+                        import re
+                        answer_html = answer.replace('\n\n', '</p><p>').replace('\n', '<br>')
+                        answer_html = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', answer_html)
+                        answer_html = re.sub(r'__(.*?)__', r'<b>\1</b>', answer_html)
+                        answer_html = f'<p>{answer_html}</p>'
+
+                    # Render character + bubble
+                    col_char, col_bubble = st.columns([1, 3])
+                    with col_char:
+                        st.image("assets/NCSC_character.png", width=120)
+                    with col_bubble:
+                        right_content = f'{answer_html}{source_html}{tts_html}{bt_html}{debug_html}'
+                        bubble_html = f'<div style="background:#E3F2FD;border-radius:16px;padding:12px 16px;">{right_content}</div>'
+                        st.markdown(bubble_html, unsafe_allow_html=True)
 
             assistant_msg = {"role": "assistant", "content": answer}
             assistant_msg["tts_autoplayed"] = False
