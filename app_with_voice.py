@@ -766,17 +766,21 @@ def main():
     background: #E3F2FD;
     border-radius: 16px;
     padding: 12px 16px;
+    overflow: visible;
+    margin-left: 8px;
 }
 .ncsc-speech-bubble::before {
     content: "";
     position: absolute;
-    left: -12px;
+    left: -15px;
     top: 20px;
     width: 0;
     height: 0;
     border-top: 10px solid transparent;
     border-right: 15px solid #E3F2FD;
     border-bottom: 10px solid transparent;
+    display: block;
+    z-index: 1;
 }
 </style>
         """, unsafe_allow_html=True)
@@ -959,14 +963,10 @@ def main():
                         answer_html = re.sub(r'__(.*?)__', r'<b>\1</b>', answer_html)
                         answer_html = f'<p>{answer_html}</p>'
 
-                    # Render character + bubble
-                    col_char, col_bubble = st.columns([1, 3])
-                    with col_char:
-                        st.image("assets/NCSC_character.png", width=120)
-                    with col_bubble:
-                        right_content = f'{answer_html}{source_html}{tts_html}{debug_html}'
-                        bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
-                        st.markdown(bubble_html, unsafe_allow_html=True)
+                    # Render sky-blue speech bubble
+                    right_content = f'{answer_html}{source_html}{tts_html}{debug_html}'
+                    bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
+                    st.markdown(bubble_html, unsafe_allow_html=True)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
                     _t0 = time.time()
@@ -1087,14 +1087,10 @@ def main():
                         answer_html = re.sub(r'__(.*?)__', r'<b>\1</b>', answer_html)
                         answer_html = f'<p>{answer_html}</p>'
 
-                    # Render character + bubble
-                    col_char, col_bubble = st.columns([1, 3])
-                    with col_char:
-                        st.image("assets/NCSC_character.png", width=120)
-                    with col_bubble:
-                        right_content = f'{answer_html}{source_html}{tts_html}{bt_html}{debug_html}'
-                        bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
-                        st.markdown(bubble_html, unsafe_allow_html=True)
+                    # Render sky-blue speech bubble
+                    right_content = f'{answer_html}{source_html}{tts_html}{bt_html}{debug_html}'
+                    bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
+                    st.markdown(bubble_html, unsafe_allow_html=True)
 
             assistant_msg = {"role": "assistant", "content": answer}
             assistant_msg["tts_autoplayed"] = False
