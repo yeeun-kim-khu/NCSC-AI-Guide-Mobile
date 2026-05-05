@@ -9,10 +9,17 @@ from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from audio_recorder_streamlit import audio_recorder
 import base64
+import json
+import time
+from datetime import datetime, timezone, timedelta
 
 from core import get_tools, route_intent, answer_rule_based, answer_rule_based_localized, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
 from voice import speech_to_text, text_to_speech, get_language_code, autoplay_audio, get_tts_cache_namespace
 from learning import render_post_visit_learning, _backtranslate_to_korean_cached
+
+# Google Form URL for feedback (replace with your actual form link)
+# To get the link: Open your Google Form → Send → copy the "Link" tab URL
+GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform"
 
 # RAG loading with session state persistence
 @st.cache_resource
@@ -129,6 +136,94 @@ def _render_privacy_notice_gate() -> None:
         if st.button("확인하고 시작하기 ✨", type="primary"):
             _ack()
         st.stop()
+
+
+def save_feedback(data: dict, language_mode: str, user_mode: str):
+    kst = datetime.now(timezone.utc) + timedelta(hours=9)
+    data["timestamp"] = kst.isoformat()
+    data["language"] = language_mode
+    data["mode"] = user_mode
+    data["msg_count"] = len(st.session_state.get("messages", []))
+    print(f"[FEEDBACK] {json.dumps(data, ensure_ascii=False)}")
+    # Google Sheets 연동 (선택사항 — 아래 가이드 참고)
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+        sheet_id = st.secrets.get("app", {}).get("feedback_sheet_id")
+        if sheet_id:
+            creds = Credentials.from_service_account_info(
+                st.secrets["gcp_service_account"],
+                scopes=["https://www.googleapis.com/auth/spreadsheets"],
+            )
+            gc = gspread.authorize(creds)
+            sheet = gc.open_by_key(sheet_id).worksheet("feedback")
+            row = [data.get("timestamp"), data.get("type"), data.get("language"), data.get("mode"), data.get("msg_count"), json.dumps(data, ensure_ascii=False)]
+            sheet.append_row(row)
+    except Exception:
+        pass
+
+
+def log_monitoring(intent: str, rule_based: bool, latency_ms: float, error: bool = False):
+    """개발자용 모니터링 로그 (PII 없이 메타데이터만 기록)"""
+    print(f"[MONITOR] intent={intent} rule_based={rule_based} latency_ms={latency_ms:.0f} error={error}")
+
+
+GOOGLE_FORM_I18N = {
+    "한국어": {
+        "children_label": "💬 한마디 남기기 🎤",
+        "children_msg": "AI 친구에게 하고 싶은 말을 남겨줘!",
+        "parent_label": "💬 서비스 만족도 남기기",
+        "parent_msg": "소중한 의견을 들려주세요",
+        "btn_text": "� 설문지 열기",
+        "done_msg": "✅ 의견 감사합니다!",
+    },
+    "English": {
+        "children_label": "💬 Leave a message 🎤",
+        "children_msg": "Tell the AI friend what you think!",
+        "parent_label": "💬 Service Feedback",
+        "parent_msg": "We'd love to hear your thoughts",
+        "btn_text": "📝 Open survey",
+        "done_msg": "✅ Thank you for your feedback!",
+    },
+    "日本語": {
+        "children_label": "� メッセージを残す 🎤",
+        "children_msg": "AI友達に伝えたいことを書いてね!",
+        "parent_label": "💬 サービスフィードバック",
+        "parent_msg": "貴重なご意見をお聞かせください",
+        "btn_text": "� アンケートを開く",
+        "done_msg": "✅ ご意見ありがとうございます!",
+    },
+    "中文": {
+        "children_label": "� 留言 🎤",
+        "children_msg": "告诉AI朋友你的想法!",
+        "parent_label": "💬 服务反馈",
+        "parent_msg": "期待您的宝贵意见",
+        "btn_text": "� 打开问卷",
+        "done_msg": "✅ 感谢您的反馈!",
+    },
+}
+
+
+def render_children_feedback(language_mode: str = "한국어", user_mode: str = "기본"):
+    ft = GOOGLE_FORM_I18N.get(language_mode, GOOGLE_FORM_I18N["한국어"])
+    if st.session_state.get("children_feedback_done"):
+        st.success(ft["done_msg"])
+        return
+    st.markdown("---")
+    st.caption(ft["children_msg"])
+    if st.link_button(ft["btn_text"], GOOGLE_FORM_URL, use_container_width=True, type="primary"):
+        st.session_state["children_feedback_done"] = True
+
+
+def render_parent_feedback(language_mode: str = "한국어", user_mode: str = "기본"):
+    ft = GOOGLE_FORM_I18N.get(language_mode, GOOGLE_FORM_I18N["한국어"])
+    if st.session_state.get("parent_feedback_done"):
+        st.success(ft["done_msg"])
+        return
+    st.markdown("---")
+    st.caption(ft["parent_msg"])
+    if st.link_button(ft["btn_text"], GOOGLE_FORM_URL, use_container_width=True, type="primary"):
+        st.session_state["parent_feedback_done"] = True
 
 
 def main():
@@ -376,10 +471,24 @@ def main():
         enable_voice_input = st.checkbox(t("voice_in"), value=True)
         enable_voice_output = st.checkbox(t("voice_out"), value=True)
 
+        # 디버그 섹션 숨김 (출력만 비활성화, 변수는 False로 유지해 하위 코드 호환성 보장)
+        # st.markdown("---")
+        # st.subheader(t("debug_section"))
+        # debug_show_ko = st.checkbox(t("debug_show_ko"), value=False)
+        # debug_backtranslate = st.checkbox(t("debug_backtranslate"), value=False)
+        debug_show_ko = False
+        debug_backtranslate = False
+
         st.markdown("---")
-        st.subheader(t("debug_section"))
-        debug_show_ko = st.checkbox(t("debug_show_ko"), value=False)
-        debug_backtranslate = st.checkbox(t("debug_backtranslate"), value=False)
+        # 설문조사를 사이드바 중하단(디버그 자리)으로 이동
+        if user_mode == "어린이":
+            if st.button("💬 한마디 남기기 🎤", use_container_width=True, key="sidebar_feedback_child"):
+                st.session_state["show_feedback_panel"] = True
+                st.rerun()
+            if st.session_state.get("show_feedback_panel"):
+                render_children_feedback(language_mode, user_mode)
+        else:
+            render_parent_feedback(language_mode, user_mode)
 
         auto_clear_on_change = True
 
@@ -465,7 +574,7 @@ def main():
                 del st.session_state["tts_cache"]
             st.rerun()
 
-    st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
+        st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
 
     # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
     _render_mascot_animation()
@@ -694,6 +803,15 @@ def main():
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
                                 autoplay_audio(audio_bytes)
 
+        # 자동 피드백 트리거 (5번째 답변 후)
+        msg_count = len(st.session_state.get("messages", []))
+        if msg_count >= 10 and not st.session_state.get("feedback_auto_shown"):
+            if user_mode == "어린이":
+                render_children_feedback(language_mode, user_mode)
+            else:
+                render_parent_feedback(language_mode, user_mode)
+            st.session_state["feedback_auto_shown"] = True
+
         user_input = None
 
         if "pending_user_input" in st.session_state and st.session_state.get("pending_user_input"):
@@ -714,10 +832,12 @@ def main():
                 if intent in ["notice", "basic"]:
                     # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
                     # answer_rule_based_localized: 정적 사전 번역 우선 → 폴백 LLM 번역
+                    _t0 = time.time()
                     with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["spinner_rule"]):
                         answer, ko_original = answer_rule_based_localized(
                             intent, user_input, user_mode, language_mode
                         )
+                    log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
                     if language_mode == "한국어":
                         ko_original = ""
                     st.markdown(answer)
@@ -745,6 +865,7 @@ def main():
                     render_tts_for_answer(answer)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
+                    _t0 = time.time()
                     with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
                         if st.session_state.get("directions_origin"):
                             origin = st.session_state.get("directions_origin")
@@ -780,6 +901,7 @@ def main():
                         ]
                         result = agent.invoke({"messages": messages}, config=config)
                         answer = result["messages"][-1].content
+                    log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
                         
                         # 디버깅 로그 수집 (RAG 검색 결과 포함)
                         debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"

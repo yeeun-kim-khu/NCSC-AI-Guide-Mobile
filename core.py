@@ -1024,9 +1024,9 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ⚠️ 지하철 운행 정보·버스 노선은 변경될 수 있으니 공식 홈페이지 '오시는 길' 페이지도 참고해 주세요."""
 
             base = STATIC_FAQ.get("교통안내", "")
-            verify = "\n\n오시는 길은 노선/출입구 변경이 있을 수 있어 정확성이 중요합니다.\n공식 홈페이지(www.csc.go.kr) '오시는 길' 페이지를 기준으로 확인해 주세요.\n추가로 02-3668-1500으로 문의하시면 가장 정확합니다."
+            verify = "\n\n정확한 실시간 길 안내는 네이버지도나 카카오맵 같은 대중교통 앱을 이용해주세요!"
             if mode == "어린이":
-                return (base or "오시는 길을 알려드릴게요! 🧭") + verify
+                return (base or "오시는 길을 알려드릴게요!") + verify
             return (base or "오시는 길 안내입니다.") + verify
 
         if category == "age_calculator":
@@ -1223,7 +1223,6 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ## 유의사항
 - **노쇼(No Show) 페널티**: 무단 미방문 시 해당일로부터 **6개월 관람 제한**
-- 사전예약 후 방문 어려운 경우 반드시 예약 취소
 - 단체관람 시 인솔자의 안전 관리 필수
 
 📞 단체 문의: **02-3668-3350** / 🌐 www.csc.go.kr
@@ -1261,9 +1260,9 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ## ♿ 시설 접근성
 - 1·2층 모두 엘리베이터로 이동 가능
 - 장애인 화장실 비치
-- 의무실은 1층 로비에 있어요 (편의점 판매 일반의약품 구비)
+- 의무실은 1층 로비에 있어요 (편의점 판매 일반의약품 구비).
 
-📞 문의: 02-3668-3350"""
+## 📞 문의: 02-3668-3350"""
             return """👶♿ 유모차·휠체어 대여 안내
 
 ## 대여 품목
@@ -1863,7 +1862,7 @@ def search_directions(origin: str, destination: str = "국립어린이과학관"
 
 일반적인 안내:
 - {destination} 주소: 서울특별시 종로구 창경궁로 215
-- 가까운 지하철역: 4호선 혜화역 4번 출구 (도보 15분)
+- 가까운 지하철역: 
 - 국립어린이과학관은 전용 주차장이 없으므로 대중교통 이용을 권장합니다.
 
 ※ 정확한 버스 노선, 소요시간, 환승 정보는 위 지도 앱에서 실시간으로 확인해주세요.
@@ -2051,7 +2050,7 @@ def _resolve_notice_title(pkid: str, num: str = "0") -> str:
     url = f"{MUSEUM_BASE_URL}/boardView.do?bbspkid=22&pkid={pkid}&num={num}"
 
     try:
-        html = _fetch_html_bytes(url, headers=headers, max_attempts=2)
+        html = _fetch_html_bytes(url, headers=headers)
         soup = BeautifulSoup(html, "html.parser")
         title = soup.select_one("div.sub_contents.sub_depth_content h3")
         if not title:
@@ -2168,14 +2167,6 @@ def _extract_notice_body_text(substance) -> str:
             if tag == "br":
                 flush("📌 " if in_textbox else "")
                 continue
-            classes = child.get("class") or []
-            is_textbox = "txc-textbox" in classes
-            if is_textbox:
-                # 텍스트박스 진입 전 현재 버퍼 flush
-                flush()
-                walk(child, in_textbox=True)
-                flush("📌 ")
-                continue
             if tag in BLOCK_TAGS:
                 flush("📌 " if in_textbox else "")
                 walk(child, in_textbox=in_textbox)
@@ -2248,7 +2239,7 @@ def get_tools():
     """LangChain agent에서 사용할 도구 목록 반환"""
     return [
         check_museum_closed_date,
-        search_directions,
+        # search_directions,  # 제거: LLM이 직접 출발지를 듣고 경로를 안내하도록 변경
         search_csc_live_info,
         fetch_latest_notices,
     ]
@@ -2332,14 +2323,14 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 === 환각 방지 가드레일 ===
 - 운영시간, 입장료, 휴관일 → 반드시 RAG 또는 도구 결과 기반
 - RAG/도구에 없는 정보 → "공식 홈페이지(www.csc.go.kr)에서 확인해주세요"
-   - "정확한 정보는 02-3668-3350으로 문의해주세요."
+   - "정확한 정보는 02-3668-1500으로 문의해주세요."
 - **주차 안내**: 국립어린이과학관은 **전용 주차장이 없습니다**. "주차 가능", "주차장 마련" 같은 말은 절대 하지 말 것. 자가용 이용 권장 금지. 대중교통 이용 안내 필수.
 
 === 국립어린이과학관 위치 정보 (고정값) ===
 **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 **가까운 지하철역**: 
-- 4호선 혜화역 4번 출구 (도보 15분)
-- 1호선 종로5가역 2번 출구 (도보 20분)
+- 4호선 혜화역 4번 출구 (도보 약 7분, 창경궁 방향)
+- 1호선 종로5가역 2번 출구 (도보 약 20분)
 **주요 버스 정류장**: 창경궁 앞 정류장
 **대표 전화**: 02-3668-3350
 
@@ -2444,29 +2435,17 @@ def _load_planetarium_videos():
         if not cat.startswith("프로그램_"):
             continue
         answer = str(r.get("answer", "")).strip()
-        # 영상 제목은 PLANETARIUM_VIDEO_INFO 키 중 answer/category에 매칭되는 것을 찾음
         title = None
-        print(f"[DEBUG] Processing cat={cat}, answer preview={answer[:30]}...")
         for video_title in PLANETARIUM_VIDEO_INFO.keys():
-            # 1. answer에 완전한 영상 제목이 포함되는지 확인
             if video_title in answer:
                 title = video_title
-                print(f"[DEBUG] Matched via answer: {title}")
                 break
-            # 2. category에서 '프로그램_' 제거 후 비교 (예: "프로그램_코코몽" → "코코몽")
             cat_clean = cat.replace("프로그램_", "").replace("_", "")
-            # video_title에서 공백 제거 (예: "코코몽 우주탐험" → "코코몽우주탐험")
             vt_no_space = video_title.replace(" ", "")
-            match = cat_clean in vt_no_space or vt_no_space.startswith(cat_clean)
-            print(f"[DEBUG] cat_clean={cat_clean}, vt_no_space={vt_no_space}, match={match}")
-            if match:
+            if cat_clean in vt_no_space or vt_no_space.startswith(cat_clean):
                 title = video_title
-                print(f"[DEBUG] Matched via category: {title}")
                 break
-        if not title:
-            print(f"[DEBUG] No match for cat={cat}")
-            continue
-        if title in seen_titles:
+        if not title or title in seen_titles:
             continue
         seen_titles.add(title)
 

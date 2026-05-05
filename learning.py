@@ -1439,7 +1439,7 @@ def render_post_visit_learning(
             "exhibits_not_found": "의 전시물 정보를 찾을 수 없습니다.",
             "principles_not_found": "과학원리를 추출할 수 없습니다.",
             "csv_not_found": "CSV 전시물 정보를 찾을 수 없습니다.",
-            "expander_parent": "학부모용: 전시물 전체보기",
+            "expander_parent": "보호자용: 전시물 전체보기",
             "story_intro": "오늘 체험한 놀이터를 바탕으로 나만의 과학동화를 만들어보세요!",
             "story_select_heading": "### 동화에 포함할 놀이터 선택",
             "story_generated": "### 📖 생성된 동화",
@@ -1655,37 +1655,42 @@ def render_post_visit_learning(
                                     f"천체투영관 상영 영상 '{selected_kw}'에서 배우는 내용\n"
                                     f"줄거리: {desc}\n"
                                     f"학습 주제: {info.get('themes', '')}\n"
-                                    f"(이 영상의 내용/주제를 바탕으로 퀴즈를 만들 것)"
-                                )
-                        except Exception as e:
-                            print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
                     if quiz_cache_key not in st.session_state:
-                        with st.spinner(text["quiz_generating"]):
-                            quiz = generate_quiz(
-                                zone, quiz_principle, llm, language_mode,
-                                variation_seed=st.session_state[seed_key],
-                            )
-                            st.session_state[quiz_cache_key] = quiz or {}
-                    quiz_obj = st.session_state.get(quiz_cache_key, {})
-                    _render_quiz_card(zone, selected_kw, quiz_obj, language_mode)
+                        if st.button(make_quiz_label, key=f"btn_make_quiz_{zone}_{selected_kw}"):
+                            with st.spinner(text["quiz_generating"]):
+                                quiz = generate_quiz(
+                                    zone, selected_kw, llm, language_mode,
+                                    variation_seed=st.session_state[seed_key],
+                                )
+                                st.session_state[quiz_cache_key] = quiz or {}
+                            st.rerun()
 
-                    new_quiz_label = {
-                        "한국어": "🔄 다른 문제 만들기",
-                        "English": "🔄 Generate another question",
-                        "日本語": "🔄 別の問題をつくる",
-                        "中文": "🔄 换一道题",
-                    }.get(language_mode, "🔄 Generate another question")
-                    if st.button(new_quiz_label, key=f"quiz_refresh_{zone}_{selected_kw}"):
-                        import random as _rnd
-                        st.session_state[seed_key] = _rnd.randint(1, 10**9)
-                        st.session_state.pop(quiz_cache_key, None)
-                        # 새 문제 생성 시 정답/오디오 상태도 초기화
-                        for k in list(st.session_state.keys()):
-                            if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
-                               k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
-                                st.session_state.pop(k, None)
-                        st.rerun()
+                    if quiz_cache_key in st.session_state:
+                        quiz_obj = st.session_state[quiz_cache_key]
+                        if quiz_obj and isinstance(quiz_obj, dict) and quiz_obj.get("question"):
+                            _render_quiz_card(zone, selected_kw, quiz_obj, language_mode)
+
+                            new_quiz_label = {
+                                "한국어": "🔄 다른 문제 만들기",
+                                "English": "🔄 Generate another question",
+                                "日本語": "🔄 別の問題をつくる",
+                                "中文": "🔄 换一道题",
+                            }.get(language_mode, "🔄 Generate another question")
+                            if st.button(new_quiz_label, key=f"quiz_refresh_{zone}_{selected_kw}"):
+                                import random as _rnd
+                                st.session_state[seed_key] = _rnd.randint(1, 10**9)
+                                st.session_state.pop(quiz_cache_key, None)
+                                for k in list(st.session_state.keys()):
+                                    if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
+                                       k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
+                                        st.session_state.pop(k, None)
+                                st.rerun()
+                        else:
+                            st.warning("퀴즈 생성에 실패했습니다.")
+                            if st.button(f"🔄 {make_quiz_label}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
+                                st.session_state.pop(quiz_cache_key, None)
+                                st.rerun()
         else:
             st.info(text["pick_zone_hint"])
 
@@ -1701,24 +1706,25 @@ def render_post_visit_learning(
 
                 with st.spinner(text["generating"]):
                     exhibits = get_zone_exhibits_from_rag(zone, vector_db)
-                    if exhibits:
-                        user_question = st.text_input(
-                            f"{_display_zone_name(zone)}{text['question_prompt']}",
-                            key=f"question_input_{zone}"
-                        )
 
-                        if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
-                            context = "\n".join([ex["content"] for ex in exhibits[:5]])
-                            prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
+                if exhibits:
+                    user_question = st.text_input(
+                        f"{_display_zone_name(zone)}{text['question_prompt']}",
+                        key=f"question_input_{zone}"
+                    )
+
+                    if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
+                        context = "\n".join([ex["content"] for ex in exhibits[:5]])
+                        prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
 {context}
 
 사용자 질문: {user_question}
 
 어린이가 이해하기 쉽게 답변해주세요."""
-                            response = llm.invoke(prompt)
-                            st.markdown(f"**{text['answer_prefix']}:** {response.content}")
-                    else:
-                        st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
+                        response = llm.invoke(prompt)
+                        st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+                else:
+                    st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
         else:
             st.info(text["pick_zone_hint"])
     
