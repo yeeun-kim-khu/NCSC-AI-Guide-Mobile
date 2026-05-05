@@ -46,7 +46,7 @@ def _render_mascot_animation() -> None:
     from pathlib import Path
     # 워터마크 불투명도 — 글자 가독성과 캐릭터 존재감 사이 균형
     # 살짝 더 진하게: 0.30 / 더 옅게: 0.15 / 클로드 추천 0.22 
-    OPACITY = 0.03
+    OPACITY = 0.15
     SIZE_VMIN = 80  # 화면 짧은 변의 80% 크기 (클로드 추천 60%)
 
     mascot_path = Path(__file__).parent / "assets" / "NCSC_character.png"
