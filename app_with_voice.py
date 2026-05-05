@@ -757,6 +757,30 @@ def main():
                     autoplay_audio(audio_bytes)
                 st.audio(audio_bytes, format="audio/mp3")
 
+        # Hide default Streamlit assistant robot avatar + define speech bubble tail CSS
+        st.markdown("""
+<style>
+[data-testid="stChatMessageAvatarAssistant"] { display: none !important; }
+.ncsc-speech-bubble {
+    position: relative;
+    background: #E3F2FD;
+    border-radius: 16px;
+    padding: 12px 16px;
+}
+.ncsc-speech-bubble::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-right: 15px solid #E3F2FD;
+    border-bottom: 10px solid transparent;
+}
+</style>
+        """, unsafe_allow_html=True)
+
         for i, msg in enumerate(st.session_state.messages):
             if msg["role"] == "debug":
                 with st.expander(ui_text.get(language_mode, ui_text["한국어"])["debug_tool_calls"]):
@@ -941,7 +965,7 @@ def main():
                         st.image("assets/NCSC_character.png", width=120)
                     with col_bubble:
                         right_content = f'{answer_html}{source_html}{tts_html}{debug_html}'
-                        bubble_html = f'<div style="background:#E3F2FD;border-radius:16px;padding:12px 16px;">{right_content}</div>'
+                        bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
                         st.markdown(bubble_html, unsafe_allow_html=True)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
@@ -1069,7 +1093,7 @@ def main():
                         st.image("assets/NCSC_character.png", width=120)
                     with col_bubble:
                         right_content = f'{answer_html}{source_html}{tts_html}{bt_html}{debug_html}'
-                        bubble_html = f'<div style="background:#E3F2FD;border-radius:16px;padding:12px 16px;">{right_content}</div>'
+                        bubble_html = f'<div class="ncsc-speech-bubble">{right_content}</div>'
                         st.markdown(bubble_html, unsafe_allow_html=True)
 
             assistant_msg = {"role": "assistant", "content": answer}
