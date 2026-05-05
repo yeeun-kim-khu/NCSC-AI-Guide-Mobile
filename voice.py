@@ -47,7 +47,6 @@ def speech_to_text(audio_bytes):
             transcript = client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
-                language="ko",  # Korean language
                 response_format="text",
                 temperature=0.0  # More deterministic
             )

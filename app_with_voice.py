@@ -519,6 +519,8 @@ def main():
                 st.session_state["pending_user_input"] = "전시관 안내"
                 st.rerun()
 
+        st.markdown("---")
+
         if enable_voice_input:
             st.markdown(t("voice_ask"))
 
