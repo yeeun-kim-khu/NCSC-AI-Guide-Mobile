@@ -471,11 +471,9 @@ def main():
                 del st.session_state["tts_cache"]
             st.rerun()
         
-        # Voice features toggle
-        st.markdown("---")
-        st.subheader(t("voice_section"))
-        enable_voice_input = st.checkbox(t("voice_in"), value=True)
-        enable_voice_output = st.checkbox(t("voice_out"), value=True)
+        # 음성 기능은 항상 활성화 (사이드바 UI 단순화)
+        enable_voice_input = True
+        enable_voice_output = True
 
         # 디버그 섹션 숨김 (출력만 비활성화, 변수는 False로 유지해 하위 코드 호환성 보장)
         # st.markdown("---")
