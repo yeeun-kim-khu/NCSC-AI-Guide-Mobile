@@ -1656,6 +1656,8 @@ def render_post_visit_learning(
                                     f"줄거리: {desc}\n"
                                     f"학습 주제: {info.get('themes', '')}\n"
                                 )
+                        except Exception as e:
+                            print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
                     if quiz_cache_key not in st.session_state:
                         if st.button(make_quiz_label, key=f"btn_make_quiz_{zone}_{selected_kw}"):
