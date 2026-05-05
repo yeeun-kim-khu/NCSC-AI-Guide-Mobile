@@ -902,15 +902,15 @@ def main():
                         result = agent.invoke({"messages": messages}, config=config)
                         answer = result["messages"][-1].content
                     log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
-                        
-                        # 디버깅 로그 수집 (RAG 검색 결과 포함)
-                        debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"
-                        for msg in result["messages"][:-1]:  # 마지막 답변 제외
-                            if hasattr(msg, 'pretty_repr'):
-                                debug_info += msg.pretty_repr() + "\n\n"
-                            elif hasattr(msg, 'content'):
-                                debug_info += str(msg.content) + "\n\n"
-                        
+
+                    # 디버깅 로그 수집 (RAG 검색 결과 포함)
+                    debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"
+                    for msg in result["messages"][:-1]:  # 마지막 답변 제외
+                        if hasattr(msg, 'pretty_repr'):
+                            debug_info += msg.pretty_repr() + "\n\n"
+                        elif hasattr(msg, 'content'):
+                            debug_info += str(msg.content) + "\n\n"
+
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_backtranslate:
                         bt = _backtranslate_to_korean_cached(answer, language_mode)
