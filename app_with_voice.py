@@ -177,10 +177,10 @@ def log_monitoring(intent: str, rule_based: bool, latency_ms: float, error: bool
 GOOGLE_FORM_I18N = {
     "한국어": {
         "children_label": "💬 한마디 남기기 🎤",
-        "children_msg": "AI 친구에게 하고 싶은 말을 남겨줘!",
+        "children_msg": "AI 가이드에게 하고 싶은 말을 남겨줘!",
         "parent_label": "💬 서비스 만족도 남기기",
         "parent_msg": "소중한 의견을 들려주세요",
-        "btn_text": "� 설문지 열기",
+        "btn_text": "📄 설문지 열기",
         "done_msg": "✅ 의견 감사합니다!",
     },
     "English": {
@@ -503,7 +503,6 @@ def main():
         st.session_state["_prev_user_mode"] = user_mode
         st.session_state["_prev_language_mode"] = language_mode
 
-        st.markdown("---")
         st.markdown(ui_text.get(language_mode, ui_text["한국어"])["faq_header"])
         s1, s2 = st.columns(2)
         with s1:
