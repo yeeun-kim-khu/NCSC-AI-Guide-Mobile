@@ -1655,6 +1655,7 @@ def render_post_visit_learning(
                                     f"천체투영관 상영 영상 '{selected_kw}'에서 배우는 내용\n"
                                     f"줄거리: {desc}\n"
                                     f"학습 주제: {info.get('themes', '')}\n"
+                                )
 
                     if quiz_cache_key not in st.session_state:
                         if st.button(make_quiz_label, key=f"btn_make_quiz_{zone}_{selected_kw}"):
