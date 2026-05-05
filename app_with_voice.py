@@ -216,25 +216,17 @@ GOOGLE_FORM_I18N = {
 
 def render_children_feedback(language_mode: str = "한국어", user_mode: str = "기본"):
     ft = GOOGLE_FORM_I18N.get(language_mode, GOOGLE_FORM_I18N["한국어"])
-    if st.session_state.get("children_feedback_done"):
-        st.success(ft["done_msg"])
-        return
     st.caption(ft["children_msg"])
     st.caption(f"\n{ft['children_guardian']}")
     form_url = GOOGLE_FORM_URLS.get(language_mode, GOOGLE_FORM_URLS["한국어"])
-    if st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary"):
-        st.session_state["children_feedback_done"] = True
+    st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary")
 
 
 def render_parent_feedback(language_mode: str = "한국어", user_mode: str = "기본"):
     ft = GOOGLE_FORM_I18N.get(language_mode, GOOGLE_FORM_I18N["한국어"])
-    if st.session_state.get("parent_feedback_done"):
-        st.success(ft["done_msg"])
-        return
     st.caption(ft["parent_msg"])
     form_url = GOOGLE_FORM_URLS.get(language_mode, GOOGLE_FORM_URLS["한국어"])
-    if st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary"):
-        st.session_state["parent_feedback_done"] = True
+    st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary")
 
 
 def main():
@@ -577,8 +569,8 @@ def main():
 
         st.markdown("---")
         st.caption(t("refresh_hint"))
-        
-        if st.button(t("refresh")):
+
+        if st.button(t("refresh"), use_container_width=True, type="primary"):
             st.session_state.messages = []
             st.session_state.thread_id = uuid.uuid4().hex
             st.session_state.debug_logs = []
@@ -586,8 +578,7 @@ def main():
                 del st.session_state["tts_cache"]
             st.rerun()
 
-        st.markdown("---")
-        # 설문조사를 사이드바 맨 하단으로 이동
+        # 설문조사를 사이드바 맨 하단으로 이동 (대화 새로고침과 같은 그룹)
         if user_mode == "어린이":
             render_children_feedback(language_mode, user_mode)
         else:
@@ -840,15 +831,6 @@ def main():
 
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
                                 autoplay_audio(audio_bytes)
-
-        # 자동 피드백 트리거 (5번째 답변 후)
-        msg_count = len(st.session_state.get("messages", []))
-        if msg_count >= 10 and not st.session_state.get("feedback_auto_shown"):
-            if user_mode == "어린이":
-                render_children_feedback(language_mode, user_mode)
-            else:
-                render_parent_feedback(language_mode, user_mode)
-            st.session_state["feedback_auto_shown"] = True
 
         user_input = None
 
