@@ -215,7 +215,6 @@ def render_children_feedback(language_mode: str = "한국어", user_mode: str = 
     if st.session_state.get("children_feedback_done"):
         st.success(ft["done_msg"])
         return
-    st.markdown("---")
     st.caption(ft["children_msg"])
     form_url = GOOGLE_FORM_URLS.get(language_mode, GOOGLE_FORM_URLS["한국어"])
     if st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary"):
@@ -227,7 +226,6 @@ def render_parent_feedback(language_mode: str = "한국어", user_mode: str = "�
     if st.session_state.get("parent_feedback_done"):
         st.success(ft["done_msg"])
         return
-    st.markdown("---")
     st.caption(ft["parent_msg"])
     form_url = GOOGLE_FORM_URLS.get(language_mode, GOOGLE_FORM_URLS["한국어"])
     if st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary"):
@@ -486,6 +484,8 @@ def main():
         # debug_backtranslate = st.checkbox(t("debug_backtranslate"), value=False)
         debug_show_ko = False
         debug_backtranslate = False
+
+        st.markdown("---")
 
         auto_clear_on_change = True
 
