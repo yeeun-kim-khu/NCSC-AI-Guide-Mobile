@@ -262,6 +262,7 @@ def main():
             "voice_ask": "### 🎤 음성으로 질문하기",
             "voice_rec_fail": "음성 인식에 실패했습니다. 다시 시도해주세요.",
             "refresh": "대화 새로고침 🔄",
+            "refresh_hint": "새 주제로 질문할 때",
             "faq_header": "### ❓ 자주 묻는 질문",
             "faq_floor": "🏢 층별 안내",
             "faq_programs": "🎭 오늘의 프로그램",
@@ -308,6 +309,7 @@ def main():
             "voice_ask": "### 🎤 Ask by voice",
             "voice_rec_fail": "Voice recognition failed. Please try again.",
             "refresh": "Reset chat 🔄",
+            "refresh_hint": "Ask about a new topic",
             "faq_header": "### ❓ FAQ",
             "faq_floor": "🏢 Floor guide",
             "faq_programs": "🎭 Today's programs",
@@ -354,6 +356,7 @@ def main():
             "voice_ask": "### 🎤 音声で質問",
             "voice_rec_fail": "音声認識に失敗しました。もう一度お試しください。",
             "refresh": "会話をリセット 🔄",
+            "refresh_hint": "別の話題を聞く時",
             "faq_header": "### ❓ よくある質問",
             "faq_floor": "🏢 フロア案内",
             "faq_programs": "🎭 本日のプログラム",
@@ -400,6 +403,7 @@ def main():
             "voice_ask": "### 🎤 语音提问",
             "voice_rec_fail": "语音识别失败，请重试。",
             "refresh": "重置对话 🔄",
+            "refresh_hint": "换个话题时",
             "faq_header": "### ❓ 常见问题",
             "faq_floor": "🏢 楼层导览",
             "faq_programs": "🎭 今日节目",
@@ -568,6 +572,7 @@ def main():
                             st.rerun()
 
         st.markdown("---")
+        st.markdown(f"**{t('refresh_hint')}**")
         
         if st.button(t("refresh")):
             st.session_state.messages = []
