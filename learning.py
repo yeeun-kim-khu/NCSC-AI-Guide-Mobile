@@ -1437,6 +1437,7 @@ def render_post_visit_learning(
             "answer_prefix": "답변",
             "pick_zone_hint": "체험한 놀이터를 선택해주세요!",
             "exhibits_not_found": "의 전시물 정보를 찾을 수 없습니다.",
+            "answer_error": "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
             "principles_not_found": "과학원리를 추출할 수 없습니다.",
             "csv_not_found": "CSV 전시물 정보를 찾을 수 없습니다.",
             "expander_parent": "보호자용: 전시물 전체보기",
@@ -1472,6 +1473,7 @@ def render_post_visit_learning(
             "answer_prefix": "Answer",
             "pick_zone_hint": "Please select the zones you visited!",
             "exhibits_not_found": ": exhibit information not found.",
+            "answer_error": "An error occurred while generating the answer. Please try again.",
             "principles_not_found": "Unable to extract science principles.",
             "csv_not_found": "CSV exhibit information not found.",
             "expander_parent": "For parents: View all exhibits",
@@ -1507,6 +1509,7 @@ def render_post_visit_learning(
             "answer_prefix": "答え",
             "pick_zone_hint": "体験したゾーンを選んでください！",
             "exhibits_not_found": "の展示情報が見つかりませんでした。",
+            "answer_error": "回答の生成中にエラーが発生しました。もう一度お試しください。",
             "principles_not_found": "科学のポイントを抽出できませんでした。",
             "csv_not_found": "CSVの展示情報が見つかりませんでした。",
             "expander_parent": "保護者向け：展示一覧を見る",
@@ -1542,6 +1545,7 @@ def render_post_visit_learning(
             "answer_prefix": "回答",
             "pick_zone_hint": "请选择你体验过的区域！",
             "exhibits_not_found": "：未找到展品信息。",
+            "answer_error": "回答生成时出错了，请重试。",
             "principles_not_found": "无法提取科学要点。",
             "csv_not_found": "未找到CSV展品信息。",
             "expander_parent": "给家长：查看全部展品",
@@ -1717,15 +1721,29 @@ def render_post_visit_learning(
                     )
 
                     if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
-                        context = "\n".join([ex["content"] for ex in exhibits[:5]])
+                        context = "\n".join([ex.get("content", "") for ex in exhibits[:5] if ex.get("content")])
+                        if not context.strip():
+                            st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
+                            continue
+                        # 언어별 답변 지시
+                        lang_instruction = {
+                            "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
+                            "English": "Please answer in English, in a way that children can easily understand.",
+                            "日本語": "子どもにもわかりやすい日本語で答えてください。",
+                            "中文": "请用中文回答，让孩子容易理解。",
+                        }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
                         prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
 {context}
 
 사용자 질문: {user_question}
 
-어린이가 이해하기 쉽게 답변해주세요."""
-                        response = llm.invoke(prompt)
-                        st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+{lang_instruction}"""
+                        try:
+                            response = llm.invoke(prompt)
+                            st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+                        except Exception as e:
+                            print(f"학습 질문 답변 오류: {e}")
+                            st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
                 else:
                     st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
         else:

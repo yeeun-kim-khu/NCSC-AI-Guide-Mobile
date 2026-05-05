@@ -262,7 +262,7 @@ def main():
             "voice_ask": "### 🎤 음성으로 질문하기",
             "voice_rec_fail": "음성 인식에 실패했습니다. 다시 시도해주세요.",
             "refresh": "대화 새로고침 🔄",
-            "faq_header": "#### ❓ 자주 묻는 질문",
+            "faq_header": "### ❓ 자주 묻는 질문",
             "faq_floor": "🏢 층별 안내",
             "faq_programs": "🎭 오늘의 프로그램",
             "faq_route": "👶 연령별 동선",
@@ -308,7 +308,7 @@ def main():
             "voice_ask": "### 🎤 Ask by voice",
             "voice_rec_fail": "Voice recognition failed. Please try again.",
             "refresh": "Reset chat 🔄",
-            "faq_header": "#### ❓ FAQ",
+            "faq_header": "### ❓ FAQ",
             "faq_floor": "🏢 Floor guide",
             "faq_programs": "🎭 Today's programs",
             "faq_route": "👶 Recommended route",
@@ -354,7 +354,7 @@ def main():
             "voice_ask": "### 🎤 音声で質問",
             "voice_rec_fail": "音声認識に失敗しました。もう一度お試しください。",
             "refresh": "会話をリセット 🔄",
-            "faq_header": "#### ❓ よくある質問",
+            "faq_header": "### ❓ よくある質問",
             "faq_floor": "🏢 フロア案内",
             "faq_programs": "🎭 本日のプログラム",
             "faq_route": "👶 おすすめ動線",
@@ -400,7 +400,7 @@ def main():
             "voice_ask": "### 🎤 语音提问",
             "voice_rec_fail": "语音识别失败，请重试。",
             "refresh": "重置对话 🔄",
-            "faq_header": "#### ❓ 常见问题",
+            "faq_header": "### ❓ 常见问题",
             "faq_floor": "🏢 楼层导览",
             "faq_programs": "🎭 今日节目",
             "faq_route": "👶 推荐动线",
@@ -903,10 +903,12 @@ def main():
                             }.get(language_mode, "")
                             if _lang_override:
                                 llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
-                        messages = [
-                            {"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"},
-                            {"role": "user", "content": llm_user_input}
-                        ]
+                        messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
+                        # 이전 대화 내용 포함 (최근 10개 메시지, user/assistant만)
+                        for hist_msg in st.session_state.messages[-10:]:
+                            if hist_msg["role"] in ("user", "assistant"):
+                                messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
+                        messages.append({"role": "user", "content": llm_user_input})
                         result = agent.invoke({"messages": messages}, config=config)
                         answer = result["messages"][-1].content
                     log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
