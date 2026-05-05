@@ -860,7 +860,7 @@ def main():
                     log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
                     if language_mode == "한국어":
                         ko_original = ""
-                    st.image("assets/NCSC_character.png", width=80)
+                    st.image("assets/NCSC_character.png", width=150)
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_show_ko and ko_original:
                         st.caption(f"KO: {ko_original}")
@@ -934,7 +934,7 @@ def main():
                         elif hasattr(msg, 'content'):
                             debug_info += str(msg.content) + "\n\n"
 
-                    st.image("assets/NCSC_character.png", width=80)
+                    st.image("assets/NCSC_character.png", width=150)
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_backtranslate:
                         bt = _backtranslate_to_korean_cached(answer, language_mode)
