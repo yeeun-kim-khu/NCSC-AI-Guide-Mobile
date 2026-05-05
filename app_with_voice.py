@@ -21,10 +21,10 @@ from learning import render_post_visit_learning, _backtranslate_to_korean_cached
 # Tip: You can either create separate forms per language, or use one form with Google Forms' built-in translation.
 # To get a link: Open your Google Form → Send → copy the "Link" tab URL
 GOOGLE_FORM_URLS = {
-    "한국어": "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform",
-    "English": "https://docs.google.com/forms/d/e/YOUR_EN_FORM_ID/viewform",
-    "日本語": "https://docs.google.com/forms/d/e/YOUR_JA_FORM_ID/viewform",
-    "中文": "https://docs.google.com/forms/d/e/YOUR_ZH_FORM_ID/viewform",
+    "한국어": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
+    "English": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
+    "日本語": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
+    "中文": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
 }
 
 # RAG loading with session state persistence
@@ -177,7 +177,8 @@ def log_monitoring(intent: str, rule_based: bool, latency_ms: float, error: bool
 GOOGLE_FORM_I18N = {
     "한국어": {
         "children_label": "💬 한마디 남기기 🎤",
-        "children_msg": "AI 가이드에게 하고 싶은 말을 남겨줘!",
+        "children_msg": "소중한 의견을 들려주세요",
+        "children_guardian": "* 어린이는 보호자와 함께 작성해 주세요",
         "parent_label": "💬 서비스 만족도 남기기",
         "parent_msg": "소중한 의견을 들려주세요",
         "btn_text": "📄 설문지 열기",
@@ -185,26 +186,29 @@ GOOGLE_FORM_I18N = {
     },
     "English": {
         "children_label": "💬 Leave a message 🎤",
-        "children_msg": "Tell the AI friend what you think!",
+        "children_msg": "We'd love to hear your thoughts",
+        "children_guardian": "* Children, please fill this out with your parent or guardian",
         "parent_label": "💬 Service Feedback",
         "parent_msg": "We'd love to hear your thoughts",
         "btn_text": "📝 Open survey",
         "done_msg": "✅ Thank you for your feedback!",
     },
     "日本語": {
-        "children_label": "� メッセージを残す 🎤",
-        "children_msg": "AI友達に伝えたいことを書いてね!",
+        "children_label": "💬 メッセージを残す 🎤",
+        "children_msg": "貴重なご意見をお聞かせください",
+        "children_guardian": "* お子様は保護者の方と一緒にお書きください",
         "parent_label": "💬 サービスフィードバック",
         "parent_msg": "貴重なご意見をお聞かせください",
-        "btn_text": "� アンケートを開く",
+        "btn_text": "📝 アンケートを開く",
         "done_msg": "✅ ご意見ありがとうございます!",
     },
     "中文": {
-        "children_label": "� 留言 🎤",
-        "children_msg": "告诉AI朋友你的想法!",
+        "children_label": "💬 留言 🎤",
+        "children_msg": "期待您的宝贵意见",
+        "children_guardian": "* 儿童请在家长陪同下填写",
         "parent_label": "💬 服务反馈",
         "parent_msg": "期待您的宝贵意见",
-        "btn_text": "� 打开问卷",
+        "btn_text": "📝 打开问卷",
         "done_msg": "✅ 感谢您的反馈!",
     },
 }
@@ -216,6 +220,7 @@ def render_children_feedback(language_mode: str = "한국어", user_mode: str = 
         st.success(ft["done_msg"])
         return
     st.caption(ft["children_msg"])
+    st.caption(f"\n{ft['children_guardian']}")
     form_url = GOOGLE_FORM_URLS.get(language_mode, GOOGLE_FORM_URLS["한국어"])
     if st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary"):
         st.session_state["children_feedback_done"] = True
@@ -573,11 +578,7 @@ def main():
         st.markdown("---")
         # 설문조사를 사이드바 맨 하단으로 이동
         if user_mode == "어린이":
-            if st.button("💬 한마디 남기기 🎤", use_container_width=True, key="sidebar_feedback_child"):
-                st.session_state["show_feedback_panel"] = True
-                st.rerun()
-            if st.session_state.get("show_feedback_panel"):
-                render_children_feedback(language_mode, user_mode)
+            render_children_feedback(language_mode, user_mode)
         else:
             render_parent_feedback(language_mode, user_mode)
 
