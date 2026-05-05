@@ -28,7 +28,7 @@ GOOGLE_FORM_URLS = {
 }
 
 # RAG loading with session state persistence
-@st.cache_resource
+@st.cache_resource(ttl=3600)
 def load_rag_db():
     """Load RAG database with caching"""
     from core import initialize_vector_db
@@ -262,7 +262,7 @@ def main():
             "voice_ask": "### 🎤 음성으로 질문하기",
             "voice_rec_fail": "음성 인식에 실패했습니다. 다시 시도해주세요.",
             "refresh": "대화 새로고침 🔄",
-            "refresh_hint": "새 주제로 질문할 때",
+            "refresh_hint": "처음부터 다시 시작할 때",
             "faq_header": "### ❓ 자주 묻는 질문",
             "faq_floor": "🏢 층별 안내",
             "faq_programs": "🎭 오늘의 프로그램",
@@ -309,7 +309,7 @@ def main():
             "voice_ask": "### 🎤 Ask by voice",
             "voice_rec_fail": "Voice recognition failed. Please try again.",
             "refresh": "Reset chat 🔄",
-            "refresh_hint": "Ask about a new topic",
+            "refresh_hint": "Start a fresh conversation",
             "faq_header": "### ❓ FAQ",
             "faq_floor": "🏢 Floor guide",
             "faq_programs": "🎭 Today's programs",
@@ -356,7 +356,7 @@ def main():
             "voice_ask": "### 🎤 音声で質問",
             "voice_rec_fail": "音声認識に失敗しました。もう一度お試しください。",
             "refresh": "会話をリセット 🔄",
-            "refresh_hint": "別の話題を聞く時",
+            "refresh_hint": "最初からやり直す時",
             "faq_header": "### ❓ よくある質問",
             "faq_floor": "🏢 フロア案内",
             "faq_programs": "🎭 本日のプログラム",
@@ -403,7 +403,7 @@ def main():
             "voice_ask": "### 🎤 语音提问",
             "voice_rec_fail": "语音识别失败，请重试。",
             "refresh": "重置对话 🔄",
-            "refresh_hint": "换个话题时",
+            "refresh_hint": "重新开始对话时",
             "faq_header": "### ❓ 常见问题",
             "faq_floor": "🏢 楼层导览",
             "faq_programs": "🎭 今日节目",
@@ -455,7 +455,7 @@ def main():
     vector_db = load_rag_db()
 
     with st.sidebar:
-        st.header(t("sidebar_title"))
+        st.subheader(t("sidebar_title"))
 
         user_mode_display = st.selectbox(
             t("user_mode_label"),
@@ -515,17 +515,21 @@ def main():
         with s1:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_floor"], key="faq_floor_sidebar"):
                 st.session_state["pending_user_input"] = "층별 안내"
+                st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_programs"], key="faq_programs_sidebar"):
                 st.session_state["pending_user_input"] = "오늘의 프로그램"
                 st.session_state["pending_ui_program_buttons"] = True
+                st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
         with s2:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_route"], key="faq_route_sidebar"):
                 st.session_state["pending_user_input"] = "연령별 맞춤 동선 추천"
+                st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_exhibits"], key="faq_exhibits_sidebar"):
                 st.session_state["pending_user_input"] = "전시관 안내"
+                st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
 
         st.markdown("---")
@@ -572,7 +576,7 @@ def main():
                             st.rerun()
 
         st.markdown("---")
-        st.markdown(f"**{t('refresh_hint')}**")
+        st.caption(t("refresh_hint"))
         
         if st.button(t("refresh")):
             st.session_state.messages = []
@@ -700,6 +704,25 @@ def main():
         ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
         ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
     ])
+    
+    # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
+    if st.session_state.get("switch_to_guide_tab"):
+        try:
+            st.toast("과학관 안내 탭에서 답변을 확인하세요!", icon="🔔")
+        except Exception:
+            pass
+        st.markdown("""
+        <script>
+            (function() {
+                try {
+                    var doc = window.parent.document;
+                    var tabs = doc.querySelectorAll('[role="tab"]');
+                    if (tabs && tabs.length >= 2) { tabs[0].click(); }
+                } catch(e) {}
+            })();
+        </script>
+        """, unsafe_allow_html=True)
+        del st.session_state["switch_to_guide_tab"]
     
     with tab1:
         if "messages" not in st.session_state:
