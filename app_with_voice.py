@@ -36,6 +36,52 @@ def load_rag_db():
         vector_db = initialize_vector_db()
     return vector_db
 
+
+# ---- Google Analytics 4 (privacy-preserving) ----
+GA_MEASUREMENT_ID = "G-7VS14G0T7P"
+
+
+def _init_google_analytics() -> None:
+    """Initialize GA4 once per session with de-identification settings."""
+    if st.session_state.get("_ga_initialized"):
+        return
+    ga_script = f"""
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', '{GA_MEASUREMENT_ID}', {{
+        'anonymize_ip': true,
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false,
+        'restricted_data_processing': true,
+        'send_page_view': true,
+        'transport_type': 'beacon'
+      }});
+    </script>
+    """
+    st.markdown(ga_script, unsafe_allow_html=True)
+    st.session_state._ga_initialized = True
+
+
+def _track_ga_event(event_name: str, params: dict | None = None) -> None:
+    """Send a privacy-safe custom event to GA4. No PII or chat content."""
+    safe_params = dict(params or {})
+    for key in list(safe_params.keys()):
+        if key.lower() in ("user_id", "email", "name", "content", "message", "query"):
+            del safe_params[key]
+    params_json = json.dumps(safe_params, ensure_ascii=False)
+    script = f"""
+    <script>
+      if (typeof gtag !== 'undefined') {{
+        gtag('event', '{event_name}', {params_json});
+      }}
+    </script>
+    """
+    st.markdown(script, unsafe_allow_html=True)
+
+
 def _render_mascot_animation() -> None:
     """어린이 모드용 마스코트를 본문 글자 뒤 워터마크 배경으로 렌더링.
 
@@ -234,6 +280,9 @@ def main():
 
     # 첫 진입 시 개인정보 안내 팝업 (동의 전 본문 차단)
     _render_privacy_notice_gate()
+
+    # Google Analytics 4 (비식별 설정)
+    _init_google_analytics()
 
     if "language_mode" not in st.session_state:
         st.session_state["language_mode"] = "한국어"
@@ -844,6 +893,11 @@ def main():
                 st.markdown(user_input)
 
             intent = route_intent(user_input)
+            _track_ga_event("send_message", {
+                "intent": intent,
+                "language": language_mode,
+                "user_mode": user_mode
+            })
             lowered_input = user_input.lower()
             if any(token in lowered_input for token in ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "입장권", "qr", "정원", "1600"]):
                 st.session_state["pending_ui_reservation_links"] = True
