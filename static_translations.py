@@ -34,13 +34,13 @@ _PARKING_KR_KID = """🚗 주차 안내
 - 차로 오게 되면 근처 유료 주차장을 써야 해요.
 
 ### 🚇 지하철로 오는 방법
-- **4호선 혜화역 4번 출구** → 걸어서 약 10~15분
+- **4호선 혜화역 4번 출구** → 걸어서 약 7분
   - 혜화역에서 나오면 창경궁 방향(북쪽)으로 쭉 걸어오면 돼요!
 - **1호선 종로5가역 2번 출구** → 걸어서 약 20분
 
 ### 🚌 버스로 오는 방법
-- **창경궁 앞(홍화문)** 정류장에서 내려서 5분 정도 걸어오세요.
-- 지나가는 버스 번호(예): 101, 102, 104, 106, 107, 108, 140, 150, 160 등
+- **창경궁·서울대학교병원** 또는 **명륜3가·성대입구** 정류장에서 내려서 5분 정도 걸어오세요.
+- 간선(파랑)버스 번호(예): 100, 102, 104, 107, 140, 143, 150, 151, 160, 162, 171, 172, 272, 301, 710 등
 
 ### 🅿️ 꼭 차로 와야 한다면
 - **창경궁 주차장**(가장 가까워요) — 창경궁 홍화문 바로 옆
@@ -65,13 +65,13 @@ _PARKING_KR_DEFAULT = """🚗 주차 안내
 - 차량으로 오시는 경우 인근 유료 주차장을 이용하셔야 하며, **가능하면 대중교통 이용을 권장드립니다.**
 
 ### 🚇 지하철 (가장 빠르고 편리한 방법)
-- **4호선 혜화역 4번 출구** → 도보 약 10~15분
+- **4호선 혜화역 4번 출구** → 도보 약 7분
   - 혜화역 4번 출구로 나와 창경궁로를 따라 북쪽(창경궁 방향)으로 직진하시면 됩니다.
 - **1호선 종로5가역 2번 출구** → 도보 약 20분
 
 ### 🚌 버스
-- **창경궁 정문(홍화문)** 정류장 하차 후 도보 약 5분
-- 경유 노선(일부): 101, 102, 104, 106, 107, 108, 140, 150, 160 등
+- 정류장: **창경궁·서울대학교병원** 또는 **명륜3가·성대입구** 하차 후 도보 약 5분
+- 간선(파랑)버스: 100, 102, 104, 107, 140, 143, 150, 151, 160, 162, 171, 172, 272, 301, 710
 - 버스 도착 정보는 서울 버스 앱이나 정류장 전광판에서 확인 가능합니다.
 
 ### 🅿️ 차량 이용 시 (인근 유료 주차장)
@@ -102,13 +102,13 @@ _PARKING_EN_DEFAULT = """🚗 Parking & Transportation Guide
 - If you must drive, please use a nearby paid parking lot. **Public transportation is strongly recommended.**
 
 ### 🚇 Subway (fastest & most convenient)
-- **Line 4, Hyehwa Station (Exit 4)** → ~10–15 min walk
+- **Line 4, Hyehwa Station (Exit 4)** → ~7 min walk
   - From Exit 4, head north along Changgyeonggung-ro toward Changgyeonggung Palace.
 - **Line 1, Jongno 5-ga Station (Exit 2)** → ~20 min walk
 
-### � Bus
-- Get off at the **"Changgyeonggung Palace / Honghwamun Gate"** bus stop, then walk ~5 minutes.
-- Routes passing nearby (examples): 101, 102, 104, 106, 107, 108, 140, 150, 160.
+### 🚌 Bus
+- Bus stops: **Changgyeonggung·Seoul National University Hospital** or **Myeongnyun 3-ga·Sungdae Entrance**, then walk ~5 minutes.
+- Main line (blue) buses: 100, 102, 104, 107, 140, 143, 150, 151, 160, 162, 171, 172, 272, 301, 710
 - You can check real-time arrivals via the Seoul Bus app or the stop's LED board.
 
 ### 🅿️ If you must drive (nearby paid parking lots)
@@ -140,13 +140,13 @@ _PARKING_EN_KID = """🚗 Parking & How to Get Here
 - If you drive, you'll need a paid parking lot nearby.
 
 ### 🚇 By Subway
-- **Line 4, Hyehwa Station, Exit 4** → about a 10–15 minute walk
+- **Line 4, Hyehwa Station, Exit 4** → about a 7 minute walk
   - From the exit, walk north toward Changgyeonggung Palace.
 - **Line 1, Jongno 5-ga Station, Exit 2** → about a 20 minute walk
 
 ### 🚌 By Bus
-- Get off at the **Changgyeonggung Palace (Honghwamun Gate)** stop and walk ~5 minutes.
-- Example bus routes: 101, 102, 104, 106, 107, 108, 140, 150, 160.
+- Get off at **Changgyeonggung·Seoul National University Hospital** or **Myeongnyun 3-ga·Sungdae Entrance** stop and walk ~5 minutes.
+- Main line (blue) buses: 100, 102, 104, 107, 140, 143, 150, 151, 160, 162, 171, 172, 272, 301, 710.
 
 ### 🅿️ If You Must Drive
 - **Changgyeonggung Palace Parking Lot** (closest) — right next to Honghwamun Gate.
@@ -171,13 +171,13 @@ _PARKING_JP_DEFAULT = """🚗 駐車・交通のご案内
 - お車でお越しの場合は近隣の有料駐車場をご利用いただくことになりますので、**できるだけ公共交通機関のご利用をおすすめします。**
 
 ### 🚇 地下鉄(最も早くて便利)
-- **4号線 恵化(ヘファ)駅 4番出口** → 徒歩約 10~15分
+- **4号線 恵化(ヘファ)駅 4番出口** → 徒歩約 7分
   - 4番出口を出て、昌慶宮路(チャンギョングンロ)を北(昌慶宮方面)へ直進してください。
 - **1号線 鍾路5街駅 2番出口** → 徒歩約 20分
 
 ### 🚌 バス
-- **「昌慶宮・弘化門(ホンファムン)」** バス停で下車、徒歩約5分。
-- 通過路線(例):101、102、104、106、107、108、140、150、160 など
+- バス停:**昌慶宮・ソウル大学校病院** または **明倫3街・成大入口** で下車、徒歩約5分。
+- 幹線(青)バス:100、102、104、107、140、143、150、151、160、162、171、172、272、301、710
 - バス到着情報はソウルバスアプリや停留所の電光掲示板で確認できます。
 
 ### 🅿️ お車の場合(近隣の有料駐車場)
@@ -209,13 +209,13 @@ _PARKING_JP_KID = """🚗 ちゅうしゃ・アクセスのご案内
 - 車で来るときは近くのゆうりょうちゅうしゃ場を使ってね。
 
 ### 🚇 地下鉄で来るには
-- **4号線 恵化(ヘファ)駅 4番出口** → 歩いて約10~15分
+- **4号線 恵化(ヘファ)駅 4番出口** → 歩いて約7分
   - 駅を出たら、昌慶宮の方(北)にまっすぐ歩いてね。
 - **1号線 鍾路5街駅 2番出口** → 歩いて約20分
 
 ### 🚌 バスで来るには
-- **「昌慶宮・弘化門」** のバス停で降りて、5分くらい歩いてね。
-- 通るバスの例:101、102、104、106、107、108、140、150、160 など
+- **昌慶宮・ソウル大学校病院** または **明倫3街・成大入口** のバス停で降りて、5分くらい歩いてね。
+- 幹線(青)バス:100、102、104、107、140、143、150、151、160、162、171、172、272、301、710 など
 
 ### 🅿️ どうしても車で来るときは
 - **昌慶宮ちゅうしゃ場**(いちばん近い) — 弘化門のすぐとなり
@@ -240,13 +240,13 @@ _PARKING_ZH_DEFAULT = """🚗 停车与交通指南
 - 如自驾前来,需使用附近的收费停车场,**建议尽量使用公共交通**。
 
 ### 🚇 地铁(最快最方便)
-- **4号线 惠化(Hyehwa)站 4号出口** → 步行约 10~15 分钟
+- **4号线 惠化(Hyehwa)站 4号出口** → 步行约 7 分钟
   - 从4号出口出站,沿昌庆宫路向北(昌庆宫方向)直走即可。
 - **1号线 钟路5街站 2号出口** → 步行约 20 分钟
 
 ### 🚌 公交
-- 在 **"昌庆宫・弘化门"** 站下车,步行约 5 分钟。
-- 经过路线(部分):101、102、104、106、107、108、140、150、160 等
+- 公交站:**昌庆宫·首尔大学医院** 或 **明伦3街·成大入口** 下车,步行约 5 分钟。
+- 干线(蓝色)公交车:100、102、104、107、140、143、150、151、160、162、171、172、272、301、710
 - 可通过"首尔巴士"APP 或站台电子屏查看实时到站信息。
 
 ### 🅿️ 自驾时(附近收费停车场)
@@ -278,13 +278,13 @@ _PARKING_ZH_KID = """🚗 停车和怎么来
 - 如果开车来,就要用附近的收费停车场啦。
 
 ### 🚇 坐地铁来
-- **4号线 惠化站 4号出口** → 走路约 10~15 分钟
+- **4号线 惠化站 4号出口** → 走路约 7 分钟
   - 从4号出口出来,朝昌庆宫方向(北边)一直走就好。
 - **1号线 钟路5街站 2号出口** → 走路约 20 分钟
 
 ### 🚌 坐公交来
-- 在 **"昌庆宫・弘化门"** 站下车,再走5分钟左右。
-- 经过的公交车(例):101、102、104、106、107、108、140、150、160 等
+- 在 **昌庆宫·首尔大学医院** 或 **明伦3街·成大入口** 站下车,再走5分钟左右。
+- 干线(蓝色)公交车(例):100、102、104、107、140、143、150、151、160、162、171、172、272、301、710 等
 
 ### 🅿️ 实在要开车来
 - **昌庆宫停车场**(最近) — 就在弘化门旁边
@@ -364,21 +364,32 @@ _ADMISSION = {
 
 | Category | Individual | Group | Eligibility |
 | --- | ---: | ---: | --- |
+| Infant | Free | Free | Age 6 and under |
+| Schoolchild | Free | Free | Age 7–12 |
+| Adolescent | 1,000 KRW | N/A | Age 13–18 |
 | Adult | 2,000 KRW | N/A | Age 19+ |
-| Teen | 1,000 KRW | N/A | Age 13–18 |
-| Elementary | 1,000 KRW | 500 KRW | Age 7–12 |
-| Preschool | Free | Free | Age 6 and under |
 | Concession | Free | N/A | Seniors, persons with disabilities, etc. (proof required) |
+
+
+#### Interactive Theater
+
+| Category | Individual | Group | Eligibility |
+| --- | ---: | ---: | --- |
+| Infant | 1,000 KRW | 1,000 KRW | Age 6 and under |
+| Schoolchild | 1,000 KRW | 1,000 KRW | Age 7–12 |
+| Adolescent | 1,000 KRW | N/A | Age 13–18 |
+| Adult | 1,500 KRW | N/A | Age 19+ |
+| Concession | 1,000 KRW | N/A | Seniors, persons with disabilities, etc. (proof required) |
 
 
 #### Planetarium
 
 | Category | Individual | Group | Eligibility |
 | --- | ---: | ---: | --- |
+| Infant | 1,000 KRW | 1,000 KRW | Age 6 and under |
+| Schoolchild | 1,000 KRW | 1,000 KRW | Age 7–12 |
+| Adolescent | 1,000 KRW | N/A | Age 13–18 |
 | Adult | 1,500 KRW | N/A | Age 19+ |
-| Teen | 1,000 KRW | N/A | Age 13–18 |
-| Elementary | 1,000 KRW | 1,000 KRW | Age 7–12 |
-| Preschool | 1,000 KRW | 1,000 KRW | Age 4–6 (must be accompanied and paid by an adult guardian) |
 | Concession | 1,000 KRW | N/A | Seniors, persons with disabilities, etc. (proof required) |
 
 
@@ -396,21 +407,32 @@ _ADMISSION = {
 
 | 区分 | 個人 | 団体 | 対象 |
 | --- | ---: | ---: | --- |
-| 大人 | 2,000ウォン | 利用不可 | 19歳以上 |
-| 青少年 | 1,000ウォン | 利用不可 | 13~18歳 |
-| 小学生 | 1,000ウォン | 500ウォン | 7~12歳 |
 | 幼児 | 無料 | 無料 | 6歳以下 |
+| 小学生 | 無料 | 無料 | 7~12歳 |
+| 青少年 | 1,000ウォン | 利用不可 | 13~18歳 |
+| 大人 | 2,000ウォン | 利用不可 | 19歳以上 |
 | 優待 | 無料 | 利用不可 | シニア、障がいのある方など(証明書必要) |
+
+
+#### インタラクティブシアター
+
+| 区分 | 個人 | 団体 | 対象 |
+| --- | ---: | ---: | --- |
+| 幼児 | 1,000ウォン | 1,000ウォン | 6歳以下 |
+| 小学生 | 1,000ウォン | 1,000ウォン | 7~12歳 |
+| 青少年 | 1,000ウォン | 利用不可 | 13~18歳 |
+| 大人 | 1,500ウォン | 利用不可 | 19歳以上 |
+| 優待 | 1,000ウォン | 利用不可 | シニア、障がいのある方など(証明書必要) |
 
 
 #### プラネタリウム
 
 | 区分 | 個人 | 団体 | 対象 |
 | --- | ---: | ---: | --- |
-| 大人 | 1,500ウォン | 利用不可 | 19歳以上 |
-| 青少年 | 1,000ウォン | 利用不可 | 13~18歳 |
+| 幼児 | 1,000ウォン | 1,000ウォン | 6歳以下 |
 | 小学生 | 1,000ウォン | 1,000ウォン | 7~12歳 |
-| 幼児 | 1,000ウォン | 1,000ウォン | 4~6歳(成人保護者の同伴・お支払いが必要) |
+| 青少年 | 1,000ウォン | 利用不可 | 13~18歳 |
+| 大人 | 1,500ウォン | 利用不可 | 19歳以上 |
 | 優待 | 1,000ウォン | 利用不可 | シニア、障がいのある方など(証明書必要) |
 
 
@@ -428,21 +450,32 @@ _ADMISSION = {
 
 | 区分 | 个人 | 团体 | 对象 |
 | --- | ---: | ---: | --- |
-| 成人 | 2,000韩元 | 不可使用 | 19岁以上 |
-| 青少年 | 1,000韩元 | 不可使用 | 13~18岁 |
-| 小学生 | 1,000韩元 | 500韩元 | 7~12岁 |
 | 幼儿 | 免费 | 免费 | 6岁以下 |
+| 小学生 | 免费 | 免费 | 7~12岁 |
+| 青少年 | 1,000韩元 | 不可使用 | 13~18岁 |
+| 成人 | 2,000韩元 | 不可使用 | 19岁以上 |
 | 优待客户 | 免费 | 不可使用 | 老年人、残障人士等(需出示证明) |
+
+
+#### 互动影院
+
+| 区分 | 个人 | 团体 | 对象 |
+| --- | ---: | ---: | --- |
+| 幼儿 | 1,000韩元 | 1,000韩元 | 6岁以下 |
+| 小学生 | 1,000韩元 | 1,000韩元 | 7~12岁 |
+| 青少年 | 1,000韩元 | 不可使用 | 13~18岁 |
+| 成人 | 1,500韩元 | 不可使用 | 19岁以上 |
+| 优待客户 | 1,000韩元 | 不可使用 | 老年人、残障人士等(需出示证明) |
 
 
 #### 天体投影馆
 
 | 区分 | 个人 | 团体 | 对象 |
 | --- | ---: | ---: | --- |
-| 成人 | 1,500韩元 | 不可使用 | 19岁以上 |
-| 青少年 | 1,000韩元 | 不可使用 | 13~18岁 |
+| 幼儿 | 1,000韩元 | 1,000韩元 | 6岁以下 |
 | 小学生 | 1,000韩元 | 1,000韩元 | 7~12岁 |
-| 幼儿 | 1,000韩元 | 1,000韩元 | 4~6岁(须有成人监护人同行及支付) |
+| 青少年 | 1,000韩元 | 不可使用 | 13~18岁 |
+| 成人 | 1,500韩元 | 不可使用 | 19岁以上 |
 | 优待客户 | 1,000韩元 | 不可使用 | 老年人、残障人士等(需出示证明) |
 
 
@@ -600,16 +633,21 @@ _FLOOR_GUIDE = {
 - AI Zone / Thinking Zone / Activity Zone
 - Planetarium, Science Theater
 - Kids Classroom
-- Baby Care / Lounge, First Aid
+- Little Library
+- Baby Care, First Aid Room
 - Lockers
-- Stroller & wheelchair rental (ID required)
-- Little Library Garden (toward Changgyeonggung)
+- Stroller Parking
+- Exhibition Hall Exit, Info, Entrance/Exit
+- Representative Exhibits: Check your strength!, My Heart Goes Boom!, If You Want to Save the Earth, Journey of a Water Drop
 
 ## 2F
-- Light Zone / Discovery Zone / Observation Zone
-- Creative Classroom
-- Lounge (with baby play area)
-- Lockers
+- Exploration Zone, Discovery Zone
+- Science Classroom, Interactive Theater
+- Lounge, Toddler Zone
+- Restroom, Elevator
+- Stroller Parking, Lockers
+- Exhibition Hall Entrance, Info
+- Representative Exhibits: Dino Tunnel, Energy Forest, Rock Cooking Class, Colorful Shadow Play
 
 ## 3F (Rooftop)
 - Sky Courtyard
@@ -629,18 +667,22 @@ _FLOOR_GUIDE = {
 ## 1階
 - チケット売り場・案内デスク
 - AIゾーン / 考えるゾーン / アクティブゾーン
-- プラネタリウム、サイエンスシアター
+- プラネタリウム、科学劇場
 - こども教室
-- 授乳室・乳幼児休憩室、医務室
-- ロッカー
-- ベビーカー・車いすの貸出(身分証提示)
-- ドリームツリーガーデン(昌慶宮方面)
+- ドリームツリー広場
+- 授乳室、救護室
+- コインロッカー
+- ベビーカー置き場
+- 展示場出口、案内、出入り口
+- 代表展示物: よいしょ! 力比べ、心臓がドキドキする!、地球を救うには、水滴の旅
 
 ## 2階
-- ひかりゾーン / 探究ゾーン / かんさつゾーン
-- 創作教室
-- 休憩室(乳幼児プレイエリア併設)
-- ロッカー
+- トイレ、エレベーター
+- ベビーカー置き場、コインロッカー
+- 展示場入口、案内
+- 創作教室、インタラクティブシアター
+- 休憩室、ベビー休憩室
+- 代表展示物: ダイノトンネル、エネルギーの森、岩石料理教室、色とりどりの色の影
 
 ## 3階(屋上)
 - 空のひろば
@@ -660,18 +702,22 @@ _FLOOR_GUIDE = {
 ## 1层
 - 售票处・咨询台
 - AI区 / 思考区 / 行动区
-- 天体投影馆、科学剧场
+- 天文馆、科学剧场
 - 儿童教室
-- 哺乳室・婴幼儿休息室、医务室
+- 梦想之树乐园
+- 母婴室、医务室
 - 储物柜
-- 婴儿车・轮椅租借(需出示身份证)
-- 梦想树花园(昌庆宫方向)
+- 婴儿车保管箱
+- 展厅出口、咨询台、入口
+- 代表展示物: 加油!比一比力量, 心脏扑通扑通!, 拯救地球, 水滴的旅行
 
 ## 2层
-- 光区 / 探究区 / 观察区
-- 创作教室
-- 休息室(含婴幼儿游乐区)
-- 储物柜
+- 卫生间、电梯
+- 婴儿车保管箱、储物柜
+- 展厅入口、咨询台
+- 创作教室、互动影院
+- 休息室、咿咿呀呀乐园
+- 代表展示物: 恐龙隧道、能量森林、岩石料理教室、五彩缤纷的影子
 
 ## 3层(屋顶)
 - 天空广场
@@ -719,18 +765,19 @@ _FACILITY = {
         "default": """Facility & amenity guide. 😊
 
 ## 1F
-- **First Aid**: 1F / over-the-counter medicines available
-- **Baby Care / Family Lounge**: 1F / sink, microwave, sofas, etc.
+- **First Aid Room**: 1F / facility for treating minor injuries
+- **Baby Care**: 1F / space for infant feeding and care
 - **Lockers**: 1F, near the ticket office
+- **Stroller Parking**: 1F
 - **Stroller & wheelchair rental**: at the 1F ticket office / information desk (ID required)
   - Inventory: 5 strollers / 2 wheelchairs
   - Stroller use: for children 36 months and under
 - **Tickets & Information Desk**: 1F
-- **Little Library Garden**: 1F (toward Changgyeonggung)
+- **Little Library**: 1F (toward Changgyeonggung)
 
 ## 2F
 - **Lounge**: 2F
-- **Baby Play Area**: inside the 2F Lounge
+- **Toddler Zone**: inside the 2F Lounge
 - **Lockers**: inside the 2F Lounge
 
 ## 3F (Rooftop)
@@ -743,19 +790,20 @@ Main number for all inquiries: **02-3668-3350**""",
         "default": """施設・サービスのご案内です。😊
 
 ## 1階
-- **医務室**:1階 / 一般用医薬品を常備
-- **授乳室・乳幼児休憩室**:1階 / シンク、電子レンジ、ソファあり
-- **ロッカー**:1階 チケット売り場付近
+- **救護室**:1階 / 軽傷の治療施設
+- **授乳室**:1階 / 乳幼児の授乳・ケアスペース
+- **コインロッカー**:1階 チケット売り場付近
+- **ベビーカー置き場**:1階
 - **ベビーカー・車いすの貸出**:1階 チケット売り場・案内デスクにて身分証提示後にご利用ください
   - 台数:ベビーカー5台 / 車いす2台
   - ベビーカー利用:36か月以下
 - **チケット売り場・案内デスク**:1階
-- **ドリームツリーガーデン**:1階(昌慶宮方面)
+- **ドリームツリー広場**:1階(昌慶宮方面)
 
 ## 2階
 - **休憩室**:2階
-- **乳幼児プレイエリア**:2階 休憩室内
-- **ロッカー**:2階 休憩室内
+- **ベビー休憩室**:2階 休憩室内
+- **コインロッカー**:2階 休憩室内
 
 ## 3階(屋上)
 - **空のひろば**:3階 屋上
@@ -767,18 +815,19 @@ Main number for all inquiries: **02-3668-3350**""",
         "default": """便利设施一览。😊
 
 ## 1层
-- **医务室**:1层 / 备有常用药品
-- **哺乳室・婴幼儿休息室**:1层 / 配有水槽、微波炉、沙发等
+- **医务室**:1层 / 轻伤治疗设施
+- **母婴室**:1层 / 喂母乳及照料婴儿的场所
 - **储物柜**:1层 售票处附近
+- **婴儿车保管箱**:1层
 - **婴儿车・轮椅租借**:1层 售票处・咨询台凭身份证租借
   - 数量:婴儿车5辆 / 轮椅2辆
   - 婴儿车适用:36个月以下幼儿
 - **售票处・咨询台**:1层
-- **梦想树花园**:1层(昌庆宫方向)
+- **梦想之树乐园**:1层(昌庆宫方向)
 
 ## 2层
 - **休息室**:2层
-- **婴幼儿游乐区**:2层 休息室内
+- **咿咿呀呀乐园**:2层 休息室内
 - **储物柜**:2层 休息室内
 
 ## 3层(屋顶)
@@ -798,7 +847,7 @@ _EXHIBIT_GUIDE = {
 
 - **AI놀이터(1층)**: AI 미션을 해결하며 인공지능을 쉽고 재미있게 체험하는 공간이에요.
 - **행동놀이터(1층)**: 몸을 움직이며 건강/운동 원리를 체험하는 활동형 전시관이에요.
-- **생각놀이터(1층)**: 어린이들의 생각을 키우는 전시관(2026년 5월 개관 예정)입니다.
+- **생각놀이터(1층)**: 어린이들의 생각을 키우는 전시관입니다。
 - **빛놀이터(2층)**: 빛/숲/생태 주제를 미디어 인터랙션으로 몰입 체험하는 공간이에요.
 - **탐구놀이터(2층)**: 생활 속 도구·에너지·기계 원리를 직접 만지고 실험하며 탐구해요.
 - **관찰놀이터(2층)**: 공룡/화석/표본 등을 관찰하며 과학적 사고력을 키우는 공간이에요.
@@ -810,8 +859,8 @@ _EXHIBIT_GUIDE = {
 
 - **AI Zone (1F)**: Solve AI missions and experience artificial intelligence in an easy, fun way.
 - **Activity Zone (1F)**: An active exhibit where children move their bodies to learn about health and movement.
-- **Thinking Zone (1F)**: A zone designed to grow children's thinking skills (opening May 2026).
-- **Light Zone (2F)**: An immersive media-interactive space themed around light, forests, and ecology.
+- **Thinking Zone (1F)**: A zone designed to grow children's thinking skills.
+- **Exploration Zone (2F)**: An immersive media-interactive space themed around light, forests, and ecology.
 - **Discovery Zone (2F)**: Touch and experiment with everyday tools, energy, and mechanical principles.
 - **Observation Zone (2F)**: Observe dinosaurs, fossils, and specimens to grow scientific thinking.
 
@@ -822,8 +871,8 @@ Tell me a **specific zone name** (e.g., "What's in the AI Zone?") and I can give
 
 - **AIゾーン(1階)**:AIミッションを解きながら、人工知能を楽しく体験できる空間です。
 - **アクティブゾーン(1階)**:体を動かしながら健康・運動の原理を体験する活動型展示館です。
-- **考えるゾーン(1階)**:こどもたちの思考力を育てる展示館(2026年5月オープン予定)です。
-- **ひかりゾーン(2階)**:光・森・生態をテーマに、メディアインタラクションで没入体験できる空間です。
+- **考えるゾーン(1階)**:こどもたちの思考力を育てる展示館です。
+- **探索ゾーン(2階)**:光・森・生態をテーマに、メディアインタラクションで没入体験できる空間です。
 - **探究ゾーン(2階)**:身の回りの道具・エネルギー・機械の原理を、実際に触って実験しながら探究します。
 - **かんさつゾーン(2階)**:恐竜・化石・標本などを観察しながら科学的思考を育てる空間です。
 
@@ -834,8 +883,8 @@ Tell me a **specific zone name** (e.g., "What's in the AI Zone?") and I can give
 
 - **AI区(1层)**:通过解决AI任务,轻松有趣地体验人工智能。
 - **行动区(1层)**:通过身体活动来体验健康与运动原理的活动型展馆。
-- **思考区(1层)**:培养儿童思考力的展馆(预计 2026 年 5 月开馆)。
-- **光区(2层)**:以光、森林、生态为主题,通过媒体互动进行沉浸式体验的空间。
+- **思考区(1层)**:培养儿童思考力的展馆。
+- **探索区(2层)**:以光、森林、生态为主题,通过媒体互动进行沉浸式体验的空间。
 - **探究区(2层)**:亲手触摸和实验,探究生活中的工具、能源与机械原理。
 - **观察区(2层)**:观察恐龙、化石、标本等,培养科学思维的空间。
 
@@ -969,11 +1018,9 @@ _RESERVATION = {
 ## General
 - Daily admission is limited to **1,600 visitors**.
 
-## (Important) Adult / teen visitors without children
-- **Adults and teens not accompanied by a child (elementary age or younger)** must arrange their visit in advance.
-- If you wish to visit, please send a visit application form to the staff email **at least 3 days before** your visit.
-  - Email: **proxima11@korea.kr**
-  - The visit-application form is attached to the "Adult & Teen Visitor Entry Guide" notice on the website.
+## (Important) Entry Restriction
+- **Adults and adolescents who do not accompany a child (children 12 years old and under)** are not allowed to enter.
+- **Children under the age of 9 without a guardian** are not allowed to enter.
 
 ## Reservation share by program (summary)
 - **Permanent Exhibition Hall**
@@ -1007,11 +1054,9 @@ Tell me your situation (individual / group / education, visit date, party size, 
 ## 基本案内
 - 1日の入場人数は **最大 1,600名** に制限されています。
 
-## (重要)こども同伴のない大人・青少年の方へ
-- **こども(身体年齢が小学生以下)を同伴しない大人・青少年**の方は、観覧のため事前協議が必要です。
-- ご訪問希望の場合、**訪問の3日前まで**に訪問申請書を担当者メールにお送りください。
-  - 担当者メール:**proxima11@korea.kr**
-  - 訪問申請書の様式は、「成人および青少年来館者入場案内」のお知らせの添付ファイルをご確認ください。
+## (重要)注意事項
+- **子供(当該年度の年齢が12歳以下)を同伴していない大人および青少年**の入場は制限されます。
+- **保護者不同伴の9歳以下のお子様**の入場は制限されます。
 
 ## 体験別の事前予約割合(要約)
 - **常設展示館**
@@ -1045,11 +1090,9 @@ Tell me your situation (individual / group / education, visit date, party size, 
 ## 基本信息
 - 每日入场人数限制为 **最多 1,600 人**。
 
-## (重要)未带儿童的成人/青少年访客
-- **未带儿童(身体年龄在小学生及以下)的成人和青少年**需事先协商方可参观。
-- 如希望来访,请**在来访前3天**将来访申请书发送至工作人员邮箱。
-  - 工作人员邮箱:**proxima11@korea.kr**
-  - 来访申请书样式请参考"成人及青少年访客入场指南"公告中的附件。
+## (重要)注意事项
+- **没有陪伴儿童(虚岁12岁以下)的成人或青少年**谢绝入场。
+- **没有保护者陪同的9岁以下儿童**谢绝入场。
 
 ## 各项目预约比例(摘要)
 - **常设展览馆**
@@ -1165,6 +1208,52 @@ def get_operating_hours_text(language: str, mode: str, ko_status: str) -> Option
 
 
 # ============================================================================
+# NOTICES (Visitor Rules)
+# ============================================================================
+_NOTICES = {
+    "한국어": {
+        "default": """안내사항을 정리해드릴게요. 📋
+
+- 주차장이 없습니다.
+- 어린이와 함께 방문해주세요.
+- 관람 및 체험 시간을 준수해주세요.
+- 체험 안내사항을 꼼꼼히 읽어주세요.
+- 소지품을 잘 챙겨주세요.
+- 음식은 휴게실에서 드세요.""",
+    },
+    "English": {
+        "default": """Here are the visitor notices. 📋
+
+- There is no parking lot.
+- Please visit with children.
+- Please adhere to the viewing and experience times.
+- Please read the experience instructions carefully.
+- Please take care of your belongings.
+- Please eat food in the lounge.""",
+    },
+    "日本語": {
+        "default": """来館時の注意事項です。📋
+
+- 駐車場はありません。
+- 子供と一緒にご来館ください。
+- 観覧・体験時間を守ってください。
+- 体験案内をよくお読みください。
+- 持ち物にはお気をつけください。
+- 飲食は休憩室でお願いします。""",
+    },
+    "中文": {
+        "default": """Visitor notices。📋
+
+- 没有停车场。
+- 请带儿童一起来。
+- 请遵守参观和体验时间。
+- 请仔细阅读体验须知。
+- 请保管好随身物品。
+- 请在休息室用餐。""",
+    },
+}
+
+# ============================================================================
 # 메인 사전
 # ============================================================================
 STATIC_FAQ_ANSWERS = {
@@ -1173,6 +1262,7 @@ STATIC_FAQ_ANSWERS = {
     "planetarium_timetable": _PLANETARIUM_TIMETABLE,
     "floor_guide": _FLOOR_GUIDE,
     "facility_amenities": _FACILITY,
+    "notices": _NOTICES,
     # exhibit_guide / route_by_age 는 core.py 에서 풍부화되어 정적 번역과 길이가 크게 어긋남.
     # → 의도적으로 dict 에서 제외하여 translate_answer_cached(LLM, 24h 캐시) 로 폴백.
     # _EXHIBIT_GUIDE / _ROUTE_BY_AGE 는 보존하지만 사용되지 않음 (향후 4언어 동기화 시 재활성화).

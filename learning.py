@@ -14,6 +14,13 @@ from core import initialize_vector_db, load_zone_rows_from_csv
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
+def _queue_ga_event(event_name: str, params: dict | None = None) -> None:
+    """Queue a GA event to be sent on the next render (safe before st.rerun)."""
+    if "_ga_event_queue" not in st.session_state:
+        st.session_state._ga_event_queue = []
+    st.session_state._ga_event_queue.append({"name": event_name, "params": dict(params or {})})
+
+
 def _safe_secret_get(key: str, default: str = "") -> str:
     try:
         return st.secrets.get(key, default)
@@ -1665,6 +1672,7 @@ def render_post_visit_learning(
 
                     if quiz_cache_key not in st.session_state:
                         if st.button(make_quiz_label, key=f"btn_make_quiz_{zone}_{selected_kw}"):
+                            _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                             with st.spinner(text["quiz_generating"]):
                                 quiz = generate_quiz(
                                     zone, selected_kw, llm, language_mode,
@@ -1721,6 +1729,7 @@ def render_post_visit_learning(
                     )
 
                     if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
+                        _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
                         context = "\n".join([ex.get("content", "") for ex in exhibits[:5] if ex.get("content")])
                         if not context.strip():
                             st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
@@ -1796,6 +1805,7 @@ def render_post_visit_learning(
             st.warning(please_select_text)
 
         if selected_zones_story and st.button(text["generate_story"]):
+            _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
             with st.spinner(text["story_generating"]):
                 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
                 
@@ -1843,6 +1853,7 @@ def render_post_visit_learning(
                         st.markdown(bt_story)
 
             if st.button(text["to_audiobook"]):
+                _queue_ga_event("audiobook_converted", {"language": language_mode})
                 with st.spinner(text["audiobook_generating"]):
                     audio_bytes = text_to_audiobook(
                         st.session_state[story_state_key],

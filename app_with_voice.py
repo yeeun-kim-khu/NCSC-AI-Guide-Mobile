@@ -82,6 +82,21 @@ def _track_ga_event(event_name: str, params: dict | None = None) -> None:
     st.markdown(script, unsafe_allow_html=True)
 
 
+def _queue_ga_event(event_name: str, params: dict | None = None) -> None:
+    """Queue a GA event to be sent on the next render (safe before st.rerun)."""
+    if "_ga_event_queue" not in st.session_state:
+        st.session_state._ga_event_queue = []
+    st.session_state._ga_event_queue.append({"name": event_name, "params": dict(params or {})})
+
+
+def _flush_ga_events() -> None:
+    """Send all queued GA events. Call at the top of main()."""
+    events = st.session_state.get("_ga_event_queue", [])
+    for ev in events:
+        _track_ga_event(ev["name"], ev["params"])
+    st.session_state._ga_event_queue = []
+
+
 def _render_mascot_animation() -> None:
     """어린이 모드용 마스코트를 본문 글자 뒤 워터마크 배경으로 렌더링.
 
@@ -169,6 +184,7 @@ def _render_privacy_notice_gate() -> None:
 
     def _ack() -> None:
         st.session_state["privacy_notice_acknowledged"] = True
+        _queue_ga_event("privacy_consent", {"language": st.session_state.get("language_mode", "한국어")})
         st.rerun()
 
     # st.dialog (Streamlit 1.31+) 우선 사용
@@ -283,6 +299,7 @@ def main():
 
     # Google Analytics 4 (비식별 설정)
     _init_google_analytics()
+    _flush_ga_events()
 
     if "language_mode" not in st.session_state:
         st.session_state["language_mode"] = "한국어"
@@ -555,20 +572,24 @@ def main():
         s1, s2 = st.columns(2)
         with s1:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_floor"], key="faq_floor_sidebar"):
+                _queue_ga_event("faq_button_click", {"category": "floor", "language": language_mode})
                 st.session_state["pending_user_input"] = "층별 안내"
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_programs"], key="faq_programs_sidebar"):
+                _queue_ga_event("faq_button_click", {"category": "programs", "language": language_mode})
                 st.session_state["pending_user_input"] = "오늘의 프로그램"
                 st.session_state["pending_ui_program_buttons"] = True
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
         with s2:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_route"], key="faq_route_sidebar"):
+                _queue_ga_event("faq_button_click", {"category": "route", "language": language_mode})
                 st.session_state["pending_user_input"] = "연령별 맞춤 동선 추천"
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_exhibits"], key="faq_exhibits_sidebar"):
+                _queue_ga_event("faq_button_click", {"category": "exhibits", "language": language_mode})
                 st.session_state["pending_user_input"] = "전시관 안내"
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
@@ -608,6 +629,7 @@ def main():
                     with st.spinner("음성을 텍스트로 변환 중..."):
                         recognized = speech_to_text(audio_bytes)
                         if recognized:
+                            _queue_ga_event("voice_input_used", {"language": language_mode})
                             st.session_state["pending_user_input"] = recognized
                             st.session_state["audio_recorder_key"] = uuid.uuid4().hex
                             st.rerun()
@@ -620,6 +642,7 @@ def main():
         st.caption(t("refresh_hint"))
 
         if st.button(t("refresh"), use_container_width=True, type="primary"):
+            _queue_ga_event("chat_reset", {"language": language_mode, "user_mode": user_mode})
             st.session_state.messages = []
             st.session_state.thread_id = uuid.uuid4().hex
             st.session_state.debug_logs = []
@@ -723,19 +746,23 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_floor"], key="quick_floor"):
+                _queue_ga_event("quick_menu_click", {"category": "floor", "language": language_mode})
                 st.session_state["pending_user_input"] = "층별 안내"
                 st.rerun()
         with c2:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_route"], key="quick_route"):
+                _queue_ga_event("quick_menu_click", {"category": "route", "language": language_mode})
                 st.session_state["pending_user_input"] = "연령별 맞춤 동선 추천"
                 st.rerun()
         with c3:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_programs"], key="quick_programs"):
+                _queue_ga_event("quick_menu_click", {"category": "programs", "language": language_mode})
                 st.session_state["pending_user_input"] = "오늘의 프로그램"
                 st.session_state["pending_ui_program_buttons"] = True
                 st.rerun()
         with c4:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_exhibits"], key="quick_exhibits"):
+                _queue_ga_event("quick_menu_click", {"category": "exhibits", "language": language_mode})
                 st.session_state["pending_user_input"] = "전시관 안내"
                 st.rerun()
     
@@ -802,6 +829,7 @@ def main():
             audio_bytes = st.session_state.tts_cache.get(cache_key)
             if audio_bytes:
                 if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_inline_{cache_key}"):
+                    _queue_ga_event("tts_played", {"language": language_mode})
                     autoplay_audio(audio_bytes)
                 st.audio(audio_bytes, format="audio/mp3")
 
@@ -823,22 +851,50 @@ def main():
                             if bt:
                                 st.caption(f"BT: {bt}")
 
+                    # 답변 품질 피드백 (👍/👎)
+                    if msg["role"] == "assistant" and not msg.get("feedback_given"):
+                        fb_cols = st.columns([1, 1, 10])
+                        with fb_cols[0]:
+                            if st.button("👍", key=f"fb_up_{i}_{msg.get('intent', 'unknown')}"):
+                                _queue_ga_event("answer_feedback", {
+                                    "feedback": "positive",
+                                    "intent": msg.get("intent", ""),
+                                    "answer_type": msg.get("answer_type", ""),
+                                    "language": language_mode
+                                })
+                                msg["feedback_given"] = True
+                                st.rerun()
+                        with fb_cols[1]:
+                            if st.button("👎", key=f"fb_down_{i}_{msg.get('intent', 'unknown')}"):
+                                _queue_ga_event("answer_feedback", {
+                                    "feedback": "negative",
+                                    "intent": msg.get("intent", ""),
+                                    "answer_type": msg.get("answer_type", ""),
+                                    "language": language_mode
+                                })
+                                msg["feedback_given"] = True
+                                st.rerun()
+
                     if msg.get("ui") == "program_buttons":
                         col1, col2, col3, col4 = st.columns(4)
                         with col1:
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["program_explain"], key=f"prog_explain_{i}"):
+                                _queue_ga_event("program_detail_click", {"category": "explanation", "language": language_mode})
                                 st.session_state["pending_user_input"] = "전시해설 자세히 알려줘"
                                 st.rerun()
                         with col2:
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["program_show"], key=f"prog_show_{i}"):
+                                _queue_ga_event("program_detail_click", {"category": "science_show", "language": language_mode})
                                 st.session_state["pending_user_input"] = "과학쇼 자세히 알려줘"
                                 st.rerun()
                         with col3:
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["program_planet"], key=f"prog_planet_{i}"):
+                                _queue_ga_event("program_detail_click", {"category": "planetarium", "language": language_mode})
                                 st.session_state["pending_user_input"] = "천체투영관 자세히 알려줘"
                                 st.rerun()
                         with col4:
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["program_light"], key=f"prog_light_{i}"):
+                                _queue_ga_event("program_detail_click", {"category": "light_zone", "language": language_mode})
                                 st.session_state["pending_user_input"] = "빛놀이터 자세히 알려줘"
                                 st.rerun()
 
@@ -879,6 +935,7 @@ def main():
                             st.audio(audio_bytes, format="audio/mp3")
 
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
+                                _queue_ga_event("tts_played", {"language": language_mode})
                                 autoplay_audio(audio_bytes)
 
         user_input = None
@@ -912,6 +969,12 @@ def main():
                             intent, user_input, user_mode, language_mode
                         )
                     log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
+                    _track_ga_event("answer_delivered", {
+                        "intent": intent,
+                        "answer_type": "rule_based",
+                        "language": language_mode,
+                        "user_mode": user_mode
+                    })
                     if language_mode == "한국어":
                         ko_original = ""
                     st.markdown(answer)
@@ -978,6 +1041,12 @@ def main():
                         result = agent.invoke({"messages": messages}, config=config)
                         answer = result["messages"][-1].content
                     log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
+                    _track_ga_event("answer_delivered", {
+                        "intent": intent,
+                        "answer_type": "llm_rag",
+                        "language": language_mode,
+                        "user_mode": user_mode
+                    })
 
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_backtranslate:
@@ -1000,7 +1069,8 @@ def main():
                                 st.text(debug_info)
                         st.session_state.messages.append({"role": "debug", "content": debug_info})
 
-            assistant_msg = {"role": "assistant", "content": answer}
+            answer_type = "rule_based" if intent in ["notice", "basic"] else "llm_rag"
+            assistant_msg = {"role": "assistant", "content": answer, "intent": intent, "answer_type": answer_type}
             assistant_msg["tts_autoplayed"] = False
             # 디버그용 KO 원문 캐시 (rule-based 경로에서만 채워짐)
             if intent in ["notice", "basic"] and language_mode != "한국어":
