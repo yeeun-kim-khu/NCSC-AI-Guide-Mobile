@@ -40,7 +40,7 @@ ZONE_INFO = {
     "생각놀이터": {
         "floor": "1층",
         "description": "생각하는 힘을 키워요",
-        "has_data": False
+        "has_data": True
     },
     "행동놀이터": {
         "floor": "1층",
@@ -65,7 +65,7 @@ ZONE_INFO = {
     "빛놀이터": {
         "floor": "2층",
         "description": "빛의 신비를 체험해요",
-        "has_data": False
+        "has_data": True
     }
 }
 

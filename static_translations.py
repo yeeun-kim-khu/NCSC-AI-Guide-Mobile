@@ -641,7 +641,7 @@ _FLOOR_GUIDE = {
 - Representative Exhibits: Check your strength!, My Heart Goes Boom!, If You Want to Save the Earth, Journey of a Water Drop
 
 ## 2F
-- Exploration Zone, Discovery Zone
+- Interactive Theater, Discovery Zone
 - Science Classroom, Interactive Theater
 - Lounge, Toddler Zone
 - Restroom, Elevator
@@ -860,7 +860,7 @@ _EXHIBIT_GUIDE = {
 - **AI Zone (1F)**: Solve AI missions and experience artificial intelligence in an easy, fun way.
 - **Activity Zone (1F)**: An active exhibit where children move their bodies to learn about health and movement.
 - **Thinking Zone (1F)**: A zone designed to grow children's thinking skills.
-- **Exploration Zone (2F)**: An immersive media-interactive space themed around light, forests, and ecology.
+- **Interactive Theater (2F)**: An immersive real-media exhibition themed around temperate forests where you become an Eco Creator and build a beautiful future of nature.
 - **Discovery Zone (2F)**: Touch and experiment with everyday tools, energy, and mechanical principles.
 - **Observation Zone (2F)**: Observe dinosaurs, fossils, and specimens to grow scientific thinking.
 
@@ -918,7 +918,7 @@ _ROUTE_BY_AGE = {
         "default": """Age-based recommended routes. 😊
 
 - Ages 4–7 (Preschool)
-  - Start with short, hands-on experiences. The Light Zone and movement-based exhibits work great.
+  - Start with short, hands-on experiences. The Interactive Theater and movement-based exhibits work great.
   - Don't forget breaks at the lounge or baby-care room between sessions.
 
 - Lower Elementary
@@ -936,7 +936,7 @@ Tell me your child's age (e.g., 6 years old, 2nd grade, 5th grade) and current l
         "default": """年齢別おすすめ動線です。😊
 
 - 4~7歳(幼児)
-  - 短時間集中型の体験を中心に、「ひかりゾーン」や体を動かす展示をまずおすすめします。
+  - 短時間集中型の体験を中心に、「探索ゾーン」や体を動かす展示をまずおすすめします。
   - 合間に休憩(休憩室/授乳室)も忘れずに。
 
 - 小学生(低学年)
@@ -954,7 +954,7 @@ Tell me your child's age (e.g., 6 years old, 2nd grade, 5th grade) and current l
         "default": """按年龄推荐的参观路线。😊
 
 - 4~7岁(幼儿)
-  - 以短时集中的体验为主,推荐先去"光区"或可以活动身体的展馆。
+  - 以短时集中的体验为主,推荐先去"探索区"或可以活动身体的展馆。
   - 中途别忘了去休息室/哺乳室休息一下。
 
 - 小学低年级
