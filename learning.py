@@ -1552,7 +1552,7 @@ def render_post_visit_learning(
             "subtitle": "다시 만나 반가워요! 즐거웠던 놀이터에서의 추억을 함께 나누어 보아요!",
             "floor1": "1층 놀이터",
             "floor2": "2층 놀이터",
-            "tab_quiz": "퀴즈타임 & 질문해요",
+            "tab_quiz": "퀴즈타임 & 궁금해요",
             "tab_story": "과학동화",
             "tab1": "퀴즈/질문",
             "tab2": "과학동화",
@@ -1795,13 +1795,27 @@ def render_post_visit_learning(
 
                 if selected_kw:
                     # 퀴즈와 질문 선택 버튼
+                    quiz_button_label = {
+                        "한국어": "🎯 퀴즈타임!",
+                        "English": "🎯 Quiz Time!",
+                        "日本語": "🎯 クイズタイム!",
+                        "中文": "🎯 测验时间!",
+                    }.get(language_mode, "🎯 Quiz Time!")
+                    
+                    question_button_label = {
+                        "한국어": "❓ 궁금해요!",
+                        "English": "❓ I'm curious!",
+                        "日本語": "❓ 気になる!",
+                        "中文": "❓ 我很好奇!",
+                    }.get(language_mode, "❓ I'm curious!")
+                    
                     col1, col2 = st.columns(2)
                     with col1:
-                        if st.button("🎯 퀴즈타임!", key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary", use_container_width=True):
+                        if st.button(quiz_button_label, key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary", use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "quiz"
                             st.rerun()
                     with col2:
-                        if st.button("❓ 궁금해요!", key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary", use_container_width=True):
+                        if st.button(question_button_label, key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary", use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "question"
                             st.rerun()
                     
@@ -1890,9 +1904,21 @@ def render_post_visit_learning(
                     
                     elif current_mode == "question":
                         # 질문 모드
-                        st.markdown("#### ❓ 질문하기")
+                        question_mode_label = {
+                            "한국어": "#### ❓ 질문하기",
+                            "English": "#### ❓ Ask a question",
+                            "日本語": "#### ❓ 質問する",
+                            "中文": "#### ❓ 提问",
+                        }.get(language_mode, "#### ❓ Ask a question")
+                        st.markdown(question_mode_label)
+                        question_placeholder = {
+                            "한국어": f"{_display_zone_name(zone)}의 {selected_disp}에 대해 질문하세요",
+                            "English": f"Ask a question about {selected_disp} in {_display_zone_name(zone)}",
+                            "日本語": f"{_display_zone_name(zone)}の{selected_disp}について質問してください",
+                            "中文": f"请询问关于{_display_zone_name(zone)}的{selected_disp}的问题",
+                        }.get(language_mode, f"Ask a question about {selected_disp} in {_display_zone_name(zone)}")
                         user_question = st.text_input(
-                            f"{_display_zone_name(zone)}의 {selected_disp}에 대해 질문하세요",
+                            question_placeholder,
                             key=f"question_input_{zone}_{selected_kw}"
                         )
 
@@ -1929,7 +1955,32 @@ def render_post_visit_learning(
 {lang_instruction}"""
                                 try:
                                     response = llm.invoke(prompt)
-                                    st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+                                    answer_text = response.content
+                                    st.markdown(f"**{text['answer_prefix']}:** {answer_text}")
+                                    
+                                    # 음성 듣기 버튼
+                                    listen_answer_label = {
+                                        "한국어": "🔊 답변 듣기",
+                                        "English": "🔊 Listen to answer",
+                                        "日本語": "🔊 答えを聞く",
+                                        "中文": "🔊 听答案",
+                                    }.get(language_mode, "🔊 Listen to answer")
+                                    
+                                    answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{user_question}"
+                                    if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}"):
+                                        try:
+                                            audio = client.audio.speech.create(
+                                                model="tts-1",
+                                                voice="alloy",
+                                                input=answer_text
+                                            )
+                                            st.session_state[answer_audio_key] = audio.content
+                                        except Exception as e:
+                                            print(f"답변 TTS 오류: {e}")
+                                            st.warning("음성 생성 실패")
+                                    
+                                    if answer_audio_key in st.session_state:
+                                        st.audio(st.session_state[answer_audio_key], format="audio/mp3")
                                 except Exception as e:
                                     print(f"학습 질문 답변 오류: {e}")
                                     st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
