@@ -2457,10 +2457,10 @@ def load_zone_rows_from_csv(zone_name: str):
     def load_csv_safe(path: str) -> pd.DataFrame:
         for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
             try:
-                return pd.read_csv(path, encoding=enc)
+                return pd.read_csv(path, encoding=enc, engine="python")
             except Exception:
                 continue
-        return pd.read_csv(path)
+        return pd.read_csv(path, engine="python")
 
     # Use absolute path for Streamlit Cloud compatibility
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -2489,7 +2489,7 @@ def load_zone_rows_from_csv(zone_name: str):
     synonyms = {
         "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
         "content": ["content", "내용", "설명", "전시내용", "본문"],
-        "detail": ["detail", "세부설명", "상세", "상세설명"],
+        "detail": ["detail", "세부 설명", "세부설명", "상세", "상세설명"],
         "category": ["category", "분류", "카테고리", "구분"],
     }
     cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
