@@ -394,6 +394,7 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
         if st.button(clear_label, key=f"kw_clear_{zone_name}_{mode}"):
             st.session_state[state_key] = ""
             selected_kw = ""
+            st.rerun()
 
     return selected_kw, selected_disp
 
@@ -1385,7 +1386,7 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
     if (not eleven_key) and hasattr(st, "secrets"):
         eleven_key = _safe_secret_get("ELEVENLABS_API_KEY", "")
 
-    eleven_voice_id = os.environ.get("ELEVENLABS_VOICE_ID")
+    eleven_voice_id = voice_override or os.environ.get("ELEVENLABS_VOICE_ID")
     if (not eleven_voice_id) and hasattr(st, "secrets"):
         eleven_voice_id = _safe_secret_get("ELEVENLABS_VOICE_ID", "")
     if not eleven_voice_id:
@@ -1844,6 +1845,15 @@ def render_post_visit_learning(
                                     if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
                                        k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
                                         st.session_state.pop(k, None)
+                                # 즉시 새 퀴즈 생성
+                                _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
+                                with st.spinner(text["quiz_generating"]):
+                                    quiz = generate_quiz(
+                                        zone, selected_kw, llm, language_mode,
+                                        variation_seed=st.session_state[seed_key],
+                                        exhibit_detail=quiz_detail,
+                                    )
+                                    st.session_state[quiz_cache_key] = quiz or {}
                                 st.rerun()
                         else:
                             st.warning("퀴즈 생성에 실패했습니다.")
@@ -1861,8 +1871,15 @@ def render_post_visit_learning(
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
+                
+                # 전시물이 없으면 RAG에서 가져오기 시도
+                if not zone_rows:
+                    with st.spinner(text["generating"]):
+                        zone_rows = get_zone_exhibits_from_rag(zone, vector_db)
+                
                 _render_zone_header(zone, zone_rows, mode="question", llm=llm)
 
+                # RAG에서 전시물 가져오기 (질문 컨텍스트용)
                 with st.spinner(text["generating"]):
                     exhibits = get_zone_exhibits_from_rag(zone, vector_db)
 
@@ -2015,9 +2032,14 @@ def render_post_visit_learning(
             if st.button(text["to_audiobook"]):
                 _queue_ga_event("audiobook_converted", {"language": language_mode})
                 with st.spinner(text["audiobook_generating"]):
+                    # 사용자가 설정한 음성 아이디가 있으면 전달
+                    custom_voice_id = os.environ.get("ELEVENLABS_VOICE_ID")
+                    if (not custom_voice_id) and hasattr(st, "secrets"):
+                        custom_voice_id = _safe_secret_get("ELEVENLABS_VOICE_ID", "")
                     audio_bytes = text_to_audiobook(
                         st.session_state[story_state_key],
                         language_mode,
+                        voice_override=custom_voice_id,
                     )
                     if audio_bytes:
                         st.session_state[audio_state_key] = audio_bytes
