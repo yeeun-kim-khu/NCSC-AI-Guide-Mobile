@@ -781,6 +781,12 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 이번 스타일: {angle}
 랜덤 시드: {variation_seed} (매번 다른 질문!)
 
+[중요: 전시물 정보 활용]
+- 제공된 전시물 정보의 모든 내용을 활용하세요.
+- 하나의 전시물에 여러 내용이 포함된 경우, 각 내용을 개별적으로 다루어 다양한 질문을 만드세요.
+- 같은 전시물이라도 다른 측면(원인, 결과, 비교, 예시 등)에서 질문하세요.
+- 매번 완전히 다른 질문과 선택지를 만드세요.
+
 {quality_rules_ko}
 
 [출력 형식 — JSON만, 다른 텍스트 금지]
@@ -801,6 +807,12 @@ Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glos
 {detail_section}
 Style this time: {angle}
 Random seed: {variation_seed}
+
+[IMPORTANT: Use all exhibit information]
+- Utilize ALL content from the provided exhibit information.
+- If an exhibit contains multiple pieces of content, address each individually to create diverse questions.
+- Ask about different aspects (cause, result, comparison, example) of the same exhibit.
+- Create completely different questions and options each time.
 
 {quality_rules_en}
 
