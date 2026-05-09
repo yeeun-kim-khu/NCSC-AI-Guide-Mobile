@@ -185,7 +185,7 @@ def _render_privacy_notice_gate() -> None:
     def _ack() -> None:
         st.session_state["privacy_notice_acknowledged"] = True
         _queue_ga_event("privacy_consent", {"language": st.session_state.get("language_mode", "한국어")})
-        # st.rerun() 제거 - 전체 페이지 다시 로딩 방지
+        st.rerun()
 
     # st.dialog (Streamlit 1.31+) 우선 사용
     if hasattr(st, "dialog"):
