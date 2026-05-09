@@ -935,9 +935,58 @@ def _get_ui_glossary_rules(language_mode: str) -> str:
     )
 
 
+def get_random_story_dna(language="한국어"):
+    """매 호출마다 완전히 다른 이야기 DNA 생성"""
+    import random
+
+    genres = {
+        "한국어": [
+            {"name": "미스터리 탐정",  "desc": "수수께끼를 푸는 탐정 어드벤처. 단서를 하나씩 모아 진실에 다가간다."},
+            {"name": "우정 성장담",    "desc": "혼자서는 못 하지만 함께라면 가능한 이야기. 우정이 과학적 발견을 이끈다."},
+            {"name": "구출 작전",      "desc": "소중한 누군가(또는 무언가)를 구하기 위해 모험을 떠난다."},
+            {"name": "발명가 이야기",  "desc": "실패를 거듭하며 결국 놀라운 발명을 완성하는 이야기."},
+            {"name": "시간 여행",      "desc": "과거 또는 미래로 이동해 과학 원리로 문제를 해결한다."},
+            {"name": "작은 영웅",      "desc": "아무도 주목하지 않던 평범한 아이가 세상을 구한다."},
+            {"name": "꿈속 모험",      "desc": "잠들었다가 깨어난 꿈속 세계. 현실과 꿈의 경계가 흐릿하다."},
+            {"name": "변신 이야기",    "desc": "주인공이 다른 존재로 변해 완전히 다른 시각으로 세상을 본다."},
+        ]
+    }
+
+    conflicts = {
+        "한국어": [
+            "소중한 것이 사라졌다 (친구, 색깔, 소리, 빛)",
+            "세상이 멈춰버렸다 (시간, 움직임, 계절)",
+            "누군가 거짓말을 하고 있다 (진실을 밝혀야 한다)",
+            "둘 중 하나를 선택해야 한다 (포기할 수 없는 두 가지)",
+            "점점 작아지거나 커지고 있다 (몸이 변하고 있다)",
+            "혼자 남겨졌다 (동반자를 찾아야 한다)",
+            "기억이 사라지고 있다 (원리를 기억해내야만 한다)",
+        ]
+    }
+
+    world_textures = {
+        "한국어": [
+            "모든 것이 거꾸로인 세상 (중력, 색깔, 소리가 뒤집혀 있다)",
+            "밤에만 보이는 세상 (낮에는 투명해진다)",
+            "감정이 날씨로 나타나는 세상 (기쁘면 햇살, 슬프면 비)",
+            "크기가 없는 세상 (모든 것이 주인공 마음대로 커지고 작아진다)",
+            "소리로 만들어진 세상 (건물도 나무도 모두 음악으로 되어있다)",
+            "그림자가 살아있는 세상 (그림자가 따로 움직인다)",
+        ]
+    }
+
+    lang = language if language in genres else "한국어"
+    chosen_genre    = random.choice(genres[lang])
+    chosen_conflict = random.choice(conflicts[lang])
+    chosen_texture  = random.choice(world_textures[lang])
+
+    return chosen_genre, chosen_conflict, chosen_texture
+
+
 def generate_science_story(zone_name, exhibits, principles, language="한국어"):
     """방문한 놀이터 기반 과학동화 생성 (상상력 강화 버전)"""
     import random
+    genre, conflict, texture = get_random_story_dna(language)
 
     # 랜덤 주인공 이름 선택
     protagonist_names = {
@@ -1123,8 +1172,11 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 - 빈 줄
 - 본문: 6~8개 문단, 각 문단 2~3문장
 - 총 분량: 약 1000~1400자
-""",
 
+[분위기 태그]
+동화 본문의 마지막 줄에 반드시 아래 형식으로 분위기 태그를 출력하세요:
+MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 중 하나만
+""",
         "English": f"""You are a tender, imaginative science story writer for children aged 6–8.{glossary_rules}
 
 [Ingredients — all from REAL CSV data. You MUST use them; do not ignore.]
@@ -1171,8 +1223,12 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 - Line 1: **Bold title**
 - Blank line
 - Body: 6–8 paragraphs, each 2–3 sentences
-- Length: about 1000–1400 characters total, child-friendly.""",
+- Length: about 1000–1400 characters total, child-friendly.
 
+[Mood Tag]
+At the very last line of the story, output a mood tag in this exact format:
+MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only one
+""",
         "日本語": f"""あなたは6〜8歳の子ども向けに、やさしくて楽しい科学の物語を書く作家です。{glossary_rules}
 
 [素材 — すべて実在のCSVデータ。必ず活用すること]
@@ -1219,8 +1275,12 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 - 1行目: **太字のタイトル**
 - 空行
 - 本文: 6〜8段落、各段落2〜3文
-- 分量: 全体で約1000〜1400字""",
+- 分量: 全体で約1000〜1400字
 
+[雰囲気タグ]
+物語の最後の行に、必ず以下の形式で雰囲気タグを出力してください:
+MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
+""",
         "中文": f"""你是一位为6〜8岁儿童写作的温柔而充满想象力的科学故事作家。{glossary_rules}
 
 [素材 — 全部来自真实CSV数据，必须使用]
@@ -1267,10 +1327,16 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 - 第1行: **加粗标题**
 - 空行
 - 正文: 6〜8段，每段2〜3句
-- 全文约1000〜1400字""",
+- 全文约1000〜1400字
+
+[氛围标签]
+在故事正文的最后一行，必须按以下格式输出氛围标签：
+MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 只能选一个
+""",
     }
 
-    prompt = language_prompts.get(language, language_prompts["한국어"])
+    dna_header = f"[이번 동화의 DNA — 매번 다름]\n▶ 장르: {genre['name']} — {genre['desc']}\n▶ 위기: {conflict}\n▶ 세계관 질감: {texture}\n\n위 DNA와 과학 재료를 조합해서, 매번 완전히 다른 이야기를 써주세요. 장르와 위기가 이야기 구조를 결정하고, 과학 현상은 그 위기를 해결하는 열쇠가 됩니다.\n\n"
+    prompt = dna_header + language_prompts.get(language, language_prompts["한국어"])
 
     try:
         llm = ChatOpenAI(model="gpt-4o", temperature=0.8)
@@ -1279,6 +1345,37 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
     except Exception as e:
         print(f"동화 생성 오류: {e}")
         return None
+
+
+BGM_MAP = {
+    "wonder":    ["bgm/children_jazz_fantasy.mp3",  "bgm/magical_wonderland.mp3"],
+    "adventure": ["bgm/cartoon_funny_music.mp3",     "bgm/epic_adventure_theme.mp3"],
+    "mystery":   ["bgm/little_star_lullaby.mp3",     "bgm/mystery_night_whisper.mp3"],
+    "cozy":      ["bgm/happy_happy_background.mp3",  "bgm/warm_cozy_fireplace.mp3"],
+    "exciting":  ["bgm/comedy_music_free.mp3",       "bgm/energetic_run_play.mp3"],
+    "melancholy":["bgm/magical_christmas.mp3",        "bgm/soft_piano_dream.mp3"],
+}
+
+
+def parse_mood_and_bgm(llm_response: str) -> tuple[str, str, str]:
+    """응답에서 MOOD_TAG를 파싱하고 스토리+BGM 경로 반환"""
+    import random
+    story = llm_response
+    mood = "wonder"
+    bgm_path = random.choice(BGM_MAP["wonder"])
+
+    for line in llm_response.splitlines():
+        if line.strip().startswith("MOOD_TAG:"):
+            raw_mood = line.split(":", 1)[1].strip().lower()
+            # 괄호나 기타 문자 제거
+            raw_mood = raw_mood.strip("[]—\-\ ")
+            if raw_mood in BGM_MAP:
+                mood = raw_mood
+                bgm_path = random.choice(BGM_MAP[mood])
+            story = llm_response.replace(line, "").strip()
+            break
+
+    return story, mood, bgm_path
 
 
 def text_to_audiobook(story_text, language="한국어", voice_override=None, speed_override=None):
@@ -1897,7 +1994,15 @@ def render_post_visit_learning(
                 bt = _backtranslate_to_korean_cached(text["story_generated"], language_mode)
                 if bt:
                     st.caption(f"BT: {bt}")
-            st.markdown(st.session_state[story_state_key])
+            raw_story = st.session_state[story_state_key]
+            story_text, mood, bgm_path = parse_mood_and_bgm(raw_story)
+            st.markdown(story_text)
+            if os.path.exists(bgm_path):
+                with open(bgm_path, "rb") as f:
+                    st.audio(f.read(), format="audio/mp3")
+                st.caption(f"🎵 {mood} 테마 배경음악")
+            else:
+                st.caption(f"🎵 {mood} 테마 배경음악 ({os.path.basename(bgm_path)} 파일 없음 — bgm/ 폴더에 음악 파일을 넣어주세요)")
             # 동화는 외국어 모드에서 직접 그 언어로 생성되므로 별도의 KO 원문이 없음.
             # → debug_show_korean 또는 debug_backtranslate 가 켜지면 한국어 역번역본을 노출 (사실상 동일한 자료).
             if language_mode != "한국어" and (debug_show_korean or debug_backtranslate):
