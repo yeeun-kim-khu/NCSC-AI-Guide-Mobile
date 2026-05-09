@@ -2482,6 +2482,15 @@ def load_zone_rows_from_csv(zone_name: str):
     df = load_csv_safe(path)
     print(f"CSV loaded, shape: {df.shape}, columns: {df.columns.tolist()}")
     df.columns = [str(c).strip() for c in df.columns]
+    
+    # 첫 번째 줄이 헤더가 아닌 경우 처리
+    if len(df.columns) == 1 or any(str(c).startswith("(") for c in df.columns):
+        try:
+            df = pd.read_csv(path, encoding="utf-8-sig", skiprows=1, engine="python")
+            df.columns = [str(c).strip() for c in df.columns]
+            print(f"CSV reloaded with skiprows=1, shape: {df.shape}, columns: {df.columns.tolist()}")
+        except Exception as e:
+            print(f"CSV reload with skiprows failed: {e}")
 
     # 먼저 한글/동의어 컬럼명을 표준 영어로 매핑 (has_expected 체크 전에 실행)
     rename_map = {}
