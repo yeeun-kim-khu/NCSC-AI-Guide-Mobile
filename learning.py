@@ -1552,8 +1552,7 @@ def render_post_visit_learning(
             "subtitle": "다시 만나 반가워요! 즐거웠던 놀이터에서의 추억을 함께 나누어 보아요!",
             "floor1": "1층 놀이터",
             "floor2": "2층 놀이터",
-            "tab_quiz": "퀴즈타임",
-            "tab_question": "궁금해요!",
+            "tab_quiz": "퀴즈타임 & 질문해요",
             "tab_story": "과학동화",
             "tab1": "퀴즈/질문",
             "tab2": "과학동화",
@@ -1723,34 +1722,35 @@ def render_post_visit_learning(
     def _render_zone_selector(key_prefix: str):
         st.markdown(f"#### {text['select_zone']}")
 
-        # 놀이터 하나씩만 선택 가능 (radio 버튼)
-        all_zones = list(ZONE_INFO.keys())
-        zone_options = [_display_zone_name(z) for z in all_zones]
-        
-        selected_index = None
-        for i, zone in enumerate(all_zones):
-            if st.session_state.get(f"selected_zone_{key_prefix}") == zone:
-                selected_index = i
-                break
-        
-        selected_zone_name = st.radio(
-            "놀이터 선택",
-            zone_options,
-            index=selected_index if selected_index is not None else 0,
-            key=f"{key_prefix}_zone_radio"
-        )
-        
-        # 선택된 놀이터 이름으로 zone 찾기
-        selected_zone = None
-        for zone, info in ZONE_INFO.items():
-            if _display_zone_name(zone) == selected_zone_name:
-                selected_zone = zone
-                break
-        
-        if selected_zone:
-            st.session_state[f"selected_zone_{key_prefix}"] = selected_zone
-        
-        return [selected_zone] if selected_zone else []
+        selected = []
+
+        st.markdown(f"##### {text['floor1']}")
+        col1, col2 = st.columns(2)
+
+        floor1_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"]
+        for i, zone in enumerate(floor1_zones):
+            col = col1 if i % 2 == 0 else col2
+            with col:
+                disabled = not ZONE_INFO[zone]["has_data"]
+                zone_disp = _display_zone_name(zone)
+                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
+                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
+                    selected.append(zone)
+
+        st.markdown(f"##### {text['floor2']}")
+        col3, col4 = st.columns(2)
+
+        floor2_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
+        for i, zone in enumerate(floor2_zones):
+            col = col3 if i % 2 == 0 else col4
+            with col:
+                disabled = not ZONE_INFO[zone]["has_data"]
+                zone_disp = _display_zone_name(zone)
+                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
+                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
+                    selected.append(zone)
+
+        return selected
 
     def _render_zone_header(zone: str, zone_rows, mode: str = "exhibits", llm=None):
         st.markdown(f"#### 🎯 {_display_zone_name(zone)}")
@@ -1797,11 +1797,11 @@ def render_post_visit_learning(
                     # 퀴즈와 질문 선택 버튼
                     col1, col2 = st.columns(2)
                     with col1:
-                        if st.button("🎯 퀴즈 풀기", key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary"):
+                        if st.button("🎯 퀴즈타임!", key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary", use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "quiz"
                             st.rerun()
                     with col2:
-                        if st.button("❓ 질문하기", key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary"):
+                        if st.button("❓ 궁금해요!", key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary", use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "question"
                             st.rerun()
                     

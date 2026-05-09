@@ -2457,21 +2457,30 @@ def load_zone_rows_from_csv(zone_name: str):
     def load_csv_safe(path: str) -> pd.DataFrame:
         for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
             try:
+                print(f"Trying encoding: {enc} for {path}")
                 return pd.read_csv(path, encoding=enc, engine="python")
-            except Exception:
+            except Exception as e:
+                print(f"Encoding {enc} failed: {e}")
                 continue
+        print(f"All encodings failed for {path}")
         return pd.read_csv(path, engine="python")
 
     # Use absolute path for Streamlit Cloud compatibility
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "data")
+    print(f"Loading CSV for {zone_name} from {data_dir}")
     csv_files = glob.glob(os.path.join(data_dir, "*.csv"))
+    print(f"Found CSV files: {csv_files}")
     target_files = [p for p in csv_files if os.path.basename(p) == f"{zone_name}.csv"]
+    print(f"Target files for {zone_name}: {target_files}")
     if not target_files:
+        print(f"No CSV file found for {zone_name}")
         return []
 
     path = target_files[0]
+    print(f"Loading CSV from: {path}")
     df = load_csv_safe(path)
+    print(f"CSV loaded, shape: {df.shape}, columns: {df.columns.tolist()}")
     df.columns = [str(c).strip() for c in df.columns]
 
     # 먼저 한글/동의어 컬럼명을 표준 영어로 매핑 (has_expected 체크 전에 실행)
