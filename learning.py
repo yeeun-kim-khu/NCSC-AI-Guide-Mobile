@@ -234,6 +234,7 @@ CSV 요약:
         prompt = f"""You are a keyword editor for young kids and parents.
 
 From the exhibit CSV snippets for '{zone_name}', extract 8-12 big, easy keywords.
+Include specific items (foods, objects, materials) mentioned in the exhibits.
 Avoid particles/verbs/very generic words.
 Return a single line, comma-separated.
 
@@ -652,19 +653,19 @@ def extract_principles_from_exhibits(exhibits, llm):
     
     exhibit_text = "\n\n".join([ex["content"] for ex in exhibits[:10]])
     
-    prompt = f"""다음 전시물들에서 핵심 과학원리를 추출해주세요.
+    prompt = f"""다음 전시물들에서 핵심 과학원리와 구체적인 항목(음식, 물건, 재료 등)을 추출해주세요.
 
 전시물 정보:
 {exhibit_text}
 
 **응답 형식:**
-1. 먼저 과학원리 목록을 쉼표로 구분하여 한 줄로 작성하세요.
-   예: 빛의 굴절, 소리의 진동, 전기회로, 자기장, 에너지 변환
+1. 먼저 과학원리와 구체적인 항목 목록을 쉼표로 구분하여 한 줄로 작성하세요.
+   예: 운동과 뇌, 달걀, 브로콜리, 시큼치, 혈류 증가
 
 2. 그 다음 각 원리에 대한 설명을 작성하세요.
    - 원리명: 간단한 설명 (1-2문장)
 
-최대 5-7개의 핵심 원리를 추출하세요."""
+최대 5-7개의 핵심 원리와 구체적인 항목을 추출하세요."""
 
     try:
         response = llm.invoke(prompt)
@@ -786,6 +787,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 - 하나의 전시물에 여러 내용이 포함된 경우, 각 내용을 개별적으로 다루어 다양한 질문을 만드세요.
 - 같은 전시물이라도 다른 측면(원인, 결과, 비교, 예시 등)에서 질문하세요.
 - 매번 완전히 다른 질문과 선택지를 만드세요.
+- CSV 정보만 사용하세요. 외부 지식을 추가하지 마세요.
 
 {quality_rules_ko}
 
@@ -813,6 +815,7 @@ Random seed: {variation_seed}
 - If an exhibit contains multiple pieces of content, address each individually to create diverse questions.
 - Ask about different aspects (cause, result, comparison, example) of the same exhibit.
 - Create completely different questions and options each time.
+- Use ONLY CSV information. Do not add external knowledge.
 
 {quality_rules_en}
 
