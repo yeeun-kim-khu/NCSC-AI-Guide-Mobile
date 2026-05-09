@@ -1821,17 +1821,19 @@ def render_post_visit_learning(
                         "中文": "❓ 我很好奇!",
                     }.get(language_mode, "❓ I'm curious!")
                     
+                    current_mode = st.session_state.get(f"mode_{zone}_{selected_kw}", "quiz")
+                    
                     col1, col2 = st.columns(2)
                     with col1:
-                        if st.button(quiz_button_label, key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary", use_container_width=True):
+                        quiz_type = "primary" if current_mode == "quiz" else "secondary"
+                        if st.button(quiz_button_label, key=f"btn_quiz_mode_{zone}_{selected_kw}", type=quiz_type, use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "quiz"
                             st.rerun()
                     with col2:
-                        if st.button(question_button_label, key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary", use_container_width=True):
+                        question_type = "primary" if current_mode == "question" else "secondary"
+                        if st.button(question_button_label, key=f"btn_question_mode_{zone}_{selected_kw}", type=question_type, use_container_width=True):
                             st.session_state[f"mode_{zone}_{selected_kw}"] = "question"
                             st.rerun()
-                    
-                    current_mode = st.session_state.get(f"mode_{zone}_{selected_kw}", "quiz")
                     
                     if current_mode == "quiz":
                         seed_key = f"quiz_seed_{zone}_{selected_kw}"
