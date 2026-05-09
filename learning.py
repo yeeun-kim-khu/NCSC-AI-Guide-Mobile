@@ -1348,12 +1348,12 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 只能选一个
 
 
 BGM_MAP = {
-    "wonder":    ["bgm/children_jazz_fantasy.mp3",  "bgm/magical_wonderland.mp3"],
-    "adventure": ["bgm/cartoon_funny_music.mp3",     "bgm/epic_adventure_theme.mp3"],
-    "mystery":   ["bgm/little_star_lullaby.mp3",     "bgm/mystery_night_whisper.mp3"],
-    "cozy":      ["bgm/happy_happy_background.mp3",  "bgm/warm_cozy_fireplace.mp3"],
-    "exciting":  ["bgm/comedy_music_free.mp3",       "bgm/energetic_run_play.mp3"],
-    "melancholy":["bgm/magical_christmas.mp3",        "bgm/soft_piano_dream.mp3"],
+    "wonder":     ["bgm/magical_wonderland.mp3",  "bgm/happy_happy_background.mp3"],
+    "adventure":  ["bgm/epic_adventure_theme.mp3", "bgm/cartoon_funny_music.mp3"],
+    "mystery":    ["bgm/magical_christmas.mp3",   "bgm/soft_piano_dream.mp3"],
+    "cozy":       ["bgm/happy_happy_background.mp3", "bgm/soft_piano_dream.mp3"],
+    "exciting":   ["bgm/energetic_run_play.mp3",   "bgm/cartoon_funny_music.mp3"],
+    "melancholy": ["bgm/soft_piano_dream.mp3",    "bgm/magical_christmas.mp3"],
 }
 
 
