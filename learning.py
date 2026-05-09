@@ -1075,7 +1075,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     world = random.choice(_world_candidates)
 
     language_prompts = {
-        "한국어": f"""너는 6~8세 어린이를 위한 감성적이고 신비로운 과학동화 작가야.
+        "한국어": f"""너는 6~8세 어린이를 위한 감성적이고 재미있는 과학동화 작가야.
 
 [재료 — 모두 CSV 실제 데이터 기반. 반드시 활용할 것]
 ※ 이 동화는 실재하는 전시관('{zone_name}')을 모티브로 한다. 아래 재료를 무시하고 무관한 설정을 만들지 말 것.
@@ -1089,7 +1089,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 ▶ 주인공: 호기심 많은 어린이 '{protagonist}'
 ▶ 동반자(주인공과 대화하는 단짝): {companion}
 
-▶ ★ 핵심 마법 아이템(아래 전시물 2개를 마법 도구/비밀 장치로 변형해서만 사용. 다른 마법 도구 발명 금지):
+▶ ★ 핵심 과학 도구(아래 전시물 2개를 과학 도구/비밀 장치로 변형해서만 사용. 다른 도구 발명 금지):
 {exhibit_summary}
 
 ▶ 분위기 재료(이야기 곳곳에 풍경/소품/등장 생물로 자연스럽게 흩뿌려 등장시킬 것 — 최소 2개 이상 본문에 포함):
@@ -1100,10 +1100,10 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 [개연성 규칙 — 매우 중요]
 1) **간결한 3막 구조 (총 6~8문단) — 과학 현상이 이야기의 굵직한 축**:
    - 1막(2문단): {protagonist}의 평범한 순간 → **'{principles_text}'와 직접 관련된 이상한 사건** 발생 → "왜 이런 일이?"라는 명확한 하나의 목표.
-   - 2막(3~4문단): [핵심 마법 아이템]을 시도 → **현상이 작게 한 번 일어남** (감각 묘사) → 한 번 실패 → 동반자와 함께 같은 현상이 반복되는 걸 관찰하며 **"어? 항상 이렇게 되네?"라는 패턴을 발견**.
+   - 2막(3~4문단): [핵심 과학 도구]를 시도 → **현상이 작게 한 번 일어남** (감각 묘사) → 한 번 실패 → 동반자와 함께 같은 현상이 반복되는 걸 관찰하며 **"어? 항상 이렇게 되네?"라는 패턴을 발견**.
    - 3막(1~2문단): **★ 아하 순간**: 주인공이 큰 소리로 깨달음 — "아, 이게 바로 **{principles_text}**(이)구나!" 그 원리를 이용해 위기를 해결 → 1막의 수수께끼도 같은 원리로 설명 → 따뜻한 마무리.
 2) **인과 사슬**: 모든 장면은 "~ 때문에 → ~이 일어났다" 순서. 갑자기 새 도구·새 능력 등장 금지.
-3) **아이템 제한**: 위에 적힌 [핵심 마법 아이템]만으로 위기를 해결. 새로운 마법/도구를 즉석에서 만들지 말 것.
+3) **아이템 제한**: 위에 적힌 [핵심 과학 도구]만으로 위기를 해결. 새로운 도구를 즉석에서 만들지 말 것.
 4) **목표·이름 일관성**: 1막의 목표는 끝까지 유지, 주인공 '{protagonist}'와 동반자 이름은 절대 바뀌지 않음.
 5) **★ 과학 표현 규칙 (가장 중요) — "흘려들어도 원리가 박히게"**:
    - **1~2막에서는 용어 사용 금지**. 현상만 감각으로 묘사: "밀자 거꾸로 튕겨 나왔어요", "빛이 둥근 물방울을 지나자 무지개로 흩어졌어요".
@@ -1124,7 +1124,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 - 총 분량: 약 1000~1400자
 """,
 
-        "English": f"""You are a tender, imaginative science-fairytale writer for children aged 6–8.{glossary_rules}
+        "English": f"""You are a tender, imaginative science story writer for children aged 6–8.{glossary_rules}
 
 [Ingredients — all from REAL CSV data. You MUST use them; do not ignore.]
 This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unrelated settings.
@@ -1138,7 +1138,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 ▶ Protagonist: a curious child named '{protagonist}'
 ▶ Companion (talks with the hero, NOT an encyclopedia): {companion}
 
-▶ ★ Core magical items (use ONLY these two; transform them into magical tools — DO NOT invent other magic items):
+▶ ★ Core science tools (use ONLY these two; transform them into science tools — DO NOT invent other tools):
 {exhibit_summary}
 
 ▶ Atmosphere ingredients (sprinkle these as scenery / creatures / props throughout the story — include at least 2 in the body):
@@ -1149,10 +1149,10 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 [Coherence Rules — CRITICAL]
 1) **Compact 3-act structure (6–8 paragraphs total) — the phenomenon is the BACKBONE of the plot**:
    - Act 1 (2 paragraphs): '{protagonist}'s ordinary moment → a strange event **directly tied to '{principles_text}'** → ONE clear goal ("I must find out why…").
-   - Act 2 (3–4 paragraphs): try the magic item → **the phenomenon happens in a small way** (sensory description) → fail once → observe the SAME phenomenon repeating with the companion → "Huh, it always happens this way!" — a clear PATTERN.
+   - Act 2 (3–4 paragraphs): try the science tool → **the phenomenon happens in a small way** (sensory description) → fail once → observe the SAME phenomenon repeating with the companion → "Huh, it always happens this way!" — a clear PATTERN.
    - Act 3 (1–2 paragraphs): **★ Aha moment**: the hero exclaims aloud — "Oh! This is **{principles_text}**!" Use that idea to solve the crisis → the Act-1 mystery is explained by the same idea → warm wrap-up.
 2) **Cause-and-effect**: every scene "because of X → Y happened". No sudden new tools or powers.
-3) **Item discipline**: only the listed magical items solve the crisis. No improvising new magic.
+3) **Item discipline**: only the listed science tools solve the crisis. No improvising new tools.
 4) **Goal & name consistency**: Act-1 goal persists; '{protagonist}' and the companion's name NEVER change.
 5) **★ Science visibility (most important) — "even a half-listening child must catch it"**:
    - **In Acts 1–2 do NOT use the term**. Show the phenomenon through senses only ("when she pushed it, it bounced back the other way").
@@ -1172,7 +1172,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 - Body: 6–8 paragraphs, each 2–3 sentences
 - Length: about 1000–1400 characters total, child-friendly.""",
 
-        "日本語": f"""あなたは6〜8歳の子ども向けに、やさしくて不思議な科学ファンタジーを書く作家です。{glossary_rules}
+        "日本語": f"""あなたは6〜8歳の子ども向けに、やさしくて楽しい科学の物語を書く作家です。{glossary_rules}
 
 [素材 — すべて実在のCSVデータ。必ず活用すること]
 この物語は実在の展示館（『{zone_name}』）をモチーフにする。下の素材を無視して無関係な設定を作らない。
@@ -1186,7 +1186,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 ▶ 主人公: 好奇心いっぱいの子ども『{protagonist}』
 ▶ 相棒（主人公と話す友だち。百科事典ではない）: {companion}
 
-▶ ★ 中心となる魔法のアイテム（下の2点だけを魔法の道具に変えて使う。他の魔法は作らない）:
+▶ ★ 中心となる科学の道具（下の2点だけを科学の道具に変えて使う。他の道具は作らない）:
 {exhibit_summary}
 
 ▶ 雰囲気の素材（物語の風景・生き物・小道具として自然に散りばめる — 本文に最低2つ以上登場させる）:
@@ -1197,10 +1197,10 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 [筋の通った物語ルール — 最重要]
 1) **コンパクトな3幕構成（全6〜8段落）— 科学現象が物語の太い背骨になる**:
    - 第1幕（2段落）: 『{protagonist}』のふつうの瞬間 → **『{principles_text}』に直接かかわる不思議な出来事** → 「どうして？」というひとつの明確な目的。
-   - 第2幕（3〜4段落）: 魔法のアイテムを試す → **現象が小さく一度起きる**（五感で描写） → 一度失敗 → 相棒と一緒に同じ現象が繰り返されるのを観察 → 「あれ？いつもこうなる！」と **パターンに気づく**。
+   - 第2幕（3〜4段落）: 科学の道具を試す → **現象が小さく一度起きる**（五感で描写） → 一度失敗 → 相棒と一緒に同じ現象が繰り返されるのを観察 → 「あれ？いつもこうなる！」と **パターンに気づく**。
    - 第3幕（1〜2段落）: **★ アハ体験**: 主人公が声をあげて気づく — 「あっ、これって **{principles_text}** だ！」その考えで危機を解決 → 1幕の謎も同じ考えで説明 → あたたかい締めくくり。
 2) **因果のつながり**: すべての場面は「〜だから → 〜になった」の順。突然の新しい道具・能力は禁止。
-3) **アイテム制限**: 上に挙げた魔法のアイテムだけで危機を解決すること。即興で別の魔法を作らない。
+3) **アイテム制限**: 上に挙げた科学の道具だけで危機を解決すること。即興で別の道具を作らない。
 4) **目的と名前の一貫性**: 1幕の目的は最後まで保たれ、『{protagonist}』と相棒の名前は最後まで変えない。
 5) **★ 科学の見える化（最重要）— 「聞き流しても原理が頭に残るように」**:
    - **第1〜2幕では用語を使わない**。現象だけを五感で描写（「押すと、ぽいんと逆にはねかえった」など）。
@@ -1220,7 +1220,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 - 本文: 6〜8段落、各段落2〜3文
 - 分量: 全体で約1000〜1400字""",
 
-        "中文": f"""你是一位为6〜8岁儿童写作的温柔而充满想象力的科学童话作家。{glossary_rules}
+        "中文": f"""你是一位为6〜8岁儿童写作的温柔而充满想象力的科学故事作家。{glossary_rules}
 
 [素材 — 全部来自真实CSV数据，必须使用]
 本童话以真实存在的展馆（『{zone_name}』）为蓝本。不要忽略以下素材去编造无关设定。
@@ -1234,7 +1234,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 ▶ 主人公: 好奇心旺盛的孩子『{protagonist}』
 ▶ 伙伴（与主人公对话的朋友，不是百科全书）: {companion}
 
-▶ ★ 核心魔法道具（仅用以下两件展品改写成魔法道具，不要发明其他魔法）:
+▶ ★ 核心科学道具（仅用以下两件展品改写成科学道具，不要发明其他道具）:
 {exhibit_summary}
 
 ▶ 氛围素材（作为风景／生物／道具散布于故事中——正文里至少出现2个以上）:
@@ -1245,10 +1245,10 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 [开展规则 — 至关重要]
 1) **紧凑的三幕结构（共6〜8段）— 科学现象是故事的主干脊梁**:
    - 第一幕（2段）: 『{protagonist}』的平凡时刻 → **直接与『{principles_text}』相关的奇怪事件** → 一个明确目标（"我要弄清楚为什么…"）。
-   - 第二幕（3〜4段）: 摆弄魔法道具 → **现象小小地发生一次**（用五感描写）→ 失败一次 → 与伙伴一起观察同一现象反复出现 → "咦？怎么每次都这样！"——发现 **规律**。
+   - 第二幕（3〜4段）: 摆弄科学道具 → **现象小小地发生一次**（用五感描写）→ 失败一次 → 与伙伴一起观察同一现象反复出现 → "咦？怎么每次都这样！"——发现 **规律**。
    - 第三幕（1〜2段）: **★ 顿悟时刻**: 主人公大声领悟——"啊，原来这就是 **{principles_text}**！"用这个原理化解危机 → 第一幕的谜团也用同一个原理解释 → 温馨收尾。
 2) **因果链条**: 所有情节按"因为……所以……"顺序推进。不可突然出现新道具或新能力。
-3) **道具限制**: 仅用上面列出的魔法道具来解决危机，不要临时发明新的魔法。
+3) **道具限制**: 仅用上面列出的科学道具来解决危机，不要临时发明新的道具。
 4) **目标与名字一致**: 第一幕设定的目标贯穿到底；『{protagonist}』与伙伴的名字自始至终不变。
 5) **★ 让科学"看得见"（最重要）— "就算听漏也能记住原理"**:
    - **第一、二幕中绝不使用术语**，只用五感描写现象（如"她一推，它就反方向弹了回去"）。
@@ -1259,7 +1259,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    - 至少使用3个拟声词或叠词（蹦蹦跳跳、闪闪、咕噜咕噜、扑通、轻飘飘）。
    - 以短句为主，对话占比≥40%。
    - 至少加入2处感官描写（声音、光、气味、触感）。
-7) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇幻冒险。
+7) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇妙冒险。
 8) **结尾**: 温暖且充满希望，最后一句是适合睡前读的温柔话语。
 
 [输出格式]

@@ -71,13 +71,19 @@ def speech_to_text(audio_bytes):
             pass
         return None
 
-def _tts_elevenlabs(text: str) -> bytes | None:
+def _tts_elevenlabs(text: str, language: str = "ko") -> bytes | None:
     """ElevenLabs TTS 호출. 키가 없거나 실패하면 None."""
     eleven_key = _get_secret("ELEVENLABS_API_KEY")
     if not eleven_key:
         return None
 
-    voice_id = _get_secret("ELEVENLABS_VOICE_ID") or "21m00Tcm4TlvDq8ikWAM"
+    voice_map = {
+        "ko": "uyVNoMrnUku1dZyVEXwD",
+        "en": "8LVfoRdkh4zgjr8v5ObE",
+        "ja": "3JDquces8E8bkmvbh6Bc",
+        "zh": "vZZLclMx4wouUtKBRfZn",
+    }
+    voice_id = _get_secret("ELEVENLABS_VOICE_ID") or voice_map.get(language, "uyVNoMrnUku1dZyVEXwD")
     model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
 
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
@@ -133,7 +139,7 @@ def text_to_speech(text, language="ko"):
         return None
 
     # 1) ElevenLabs (사용자 설정 음성)
-    audio = _tts_elevenlabs(text)
+    audio = _tts_elevenlabs(text, language=language)
     if audio:
         return audio
 
@@ -145,7 +151,13 @@ def get_tts_cache_namespace(language: str = "ko") -> str:
     """캐시 키. ElevenLabs 사용 시 voice_id를 키에 포함해야 음성 변경 시 재생성됨."""
     eleven_key = _get_secret("ELEVENLABS_API_KEY")
     if eleven_key:
-        voice_id = _get_secret("ELEVENLABS_VOICE_ID") or "21m00Tcm4TlvDq8ikWAM"
+        voice_map = {
+            "ko": "uyVNoMrnUku1dZyVEXwD",
+            "en": "8LVfoRdkh4zgjr8v5ObE",
+            "ja": "3JDquces8E8bkmvbh6Bc",
+            "zh": "vZZLclMx4wouUtKBRfZn",
+        }
+        voice_id = _get_secret("ELEVENLABS_VOICE_ID") or voice_map.get(language, "uyVNoMrnUku1dZyVEXwD")
         model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
         return f"elevenlabs::{model_id}::{voice_id}"
 
