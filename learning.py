@@ -1983,8 +1983,8 @@ def render_post_visit_learning(
                                         "中文": "🔊 听答案",
                                     }.get(language_mode, "🔊 Listen to answer")
                                     
-                                    answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{user_question}"
-                                    if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}"):
+                                    answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{hash(user_question)}"
+                                    if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}_{hash(user_question)}"):
                                         try:
                                             audio = client.audio.speech.create(
                                                 model="tts-1",
