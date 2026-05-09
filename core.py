@@ -2466,7 +2466,7 @@ def load_zone_rows_from_csv(zone_name: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "data")
     csv_files = glob.glob(os.path.join(data_dir, "*.csv"))
-    target_files = [p for p in csv_files if zone_name in os.path.basename(p)]
+    target_files = [p for p in csv_files if os.path.basename(p) == f"{zone_name}.csv"]
     if not target_files:
         return []
 

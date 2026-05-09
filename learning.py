@@ -345,6 +345,10 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
     if not keyword_pairs:
         return None, None
 
+    # 질문 모드에서는 키워드 태그를 렌더링하지 않음 (빈 공백 제거)
+    if mode == "question":
+        return None, None
+
     heading_text = {
         "한국어": "##### 🔑 키워드",
         "English": "##### 🔑 Keywords",
@@ -357,9 +361,10 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
     if state_key not in st.session_state:
         st.session_state[state_key] = ""
 
-    cols = st.columns(4)
+    num_cols = min(len(keyword_pairs), 4)
+    cols = st.columns(num_cols)
     for i, (kw_kr, kw_disp) in enumerate(keyword_pairs):
-        with cols[i % 4]:
+        with cols[i % num_cols]:
             if st.button(kw_disp, key=f"kw_btn_{zone_name}_{mode}_{kw_kr}"):
                 st.session_state[state_key] = kw_kr
 
@@ -565,6 +570,7 @@ def _load_exhibits_from_csv_direct(zone_name):
                     "title": title,
                     "category": zone_name,
                     "subcategory": category,
+                    "detail": detail,
                 }
             })
         print(f"CSV 직접 로드: {zone_name}에서 {len(exhibits)}개 전시물")
@@ -670,7 +676,7 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0):
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = ""):
     """과학원리 기반 4지선다 퀴즈 생성.
 
     LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
@@ -753,11 +759,16 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 7) Tie at least one element to actual exhibit experience.
 """
 
+    # 전시물 세부설명이 있으면 프롬프트에 추가
+    detail_section = ""
+    if exhibit_detail and str(exhibit_detail).strip() and str(exhibit_detail).strip().lower() != "nan":
+        detail_section = f"\n[전시물 상세 설명]\n{exhibit_detail}\n"
+
     language_prompts = {
         "한국어": f"""{output_lang_instruction}
 
 '{zone_name}'의 '{principle}' 주제로 4지선다 퀴즈를 만들어주세요.
-
+{detail_section}
 이번 스타일: {angle}
 랜덤 시드: {variation_seed} (매번 다른 질문!)
 
@@ -778,7 +789,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         "English": f"""{output_lang_instruction}
 
 Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
-
+{detail_section}
 Style this time: {angle}
 Random seed: {variation_seed}
 
@@ -952,13 +963,23 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
             return (parts[1][:limit] + "…") if len(parts[1]) > limit else parts[1]
         return ""
 
-    # 핵심 마법 아이템 2개 (제목 + 짧은 설명) — 갈등을 해결하는 키
+    # 핵심 마법 아이템 2개 (제목 + 짧은 설명 + 세부설명) — 갈등을 해결하는 키
     core_lines = []
     for ex in exhibits[:2]:
         t = ex.get("metadata", {}).get("title", "") or ""
-        d = _short_desc_from_content(ex.get("content", ""))
-        if d:
-            core_lines.append(f"- {t} (특징: {d})")
+        c = _short_desc_from_content(ex.get("content", ""))
+        d = ex.get("metadata", {}).get("detail", "")
+        if d and str(d).strip() and str(d).strip().lower() != "nan":
+            d_short = (str(d).strip()[:120] + "…") if len(str(d).strip()) > 120 else str(d).strip()
+        else:
+            d_short = ""
+        parts = []
+        if c:
+            parts.append(f"설명: {c}")
+        if d_short:
+            parts.append(f"세부: {d_short}")
+        if parts:
+            core_lines.append(f"- {t} ({'; '.join(parts)})")
         elif t:
             core_lines.append(f"- {t}")
     exhibit_summary = "\n".join(core_lines)
@@ -1669,13 +1690,21 @@ def render_post_visit_learning(
                         except Exception as e:
                             print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
+                    # 선택된 키워드(전시물)의 세부설명 찾기
+                    quiz_detail = ""
+                    for r in zone_rows:
+                        if r.get("title") == selected_kw:
+                            quiz_detail = r.get("detail", "")
+                            break
+
                     if quiz_cache_key not in st.session_state:
-                        if st.button(make_quiz_label, key=f"btn_make_quiz_{zone}_{selected_kw}"):
+                        if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                             _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                             with st.spinner(text["quiz_generating"]):
                                 quiz = generate_quiz(
                                     zone, selected_kw, llm, language_mode,
                                     variation_seed=st.session_state[seed_key],
+                                    exhibit_detail=quiz_detail,
                                 )
                                 st.session_state[quiz_cache_key] = quiz or {}
                             st.rerun()
@@ -1702,7 +1731,7 @@ def render_post_visit_learning(
                                 st.rerun()
                         else:
                             st.warning("퀴즈 생성에 실패했습니다.")
-                            if st.button(f"🔄 {make_quiz_label}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
+                            if st.button(f"🔄 {text['make_quiz']}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
                                 st.session_state.pop(quiz_cache_key, None)
                                 st.rerun()
         else:
@@ -1729,7 +1758,15 @@ def render_post_visit_learning(
 
                     if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
                         _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
-                        context = "\n".join([ex.get("content", "") for ex in exhibits[:5] if ex.get("content")])
+                        context_parts = []
+                        for ex in exhibits[:5]:
+                            c = ex.get("content", "")
+                            d = ex.get("metadata", {}).get("detail", "")
+                            if c:
+                                context_parts.append(c)
+                            if d and str(d).strip() and str(d).strip().lower() != "nan":
+                                context_parts.append(f"[세부 설명] {d}")
+                        context = "\n\n".join(context_parts)
                         if not context.strip():
                             st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
                             continue

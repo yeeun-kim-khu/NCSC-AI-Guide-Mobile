@@ -570,27 +570,60 @@ def main():
 
         st.markdown(ui_text.get(language_mode, ui_text["한국어"])["faq_header"])
         s1, s2 = st.columns(2)
+        # FAQ 질문 번역 매핑
+        faq_inputs = {
+            "한국어": {
+                "floor": "층별 안내",
+                "programs": "오늘의 프로그램",
+                "route": "연령별 맞춤 동선 추천",
+                "exhibits": "전시관 안내",
+            },
+            "English": {
+                "floor": "Floor guide",
+                "programs": "Today's programs",
+                "route": "Recommended route by age",
+                "exhibits": "Exhibition guide",
+            },
+            "日本語": {
+                "floor": "フロア案内",
+                "programs": "今日のプログラム",
+                "route": "年齢別おすすめルート",
+                "exhibits": "展示館案内",
+            },
+            "中文": {
+                "floor": "楼层导览",
+                "programs": "今日节目",
+                "route": "按年龄推荐路线",
+                "exhibits": "展馆导览",
+            },
+        }.get(language_mode, {
+            "floor": "층별 안내",
+            "programs": "오늘의 프로그램",
+            "route": "연령별 맞춤 동선 추천",
+            "exhibits": "전시관 안내",
+        })
+
         with s1:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_floor"], key="faq_floor_sidebar"):
                 _queue_ga_event("faq_button_click", {"category": "floor", "language": language_mode})
-                st.session_state["pending_user_input"] = "층별 안내"
+                st.session_state["pending_user_input"] = faq_inputs["floor"]
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_programs"], key="faq_programs_sidebar"):
                 _queue_ga_event("faq_button_click", {"category": "programs", "language": language_mode})
-                st.session_state["pending_user_input"] = "오늘의 프로그램"
+                st.session_state["pending_user_input"] = faq_inputs["programs"]
                 st.session_state["pending_ui_program_buttons"] = True
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
         with s2:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_route"], key="faq_route_sidebar"):
                 _queue_ga_event("faq_button_click", {"category": "route", "language": language_mode})
-                st.session_state["pending_user_input"] = "연령별 맞춤 동선 추천"
+                st.session_state["pending_user_input"] = faq_inputs["route"]
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["faq_exhibits"], key="faq_exhibits_sidebar"):
                 _queue_ga_event("faq_button_click", {"category": "exhibits", "language": language_mode})
-                st.session_state["pending_user_input"] = "전시관 안내"
+                st.session_state["pending_user_input"] = faq_inputs["exhibits"]
                 st.session_state["switch_to_guide_tab"] = True
                 st.rerun()
 
@@ -669,14 +702,18 @@ def main():
             "어린이": (
                 "**국립어린이과학관**에 와줘서 정말 반가워! 🎉\n\n"
                 "**🏙️ 과학관 안내** — 어디로 갈지 모르겠어? 무슨 프로그램이 있는지 궁금해? 아래 채팅에 물어봐 줘! 🎤 사이드바에서 말로도 물어볼 수 있어.\n\n"
-                "**🥰 또만나 놀이터** — 오늘 본 전시물, 다시 만나러 가볼까?! 재밌는 **퀴즈**도 풀고, 궁금한 거 **질문**도 하고, 인공지능이 만들어주는 신기한 **과학동화**까지 들어볼 수 있어~ 밑에 탭을 눌러봐!"
+                "**🥰 또만나 놀이터** — 오늘 본 전시물, 다시 만나러 가볼까?! 재밌는 **퀴즈**도 풀고, 궁금한 거 **질문**도 하고, 인공지능이 만들어주는 신기한 **과학동화**까지 들어볼 수 있어~ 밑에 탭을 눌러봐!\n\n"
+                "**📅 시범 운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
+                "**💡 팁:** 왼쪽 상단 **≡** 를 누르면 언어·모드 변경, 음성 질문, 설문조사까지 할 수 있어!"
             ),
             "청소년/성인": (
                 "과학이 기쁨이 되는 **국립어린이과학관**에 오신 걸 환영해요! 🎉\n\n"
                 "**🏙️ 과학관 안내** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 답해드려요. "
                 "아래 채팅창에 입력하거나, 왼쪽 사이드바에서 🎤 음성으로도 질문할 수 있어요.\n\n"
                 "**🥰 또만나 놀이터** — 재미있었던 과학관 놀이터, 다시 즐겨볼까?! 과학전시물에 담긴 원리를 바탕으로 **퀴즈**를 풀고, 궁금한 내용은 **질문**하고, 인공지능이 실시간으로 만들어주는 신비한 **과학동화**까지 들어보자구요~ "
-                "밑에 탭을 전환해보세요!"
+                "밑에 탭을 전환해보세요!\n\n"
+                "**📅 시범 운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
+                "**💡 팁:** 왼쪽 상단 **≡** 를 누르면 언어·모드 변경, 음성 질문, 설문조사까지 이용할 수 있어요!"
             ),
         },
         "English": {
@@ -686,7 +723,9 @@ def main():
                 "in the chat below! 🎤 You can also ask out loud using the sidebar.\n\n"
                 "**🥰 또만나 (See-You-Again) Zone** — Want to play with today's exhibits again?! Take fun "
                 "**quizzes**, ask **questions** about anything you're curious about, and listen to magical "
-                "AI-made **science stories**~ Tap the tab below!"
+                "AI-made **science stories**~ Tap the tab below!\n\n"
+                "**📅 Pilot period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "**💡 Tip:** Tap **≡** on the top left to change language, ask by voice, and take a survey!"
             ),
             "청소년/성인": (
                 "Welcome to the **National Children's Science Center**! 🎉\n\n"
@@ -695,7 +734,9 @@ def main():
                 "from the left sidebar.\n\n"
                 "**🥰 또만나 (See-You-Again) Zone** — Want to relive the fun?! Take **quizzes** on the "
                 "science behind the exhibits, ask **questions** about anything you're still curious about, "
-                "and listen to magical AI-generated **science stories** in real time~ Switch using the tab below!"
+                "and listen to magical AI-generated **science stories** in real time~ Switch using the tab below!\n\n"
+                "**📅 Pilot period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "**💡 Tip:** Tap **≡** on the top left to change language, ask by voice, and take a survey!"
             ),
         },
         "日本語": {
@@ -704,7 +745,9 @@ def main():
                 "**🏙️ 科学館案内** — どこに行こうか迷ってる？今日のプログラムが知りたい？下のチャットで聞いてみてね！"
                 "🎤 サイドバーから声でも聞けるよ。\n\n"
                 "**🥰 또만나 (またね) ゾーン** — 今日見た展示、もう一度遊びに行こうよ！楽しい **クイズ** に答えて、"
-                "気になることを **質問** して、AIが作る不思議な **サイエンス童話** まで聞いてみよう〜 下のタブを押してみてね！"
+                "気になることを **質問** して、AIが作る不思議な **サイエンス童話** まで聞いてみよう〜 下のタブを押してみてね！\n\n"
+                "**📅 試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
+                "**💡 ヒント：** 左上の **≡** を押すと、言語変更・音声質問・アンケートができるよ！"
             ),
             "청소년/성인": (
                 "**国立こども科学館** へようこそ！🎉\n\n"
@@ -712,7 +755,9 @@ def main():
                 "下のチャットに入力、または左サイドバーから 🎤 音声でどうぞ。\n\n"
                 "**🥰 또만나 (またね) ゾーン** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
                 "**クイズ** を解いて、気になることを **質問** して、AIがリアルタイムで作る不思議な **サイエンス童話** "
-                "まで聴いてみよう〜 下のタブで切り替えてみてね！"
+                "まで聴いてみよう〜 下のタブで切り替えてみてね！\n\n"
+                "**📅 試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
+                "**💡 ヒント：** 左上の **≡** を押すと、言語変更・音声質問・アンケートができます！"
             ),
         },
         "中文": {
@@ -721,14 +766,18 @@ def main():
                 "**🏙️ 科学馆导览** — 不知道去哪儿？想知道今天有什么节目？在下方聊天框问我吧！"
                 "🎤 也可以从侧边栏用语音问哦。\n\n"
                 "**🥰 또만나 (再见) 展区** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
-                "**提问** 感兴趣的内容、还能听AI做的奇妙 **科学故事** 哦~ 点点下面的标签试试！"
+                "**提问** 感兴趣的内容、还能听AI做的奇妙 **科学故事** 哦~ 点点下面的标签试试！\n\n"
+                "**📅 试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
+                "**💡 提示：** 点击左上角的 **≡**，可以切换语言、语音提问和填写问卷哦！"
             ),
             "청소년/성인": (
                 "欢迎来到 **国立儿童科学馆**！🎉\n\n"
                 "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等参观前后的问题随时为你解答。"
                 "在下方聊天框输入，或在侧边栏使用 🎤 语音提问。\n\n"
                 "**🥰 또만나 (再见) 展区** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
-                "自由 **提问** 感兴趣的内容、还能听到AI实时创作的奇妙 **科学故事** 哦~ 请切换下方标签试试！"
+                "自由 **提问** 感兴趣的内容、还能听到AI实时创作的奇妙 **科学故事** 哦~ 请切换下方标签试试！\n\n"
+                "**📅 试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
+                "**💡 提示：** 点击左上角的 **≡**，可以切换语言、语音提问和填写问卷！"
             ),
         },
     }
@@ -747,23 +796,23 @@ def main():
         with c1:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_floor"], key="quick_floor"):
                 _queue_ga_event("quick_menu_click", {"category": "floor", "language": language_mode})
-                st.session_state["pending_user_input"] = "층별 안내"
+                st.session_state["pending_user_input"] = faq_inputs["floor"]
                 st.rerun()
         with c2:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_route"], key="quick_route"):
                 _queue_ga_event("quick_menu_click", {"category": "route", "language": language_mode})
-                st.session_state["pending_user_input"] = "연령별 맞춤 동선 추천"
+                st.session_state["pending_user_input"] = faq_inputs["route"]
                 st.rerun()
         with c3:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_programs"], key="quick_programs"):
                 _queue_ga_event("quick_menu_click", {"category": "programs", "language": language_mode})
-                st.session_state["pending_user_input"] = "오늘의 프로그램"
+                st.session_state["pending_user_input"] = faq_inputs["programs"]
                 st.session_state["pending_ui_program_buttons"] = True
                 st.rerun()
         with c4:
             if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_exhibits"], key="quick_exhibits"):
                 _queue_ga_event("quick_menu_click", {"category": "exhibits", "language": language_mode})
-                st.session_state["pending_user_input"] = "전시관 안내"
+                st.session_state["pending_user_input"] = faq_inputs["exhibits"]
                 st.rerun()
     
     # Tab navigation
@@ -792,6 +841,10 @@ def main():
         """, unsafe_allow_html=True)
         try:
             del st.session_state["switch_to_guide_tab"]
+        except Exception:
+            pass
+        try:
+            del st.session_state["pending_user_input"]
         except Exception:
             pass
     
