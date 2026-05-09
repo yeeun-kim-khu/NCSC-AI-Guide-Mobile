@@ -370,6 +370,7 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
             btn_type = "primary" if is_selected else "secondary"
             if st.button(kw_disp, key=f"kw_btn_{zone_name}_{mode}_{kw_kr}", type=btn_type):
                 st.session_state[state_key] = kw_kr
+                st.rerun()
     selected_disp = selected_kw
     for kw_kr, kw_disp in keyword_pairs:
         if kw_kr == selected_kw:
@@ -1777,6 +1778,18 @@ def render_post_visit_learning(
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
+                
+                # CSV 데이터가 없으면 직접 다시 로드
+                if not zone_rows:
+                    try:
+                        from core import load_zone_rows_from_csv
+                        zone_rows = load_zone_rows_from_csv(zone)
+                        # all_zone_rows 업데이트
+                        all_zone_rows[zone] = zone_rows
+                    except Exception as e:
+                        print(f"CSV 직접 로드 오류: {e}")
+                        zone_rows = []
+                
                 selected_kw, selected_disp = _render_zone_header(zone, zone_rows, mode="quiz", llm=llm)
 
                 if selected_kw:
@@ -1864,68 +1877,68 @@ def render_post_visit_learning(
             st.info(text["pick_zone_hint"])
 
     elif st.session_state.learning_sub_tab == "question":
-        selected_zones = _render_zone_selector("question")
+        # 전시관 선택 없이 전체 과학전시에 대한 질문 가능
+        st.markdown("### 과학전시에 담긴 원리에 대해서 무엇이든 물어보세요!")
 
-        if selected_zones:
-            st.markdown("---")
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
-            for zone in selected_zones:
-                zone_rows = all_zone_rows.get(zone, [])
-                
-                # 전시물이 없으면 RAG에서 가져오기 시도
-                if not zone_rows:
-                    with st.spinner(text["generating"]):
-                        zone_rows = get_zone_exhibits_from_rag(zone, vector_db)
-                
-                _render_zone_header(zone, zone_rows, mode="question", llm=llm)
+        # 전체 전시물 정보 가져오기
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
-                # RAG에서 전시물 가져오기 (질문 컨텍스트용)
-                with st.spinner(text["generating"]):
-                    exhibits = get_zone_exhibits_from_rag(zone, vector_db)
+        # RAG에서 전체 전시물 검색 (전체 놀이터)
+        all_exhibits = []
+        with st.spinner(text["generating"]):
+            if vector_db:
+                try:
+                    # 전체 전시물 검색
+                    docs = vector_db.similarity_search("과학전시 원리 전시물", k=100)
+                    for doc in docs:
+                        metadata = doc.metadata or {}
+                        all_exhibits.append({
+                            "content": doc.page_content,
+                            "metadata": metadata
+                        })
+                except Exception as e:
+                    print(f"전체 전시물 RAG 검색 오류: {e}")
 
-                if exhibits:
-                    user_question = st.text_input(
-                        f"{_display_zone_name(zone)}{text['question_prompt']}",
-                        key=f"question_input_{zone}"
-                    )
-
-                    if st.button(text["ask_question"], key=f"question_btn_{zone}") and user_question:
-                        _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
-                        context_parts = []
-                        for ex in exhibits[:5]:
-                            c = ex.get("content", "")
-                            d = ex.get("metadata", {}).get("detail", "")
-                            if c:
-                                context_parts.append(c)
-                            if d and str(d).strip() and str(d).strip().lower() != "nan":
-                                context_parts.append(f"[세부 설명] {d}")
-                        context = "\n\n".join(context_parts)
-                        if not context.strip():
-                            st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
-                            continue
-                        # 언어별 답변 지시
-                        lang_instruction = {
-                            "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
-                            "English": "Please answer in English, in a way that children can easily understand.",
-                            "日本語": "子どもにもわかりやすい日本語で答えてください。",
-                            "中文": "请用中文回答，让孩子容易理解。",
-                        }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
-                        prompt = f"""다음은 '{zone}'의 전시물 정보입니다:
+        # 세션 스테이트에서 질문 가져오기 (과학관 안내에서 질문을 받아서 처리)
+        if "pending_learning_question" in st.session_state and st.session_state.get("pending_learning_question"):
+            user_question = st.session_state.get("pending_learning_question")
+            del st.session_state["pending_learning_question"]
+            
+            if user_question:
+                _queue_ga_event("question_asked", {"zone": "global", "language": language_mode})
+                context_parts = []
+                for ex in all_exhibits[:10]:  # 상위 10개 전시물 사용
+                    c = ex.get("content", "")
+                    d = ex.get("metadata", {}).get("detail", "")
+                    if c:
+                        context_parts.append(c)
+                    if d and str(d).strip() and str(d).strip().lower() != "nan":
+                        context_parts.append(f"[세부 설명] {d}")
+                context = "\n\n".join(context_parts)
+                if not context.strip():
+                    st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
+                else:
+                    # 언어별 답변 지시
+                    lang_instruction = {
+                        "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
+                        "English": "Please answer in English, in a way that children can easily understand.",
+                        "日本語": "子どもにもわかりやすい日本語で答えてください。",
+                        "中文": "请用中文回答，让孩子容易理解。",
+                    }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
+                    prompt = f"""다음은 과학전시의 전시물 정보입니다:
 {context}
 
 사용자 질문: {user_question}
 
 {lang_instruction}"""
-                        try:
-                            response = llm.invoke(prompt)
-                            st.markdown(f"**{text['answer_prefix']}:** {response.content}")
-                        except Exception as e:
-                            print(f"학습 질문 답변 오류: {e}")
-                            st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
-                else:
-                    st.warning(f"{_display_zone_name(zone)}{text['exhibits_not_found']}")
+                    try:
+                        response = llm.invoke(prompt)
+                        st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+                    except Exception as e:
+                        print(f"학습 질문 답변 오류: {e}")
+                        st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
         else:
-            st.info(text["pick_zone_hint"])
+            st.info("과학관 안내 탭에서 질문을 입력해주세요!")
     
     else:
         st.subheader(text["tab_story"])

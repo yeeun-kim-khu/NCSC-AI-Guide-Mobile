@@ -851,19 +851,11 @@ def main():
             st.rerun()
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
-    if st.session_state.get("active_tab") == "guide" and st.session_state.get("pending_user_input"):
+    if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
         try:
             st.toast("과학관 안내 탭에서 답변을 확인하세요!", icon="🔔")
         except Exception:
             pass
-        try:
-            del st.session_state["pending_user_input"]
-        except Exception:
-            pass
-    try:
-        del st.session_state["pending_user_input"]
-    except Exception:
-        pass
     
     if st.session_state.active_tab == "guide":
         if "messages" not in st.session_state:
@@ -1209,6 +1201,14 @@ def main():
         )
         if typed_input and not st.session_state.get("pending_user_input"):
             st.session_state["pending_user_input"] = typed_input
+    elif st.session_state.active_tab == "learning" and st.session_state.get("learning_sub_tab") == "question":
+        # 궁금해요 모드에서도 과학관 안내와 동일한 chat_input 사용
+        typed_input = st.chat_input(
+            "궁금해요 모드 질문을 입력하세요",
+            key="learning_chat_input"
+        )
+        if typed_input:
+            st.session_state["pending_learning_question"] = typed_input
     else:
         typed_input = None
 
