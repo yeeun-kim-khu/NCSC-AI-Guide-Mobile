@@ -126,7 +126,6 @@ def _select_zones_by_group(prefix_key: str, language_mode: str = "한국어") ->
 # CSV 데이터 로딩
 # ============================================================================
 
-@st.cache_data(show_spinner=False)
 def _preload_all_zone_csv_rows():
     data = {}
     for zone, info in ZONE_INFO.items():

@@ -790,7 +790,10 @@ def main():
             })();
         </script>
         """, unsafe_allow_html=True)
-        del st.session_state["switch_to_guide_tab"]
+        try:
+            del st.session_state["switch_to_guide_tab"]
+        except Exception:
+            pass
     
     with tab1:
         if "messages" not in st.session_state:
