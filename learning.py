@@ -1949,74 +1949,87 @@ def render_post_visit_learning(
                         if user_question:
                             _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
                             
-                            # 전시물 정보 컨텍스트 구성
-                            context_parts = []
-                            for r in zone_rows[:10]:
-                                title = r.get("title", "")
-                                content = r.get("content", "")
-                                detail = r.get("detail", "")
-                                if title and content:
-                                    context_parts.append(f"[{title}] {content}")
-                                    if detail and str(detail).strip() and str(detail).strip().lower() != "nan":
-                                        context_parts.append(f"[세부 설명] {detail}")
+                            # 답변 캐시 키
+                            answer_cache_key = f"answer_cache_{zone}_{selected_kw}_{hash(user_question)}"
                             
-                            context = "\n\n".join(context_parts)
-                            if not context.strip():
-                                st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
-                            else:
-                                # 언어별 답변 지시
-                                lang_instruction = {
-                                    "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
-                                    "English": "Please answer in English, in a way that children can easily understand.",
-                                    "日本語": "子どもにもわかりやすい日本語で答えてください。",
-                                    "中文": "请用中文回答，让孩子容易理解。",
-                                }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
-                                prompt = f"""다음은 {_display_zone_name(zone)}의 {selected_disp} 정보입니다:
+                            # 답변이 이미 캐시되어 있으면 사용
+                            if answer_cache_key not in st.session_state:
+                                # 전시물 정보 컨텍스트 구성
+                                context_parts = []
+                                for r in zone_rows[:10]:
+                                    title = r.get("title", "")
+                                    content = r.get("content", "")
+                                    detail = r.get("detail", "")
+                                    if title and content:
+                                        context_parts.append(f"[{title}] {content}")
+                                        if detail and str(detail).strip() and str(detail).strip().lower() != "nan":
+                                            context_parts.append(f"[세부 설명] {detail}")
+                                
+                                context = "\n\n".join(context_parts)
+                                if not context.strip():
+                                    st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
+                                else:
+                                    # 언어별 답변 지시
+                                    lang_instruction = {
+                                        "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
+                                        "English": "Please answer in English, in a way that children can easily understand.",
+                                        "日本語": "子どもにもわかりやすい日本語で答えてください。",
+                                        "中文": "请用中文回答，让孩子容易理解。",
+                                    }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
+                                    prompt = f"""다음은 {_display_zone_name(zone)}의 {selected_disp} 정보입니다:
 {context}
 
 사용자 질문: {user_question}
 
 {lang_instruction}"""
+                                    try:
+                                        response = llm.invoke(prompt)
+                                        answer_text = response.content
+                                        st.session_state[answer_cache_key] = answer_text
+                                        st.markdown(f"**{text['answer_prefix']}:** {answer_text}")
+                                    except Exception as e:
+                                        print(f"학습 질문 답변 오류: {e}")
+                                        st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
+                            else:
+                                # 캐시된 답변 사용
+                                answer_text = st.session_state[answer_cache_key]
+                                st.markdown(f"**{text['answer_prefix']}:** {answer_text}")
+                            
+                            # 음성 듣기 버튼
+                            listen_answer_label = {
+                                "한국어": "🔊 답변 듣기",
+                                "English": "🔊 Listen to answer",
+                                "日本語": "🔊 答えを聞く",
+                                "中文": "🔊 听答案",
+                            }.get(language_mode, "🔊 Listen to answer")
+                            
+                            answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{hash(user_question)}"
+                            if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}_{hash(user_question)}"):
                                 try:
-                                    response = llm.invoke(prompt)
-                                    answer_text = response.content
-                                    st.markdown(f"**{text['answer_prefix']}:** {answer_text}")
-                                    
-                                    # 음성 듣기 버튼
-                                    listen_answer_label = {
-                                        "한국어": "🔊 답변 듣기",
-                                        "English": "🔊 Listen to answer",
-                                        "日本語": "🔊 答えを聞く",
-                                        "中文": "🔊 听答案",
-                                    }.get(language_mode, "🔊 Listen to answer")
-                                    
-                                    answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{hash(user_question)}"
-                                    if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}_{hash(user_question)}"):
-                                        try:
-                                            if text_to_speech is not None:
-                                                lang_code = get_language_code(language_mode) if get_language_code else "ko"
-                                                audio = text_to_speech(answer_text, language=lang_code)
-                                                if audio:
-                                                    st.session_state[answer_audio_key] = audio
-                                                else:
-                                                    st.warning("음성 생성 실패")
-                                            else:
-                                                # 폴백: 직접 OpenAI TTS 사용
-                                                audio = client.audio.speech.create(
-                                                    model="tts-1",
-                                                    voice="alloy",
-                                                    input=answer_text
-                                                )
-                                                st.session_state[answer_audio_key] = audio.content
-                                        except Exception as e:
-                                            print(f"답변 TTS 오류: {e}")
+                                    if text_to_speech is not None:
+                                        lang_code = get_language_code(language_mode) if get_language_code else "ko"
+                                        audio = text_to_speech(answer_text, language=lang_code)
+                                        if audio:
+                                            st.session_state[answer_audio_key] = audio
+                                        else:
                                             st.warning("음성 생성 실패")
-                                    
-                                    if answer_audio_key in st.session_state:
-                                        st.audio(st.session_state[answer_audio_key], format="audio/mp3")
+                                    else:
+                                        # 폴백: 직접 OpenAI TTS 사용
+                                        audio = client.audio.speech.create(
+                                            model="tts-1",
+                                            voice="alloy",
+                                            input=answer_text
+                                        )
+                                        st.session_state[answer_audio_key] = audio.content
                                 except Exception as e:
-                                    print(f"학습 질문 답변 오류: {e}")
-                                    st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
+                                    print(f"답변 TTS 오류: {e}")
+                                    st.warning("음성 생성 실패")
+                            
+                            if answer_audio_key in st.session_state:
+                                st.audio(st.session_state[answer_audio_key], format="audio/mp3")
+                        except Exception as e:
+                            print(f"학습 질문 답변 오류: {e}")
+                            st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
         else:
             st.info(text["pick_zone_hint"])
     
