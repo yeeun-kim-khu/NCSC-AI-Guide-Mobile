@@ -363,12 +363,13 @@ def _render_keyword_tags(zone_name: str, keyword_pairs, zone_rows, language_mode
 
     num_cols = min(len(keyword_pairs), 4)
     cols = st.columns(num_cols)
+    selected_kw = st.session_state.get(state_key, "")
     for i, (kw_kr, kw_disp) in enumerate(keyword_pairs):
         with cols[i % num_cols]:
-            if st.button(kw_disp, key=f"kw_btn_{zone_name}_{mode}_{kw_kr}"):
+            is_selected = (selected_kw == kw_kr)
+            btn_type = "primary" if is_selected else "secondary"
+            if st.button(kw_disp, key=f"kw_btn_{zone_name}_{mode}_{kw_kr}", type=btn_type):
                 st.session_state[state_key] = kw_kr
-
-    selected_kw = st.session_state.get(state_key, "")
     selected_disp = selected_kw
     for kw_kr, kw_disp in keyword_pairs:
         if kw_kr == selected_kw:
@@ -1597,7 +1598,25 @@ def render_post_visit_learning(
     # CSV 데이터 미리 로드
     all_zone_rows = _preload_all_zone_csv_rows()
 
-    tab_quiz, tab_question, tab_story = st.tabs([text["tab_quiz"], text["tab_question"], text["tab_story"]])
+    if "learning_sub_tab" not in st.session_state:
+        st.session_state.learning_sub_tab = "quiz"
+    
+    sub_cols = st.columns(3)
+    with sub_cols[0]:
+        tq_type = "primary" if st.session_state.learning_sub_tab == "quiz" else "secondary"
+        if st.button(text["tab_quiz"], key="btn_sub_quiz", use_container_width=True, type=tq_type):
+            st.session_state.learning_sub_tab = "quiz"
+            st.rerun()
+    with sub_cols[1]:
+        tqu_type = "primary" if st.session_state.learning_sub_tab == "question" else "secondary"
+        if st.button(text["tab_question"], key="btn_sub_question", use_container_width=True, type=tqu_type):
+            st.session_state.learning_sub_tab = "question"
+            st.rerun()
+    with sub_cols[2]:
+        ts_type = "primary" if st.session_state.learning_sub_tab == "story" else "secondary"
+        if st.button(text["tab_story"], key="btn_sub_story", use_container_width=True, type=ts_type):
+            st.session_state.learning_sub_tab = "story"
+            st.rerun()
 
     def _render_zone_selector(key_prefix: str):
         st.markdown(f"#### {text['select_zone']}")
@@ -1652,7 +1671,7 @@ def render_post_visit_learning(
                 st.info(text["csv_not_found"])
         return selected_kw, selected_disp
 
-    with tab_quiz:
+    if st.session_state.learning_sub_tab == "quiz":
         selected_zones = _render_zone_selector("quiz")
 
         if selected_zones:
@@ -1737,7 +1756,7 @@ def render_post_visit_learning(
         else:
             st.info(text["pick_zone_hint"])
 
-    with tab_question:
+    elif st.session_state.learning_sub_tab == "question":
         selected_zones = _render_zone_selector("question")
 
         if selected_zones:
@@ -1794,7 +1813,7 @@ def render_post_visit_learning(
         else:
             st.info(text["pick_zone_hint"])
     
-    with tab_story:
+    else:
         st.subheader(text["tab_story"])
         st.markdown(text["story_intro"])
 

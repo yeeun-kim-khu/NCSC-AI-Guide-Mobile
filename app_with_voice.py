@@ -379,7 +379,7 @@ def main():
             "quick_programs": "🎭 Programs",
             "quick_exhibits": "🧩 Exhibits",
             "tab_guide": "🏙️ Guide",
-            "tab_learning": "🥰 Playground",
+            "tab_learning": "🥰 Again Zone",
             "chat_placeholder": "Type your question",
             "mode_lang_changed": "Your mode/language has changed. I will answer with the new settings from now on.",
             "program_explain": "Exhibit tour",
@@ -426,7 +426,7 @@ def main():
             "quick_programs": "🎭 プログラム",
             "quick_exhibits": "🧩 展示",
             "tab_guide": "🏙️ 科学館案内",
-            "tab_learning": "🥰 あそび",
+            "tab_learning": "🥰 またねゾーン",
             "chat_placeholder": "質問を入力してください",
             "mode_lang_changed": "モード/言語が変更されました。次の回答から新しい設定で案内します。",
             "program_explain": "展示解説",
@@ -473,7 +473,7 @@ def main():
             "quick_programs": "🎭 节目",
             "quick_exhibits": "🧩 展馆",
             "tab_guide": "🏙️ 参观导览",
-            "tab_learning": "🥰 游乐",
+            "tab_learning": "🥰 再次乐园",
             "chat_placeholder": "请输入你的问题",
             "mode_lang_changed": "模式/语言已更改。从下一次回答开始将使用新设置。",
             "program_explain": "展览讲解",
@@ -731,7 +731,7 @@ def main():
                 "**📅 AI Guide Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
                 "**🏙️ Museum Guide** — Don't know where to go? Wondering what's on today? Just ask me "
                 "in the chat below! 🎤 You can also ask out loud using the sidebar.\n\n"
-                "**🥰 Playground** — Want to play with today's exhibits again?! Take fun "
+                "**🥰 Again Zone** — Want to play with today's exhibits again?! Take fun "
                 "**quizzes**, ask **questions** about anything you're curious about, and listen to magical "
                 "AI-made **science stories**~ Tap the tab below!\n\n"
                 "**💡 Tip:** Tap **>>** on the top left to change language, ask by voice, and take a survey!"
@@ -743,29 +743,18 @@ def main():
                 "**🏙️ Museum Guide** — I'll answer questions about floors, programs, fees, reservations, "
                 "and directions before or after your visit. Type in the chat below, or use 🎤 voice input "
                 "from the left sidebar.\n\n"
-                "**🥰 Playground** — Want to relive the fun?! Take **quizzes** on the "
+                "**🥰 Again Zone** — Want to relive the fun?! Take **quizzes** on the "
                 "science behind the exhibits, ask **questions** about anything you're still curious about, "
                 "and listen to magical AI-generated **science stories** in real time~ Switch using the tab below!\n\n"
                 "** Tip:** Tap **>>** on the top left to change Language·mode, ask by voice, and take a survey!"
             ),
         },
         "日本語": {
-            "어린이": (
-                "**国立こども科学館** へようこそ！🎉<br>"
-                "**📅 AIガイド利用期間：** 5月22日(金) 〜 5月31日(日)<br>"
-                "**🏙️ 科学館案内** — どこに行こうか迷ってる？今日のプログラムが知りたい？下のチャットで聞いてみてね！"
-                "🎤 サイドバーから声でも聞けるよ。\n\n"
-                "**🥰 あそび** — 今日見た展示、もう一度遊びに行こうよ！楽しい **クイズ** に答えて、"
-                "気になることを **質問** して、AIが作る不思議な **サイエンス童話** まで聞いてみよう〜 下のタブを押してみてね！\n\n"
-                "** ヒント：** 画面左上の **>>** を押すと、言語変更・音声質問・アンケートができるよ！"
-            ),
-            "청소년/성인": (
-                "**国立こども科学館** へようこそ！🎉<br>"
                 "便利で充実した見学を提供するため、リアルタイム案内AIガイドサービスを試験運用しています。<br>"
                 "**📅 AIガイド試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
                 "**🏙️ 科学館案内** — フロア案内・プログラム・料金・予約・アクセスなど、来館前後の疑問にお答えします。"
                 "下のチャットに入力、または左サイドバーから 🎤 音声でどうぞ。\n\n"
-                "**🥰 あそび** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
+                "**🥰 またねゾーン** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
                 "**クイズ** を解いて、気になることを **質問** して、AIがリアルタイムで作る不思議な **サイエンス童話** "
                 "まで聴いてみよう〜 下のタブで切り替えてみてね！\n\n"
                 "**💡 ヒント：** 左上の **>>** を押すと、言語(Language)・モード変更、音声質問、アンケートができます！"
@@ -777,7 +766,7 @@ def main():
                 "**📅 AI导览使用期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
                 "**🏙️ 科学馆导览** — 不知道去哪儿？想知道今天有什么节目？在下方聊天框问我吧！"
                 "🎤 也可以从侧边栏用语音问哦。\n\n"
-                "**🥰 游乐** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
+                "**🥰 再次乐园** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
                 "**提问** 感兴趣的内容、还能听AI做的奇妙 **科学故事** 哦~ 点点下面的标签试试！\n\n"
                 "**💡 提示：** 点击左上角的 **>>**，可以切换语言、语音提问和填写问卷哦！"
             ),
@@ -787,7 +776,7 @@ def main():
                 "**📅 AI导览试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
                 "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等参观前后的问题随时为你解答。"
                 "在下方聊天框输入，或在侧边栏使用 🎤 语音提问。\n\n"
-                "**🥰 游乐** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
+                "**🥰 再次乐园** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
                 "自由 **提问** 感兴趣的内容、还能听到AI实时创作的奇妙 **科学故事** 哦~ 请切换下方标签试试！\n\n"
                 "** 提示：** 点击左上角的 **>>**，可以切换语言(Language)、模式、语音提问和填写问卷！"
             ),
@@ -1205,13 +1194,15 @@ def main():
         )
     
     # Chat input at page bottom (outside tabs for stable positioning)
-    typed_input = st.chat_input(
-        ui_text.get(language_mode, ui_text["한국어"])["chat_placeholder"],
-        key="main_chat_input"
-    )
-    if typed_input and not st.session_state.get("pending_user_input"):
-        st.session_state["pending_user_input"] = typed_input
-        st.rerun()
+    if st.session_state.active_tab == "guide":
+        typed_input = st.chat_input(
+            ui_text.get(language_mode, ui_text["한국어"])["chat_placeholder"],
+            key="main_chat_input"
+        )
+        if typed_input and not st.session_state.get("pending_user_input"):
+            st.session_state["pending_user_input"] = typed_input
+    else:
+        typed_input = None
 
 if __name__ == "__main__":
     main()
