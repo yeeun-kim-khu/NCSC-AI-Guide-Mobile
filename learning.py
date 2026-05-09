@@ -130,7 +130,13 @@ def _preload_all_zone_csv_rows():
     data = {}
     for zone, info in ZONE_INFO.items():
         if info.get("has_data"):
-            data[zone] = load_zone_rows_from_csv(zone)
+            try:
+                rows = load_zone_rows_from_csv(zone)
+                data[zone] = rows
+                print(f"Loaded {len(rows)} rows for {zone}")
+            except Exception as e:
+                print(f"Error loading CSV for {zone}: {e}")
+                data[zone] = []
     return data
 
 # ============================================================================
@@ -1694,24 +1700,21 @@ def render_post_visit_learning(
     st.title(text["title"])
     st.markdown(text["subtitle"])
     
-    # CSV 데이터 미리 로드
-    all_zone_rows = _preload_all_zone_csv_rows()
+    # Load CSV data once with session state persistence
+    if "all_zone_rows" not in st.session_state:
+        st.session_state.all_zone_rows = _preload_all_zone_csv_rows()
+    all_zone_rows = st.session_state.all_zone_rows
 
     if "learning_sub_tab" not in st.session_state:
-        st.session_state.learning_sub_tab = "quiz"
+        st.session_state.learning_sub_tab = "quiz_question"
     
-    sub_cols = st.columns(3)
+    sub_cols = st.columns(2)
     with sub_cols[0]:
-        tq_type = "primary" if st.session_state.learning_sub_tab == "quiz" else "secondary"
+        tq_type = "primary" if st.session_state.learning_sub_tab == "quiz_question" else "secondary"
         if st.button(text["tab_quiz"], key="btn_sub_quiz", use_container_width=True, type=tq_type):
-            st.session_state.learning_sub_tab = "quiz"
+            st.session_state.learning_sub_tab = "quiz_question"
             st.rerun()
     with sub_cols[1]:
-        tqu_type = "primary" if st.session_state.learning_sub_tab == "question" else "secondary"
-        if st.button(text["tab_question"], key="btn_sub_question", use_container_width=True, type=tqu_type):
-            st.session_state.learning_sub_tab = "question"
-            st.rerun()
-    with sub_cols[2]:
         ts_type = "primary" if st.session_state.learning_sub_tab == "story" else "secondary"
         if st.button(text["tab_story"], key="btn_sub_story", use_container_width=True, type=ts_type):
             st.session_state.learning_sub_tab = "story"
@@ -1720,35 +1723,34 @@ def render_post_visit_learning(
     def _render_zone_selector(key_prefix: str):
         st.markdown(f"#### {text['select_zone']}")
 
-        selected = []
-
-        st.markdown(f"##### {text['floor1']}")
-        col1, col2 = st.columns(2)
-
-        floor1_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"]
-        for i, zone in enumerate(floor1_zones):
-            col = col1 if i % 2 == 0 else col2
-            with col:
-                disabled = not ZONE_INFO[zone]["has_data"]
-                zone_disp = _display_zone_name(zone)
-                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
-                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
-                    selected.append(zone)
-
-        st.markdown(f"##### {text['floor2']}")
-        col3, col4 = st.columns(2)
-
-        floor2_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
-        for i, zone in enumerate(floor2_zones):
-            col = col3 if i % 2 == 0 else col4
-            with col:
-                disabled = not ZONE_INFO[zone]["has_data"]
-                zone_disp = _display_zone_name(zone)
-                label = f"{zone_disp} {text['no_data']}" if disabled else zone_disp
-                if st.checkbox(label, key=f"{key_prefix}_zone_{zone}", disabled=disabled):
-                    selected.append(zone)
-
-        return selected
+        # 놀이터 하나씩만 선택 가능 (radio 버튼)
+        all_zones = list(ZONE_INFO.keys())
+        zone_options = [_display_zone_name(z) for z in all_zones]
+        
+        selected_index = None
+        for i, zone in enumerate(all_zones):
+            if st.session_state.get(f"selected_zone_{key_prefix}") == zone:
+                selected_index = i
+                break
+        
+        selected_zone_name = st.radio(
+            "놀이터 선택",
+            zone_options,
+            index=selected_index if selected_index is not None else 0,
+            key=f"{key_prefix}_zone_radio"
+        )
+        
+        # 선택된 놀이터 이름으로 zone 찾기
+        selected_zone = None
+        for zone, info in ZONE_INFO.items():
+            if _display_zone_name(zone) == selected_zone_name:
+                selected_zone = zone
+                break
+        
+        if selected_zone:
+            st.session_state[f"selected_zone_{key_prefix}"] = selected_zone
+        
+        return [selected_zone] if selected_zone else []
 
     def _render_zone_header(zone: str, zone_rows, mode: str = "exhibits", llm=None):
         st.markdown(f"#### 🎯 {_display_zone_name(zone)}")
@@ -1770,8 +1772,8 @@ def render_post_visit_learning(
                 st.info(text["csv_not_found"])
         return selected_kw, selected_disp
 
-    if st.session_state.learning_sub_tab == "quiz":
-        selected_zones = _render_zone_selector("quiz")
+    if st.session_state.learning_sub_tab == "quiz_question":
+        selected_zones = _render_zone_selector("quiz_question")
 
         if selected_zones:
             st.markdown("---")
@@ -1784,7 +1786,6 @@ def render_post_visit_learning(
                     try:
                         from core import load_zone_rows_from_csv
                         zone_rows = load_zone_rows_from_csv(zone)
-                        # all_zone_rows 업데이트
                         all_zone_rows[zone] = zone_rows
                     except Exception as e:
                         print(f"CSV 직접 로드 오류: {e}")
@@ -1793,72 +1794,55 @@ def render_post_visit_learning(
                 selected_kw, selected_disp = _render_zone_header(zone, zone_rows, mode="quiz", llm=llm)
 
                 if selected_kw:
-                    seed_key = f"quiz_seed_{zone}_{selected_kw}"
-                    quiz_cache_key = f"quiz_cache_{zone}_{selected_kw}"
-                    if seed_key not in st.session_state:
-                        import random as _rnd
-                        st.session_state[seed_key] = _rnd.randint(1, 10**9)
-
-                    # 천체투영관: 영상 제목을 키워드로 받아 영상 내용을 원리로 변환
-                    quiz_principle = selected_kw
-                    if zone == "천체투영관":
-                        try:
-                            from core import PLANETARIUM_VIDEO_INFO
-                            info = PLANETARIUM_VIDEO_INFO.get(selected_kw)
-                            if info:
-                                # 영상 row에서 description도 같이 첨부
-                                vid_row = next(
-                                    (r for r in zone_rows if r.get("title") == selected_kw),
-                                    None,
-                                )
-                                desc = vid_row.get("content", "") if vid_row else ""
-                                quiz_principle = (
-                                    f"천체투영관 상영 영상 '{selected_kw}'에서 배우는 내용\n"
-                                    f"줄거리: {desc}\n"
-                                    f"학습 주제: {info.get('themes', '')}\n"
-                                )
-                        except Exception as e:
-                            print(f"천투 영상 컨텍스트 조회 실패: {e}")
-
-                    # 선택된 키워드(전시물)의 세부설명 찾기
-                    quiz_detail = ""
-                    for r in zone_rows:
-                        if r.get("title") == selected_kw:
-                            quiz_detail = r.get("detail", "")
-                            break
-
-                    if quiz_cache_key not in st.session_state:
-                        if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
-                            _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
-                            with st.spinner(text["quiz_generating"]):
-                                quiz = generate_quiz(
-                                    zone, selected_kw, llm, language_mode,
-                                    variation_seed=st.session_state[seed_key],
-                                    exhibit_detail=quiz_detail,
-                                )
-                                st.session_state[quiz_cache_key] = quiz or {}
+                    # 퀴즈와 질문 선택 버튼
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if st.button("🎯 퀴즈 풀기", key=f"btn_quiz_mode_{zone}_{selected_kw}", type="primary"):
+                            st.session_state[f"mode_{zone}_{selected_kw}"] = "quiz"
                             st.rerun()
+                    with col2:
+                        if st.button("❓ 질문하기", key=f"btn_question_mode_{zone}_{selected_kw}", type="secondary"):
+                            st.session_state[f"mode_{zone}_{selected_kw}"] = "question"
+                            st.rerun()
+                    
+                    current_mode = st.session_state.get(f"mode_{zone}_{selected_kw}", "quiz")
+                    
+                    if current_mode == "quiz":
+                        seed_key = f"quiz_seed_{zone}_{selected_kw}"
+                        quiz_cache_key = f"quiz_cache_{zone}_{selected_kw}"
+                        if seed_key not in st.session_state:
+                            import random as _rnd
+                            st.session_state[seed_key] = _rnd.randint(1, 10**9)
 
-                    if quiz_cache_key in st.session_state:
-                        quiz_obj = st.session_state[quiz_cache_key]
-                        if quiz_obj and isinstance(quiz_obj, dict) and quiz_obj.get("question"):
-                            _render_quiz_card(zone, selected_kw, quiz_obj, language_mode)
+                        # 천체투영관: 영상 제목을 키워드로 받아 영상 내용을 원리로 변환
+                        quiz_principle = selected_kw
+                        if zone == "천체투영관":
+                            try:
+                                from core import PLANETARIUM_VIDEO_INFO
+                                info = PLANETARIUM_VIDEO_INFO.get(selected_kw)
+                                if info:
+                                    vid_row = next(
+                                        (r for r in zone_rows if r.get("title") == selected_kw),
+                                        None,
+                                    )
+                                    desc = vid_row.get("content", "") if vid_row else ""
+                                    quiz_principle = (
+                                        f"천체투영관 상영 영상 '{selected_kw}'에서 배우는 내용\n"
+                                        f"줄거리: {desc}\n"
+                                        f"학습 주제: {info.get('themes', '')}\n"
+                                    )
+                            except Exception as e:
+                                print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
-                            new_quiz_label = {
-                                "한국어": "🔄 다른 문제 만들기",
-                                "English": "🔄 Generate another question",
-                                "日本語": "🔄 別の問題をつくる",
-                                "中文": "🔄 换一道题",
-                            }.get(language_mode, "🔄 Generate another question")
-                            if st.button(new_quiz_label, key=f"quiz_refresh_{zone}_{selected_kw}"):
-                                import random as _rnd
-                                st.session_state[seed_key] = _rnd.randint(1, 10**9)
-                                st.session_state.pop(quiz_cache_key, None)
-                                for k in list(st.session_state.keys()):
-                                    if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
-                                       k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
-                                        st.session_state.pop(k, None)
-                                # 즉시 새 퀴즈 생성
+                        # 선택된 키워드(전시물)의 세부설명 찾기
+                        quiz_detail = ""
+                        for r in zone_rows:
+                            if r.get("title") == selected_kw:
+                                quiz_detail = r.get("detail", "")
+                                break
+
+                        if quiz_cache_key not in st.session_state:
+                            if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                                 _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                 with st.spinner(text["quiz_generating"]):
                                     quiz = generate_quiz(
@@ -1868,79 +1852,87 @@ def render_post_visit_learning(
                                     )
                                     st.session_state[quiz_cache_key] = quiz or {}
                                 st.rerun()
-                        else:
-                            st.warning("퀴즈 생성에 실패했습니다.")
-                            if st.button(f"🔄 {text['make_quiz']}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
-                                st.session_state.pop(quiz_cache_key, None)
-                                st.rerun()
-        else:
-            st.info(text["pick_zone_hint"])
 
-    elif st.session_state.learning_sub_tab == "question":
-        # 전시관 선택 기능 복구
-        selected_zones = _render_zone_selector("question")
+                        if quiz_cache_key in st.session_state:
+                            quiz_obj = st.session_state[quiz_cache_key]
+                            if quiz_obj and isinstance(quiz_obj, dict) and quiz_obj.get("question"):
+                                _render_quiz_card(zone, selected_kw, quiz_obj, language_mode)
 
-        if selected_zones:
-            st.markdown("---")
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
-            for zone in selected_zones:
-                zone_rows = all_zone_rows.get(zone, [])
-                
-                # CSV 데이터가 없으면 직접 다시 로드
-                if not zone_rows:
-                    try:
-                        from core import load_zone_rows_from_csv
-                        zone_rows = load_zone_rows_from_csv(zone)
-                        all_zone_rows[zone] = zone_rows
-                    except Exception as e:
-                        print(f"CSV 직접 로드 오류: {e}")
-                        zone_rows = []
-                
-                st.markdown(f"#### 🎯 {_display_zone_name(zone)}")
-                
-                # 질문 입력
-                user_question = st.text_input(
-                    f"{_display_zone_name(zone)}에 대해 질문하세요",
-                    key=f"question_input_{zone}"
-                )
-
-                if user_question:
-                    _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
+                                new_quiz_label = {
+                                    "한국어": "🔄 다른 문제 만들기",
+                                    "English": "🔄 Generate another question",
+                                    "日本語": "🔄 別の問題をつくる",
+                                    "中文": "🔄 换一道题",
+                                }.get(language_mode, "🔄 Generate another question")
+                                if st.button(new_quiz_label, key=f"quiz_refresh_{zone}_{selected_kw}"):
+                                    import random as _rnd
+                                    st.session_state[seed_key] = _rnd.randint(1, 10**9)
+                                    st.session_state.pop(quiz_cache_key, None)
+                                    for k in list(st.session_state.keys()):
+                                        if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
+                                           k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
+                                            st.session_state.pop(k, None)
+                                    # 즉시 새 퀴즈 생성
+                                    _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
+                                    with st.spinner(text["quiz_generating"]):
+                                        quiz = generate_quiz(
+                                            zone, selected_kw, llm, language_mode,
+                                            variation_seed=st.session_state[seed_key],
+                                            exhibit_detail=quiz_detail,
+                                        )
+                                        st.session_state[quiz_cache_key] = quiz or {}
+                                    st.rerun()
+                            else:
+                                st.warning("퀴즈 생성에 실패했습니다.")
+                                if st.button(f"🔄 {text['make_quiz']}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
+                                    st.session_state.pop(quiz_cache_key, None)
+                                    st.rerun()
                     
-                    # 전시물 정보 컨텍스트 구성
-                    context_parts = []
-                    for r in zone_rows[:10]:
-                        title = r.get("title", "")
-                        content = r.get("content", "")
-                        detail = r.get("detail", "")
-                        if title and content:
-                            context_parts.append(f"[{title}] {content}")
-                            if detail and str(detail).strip() and str(detail).strip().lower() != "nan":
-                                context_parts.append(f"[세부 설명] {detail}")
-                    
-                    context = "\n\n".join(context_parts)
-                    if not context.strip():
-                        st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
-                    else:
-                        # 언어별 답변 지시
-                        lang_instruction = {
-                            "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
-                            "English": "Please answer in English, in a way that children can easily understand.",
-                            "日本語": "子どもにもわかりやすい日本語で答えてください。",
-                            "中文": "请用中文回答，让孩子容易理解。",
-                        }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
-                        prompt = f"""다음은 {_display_zone_name(zone)}의 전시물 정보입니다:
+                    elif current_mode == "question":
+                        # 질문 모드
+                        st.markdown("#### ❓ 질문하기")
+                        user_question = st.text_input(
+                            f"{_display_zone_name(zone)}의 {selected_disp}에 대해 질문하세요",
+                            key=f"question_input_{zone}_{selected_kw}"
+                        )
+
+                        if user_question:
+                            _queue_ga_event("question_asked", {"zone": zone, "language": language_mode})
+                            
+                            # 전시물 정보 컨텍스트 구성
+                            context_parts = []
+                            for r in zone_rows[:10]:
+                                title = r.get("title", "")
+                                content = r.get("content", "")
+                                detail = r.get("detail", "")
+                                if title and content:
+                                    context_parts.append(f"[{title}] {content}")
+                                    if detail and str(detail).strip() and str(detail).strip().lower() != "nan":
+                                        context_parts.append(f"[세부 설명] {detail}")
+                            
+                            context = "\n\n".join(context_parts)
+                            if not context.strip():
+                                st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
+                            else:
+                                # 언어별 답변 지시
+                                lang_instruction = {
+                                    "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
+                                    "English": "Please answer in English, in a way that children can easily understand.",
+                                    "日本語": "子どもにもわかりやすい日本語で答えてください。",
+                                    "中文": "请用中文回答，让孩子容易理解。",
+                                }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
+                                prompt = f"""다음은 {_display_zone_name(zone)}의 {selected_disp} 정보입니다:
 {context}
 
 사용자 질문: {user_question}
 
 {lang_instruction}"""
-                        try:
-                            response = llm.invoke(prompt)
-                            st.markdown(f"**{text['answer_prefix']}:** {response.content}")
-                        except Exception as e:
-                            print(f"학습 질문 답변 오류: {e}")
-                            st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
+                                try:
+                                    response = llm.invoke(prompt)
+                                    st.markdown(f"**{text['answer_prefix']}:** {response.content}")
+                                except Exception as e:
+                                    print(f"학습 질문 답변 오류: {e}")
+                                    st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
         else:
             st.info(text["pick_zone_hint"])
     
