@@ -11,6 +11,13 @@ import requests
 from collections import Counter
 from core import initialize_vector_db, load_zone_rows_from_csv
 
+# 퀴즈 음성 출력 함수 가져오기
+try:
+    from voice import text_to_speech, get_language_code
+except Exception:
+    text_to_speech = None
+    get_language_code = None
+
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
@@ -1986,12 +1993,21 @@ def render_post_visit_learning(
                                     answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{hash(user_question)}"
                                     if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}_{hash(user_question)}"):
                                         try:
-                                            audio = client.audio.speech.create(
-                                                model="tts-1",
-                                                voice="alloy",
-                                                input=answer_text
-                                            )
-                                            st.session_state[answer_audio_key] = audio.content
+                                            if text_to_speech is not None:
+                                                lang_code = get_language_code(language_mode) if get_language_code else "ko"
+                                                audio = text_to_speech(answer_text, language=lang_code)
+                                                if audio:
+                                                    st.session_state[answer_audio_key] = audio
+                                                else:
+                                                    st.warning("음성 생성 실패")
+                                            else:
+                                                # 폴백: 직접 OpenAI TTS 사용
+                                                audio = client.audio.speech.create(
+                                                    model="tts-1",
+                                                    voice="alloy",
+                                                    input=answer_text
+                                                )
+                                                st.session_state[answer_audio_key] = audio.content
                                         except Exception as e:
                                             print(f"답변 TTS 오류: {e}")
                                             st.warning("음성 생성 실패")
