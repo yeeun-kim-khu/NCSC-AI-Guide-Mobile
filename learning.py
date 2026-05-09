@@ -2027,9 +2027,6 @@ def render_post_visit_learning(
                             
                             if answer_audio_key in st.session_state:
                                 st.audio(st.session_state[answer_audio_key], format="audio/mp3")
-                        except Exception as e:
-                            print(f"학습 질문 답변 오류: {e}")
-                            st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
         else:
             st.info(text["pick_zone_hint"])
     
