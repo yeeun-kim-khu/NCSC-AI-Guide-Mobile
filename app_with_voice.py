@@ -506,6 +506,14 @@ def main():
         layout="centered",
     )
 
+    # 실행 중 화면 흐려짐 방지
+    st.markdown("""
+    <style>
+    .stApp.running { opacity: 1 !important; }
+    .stApp.running * { opacity: 1 !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
     if "OPENAI_API_KEY" not in os.environ:
         os.environ["OPENAI_API_KEY"] = st.secrets.get("OPENAI_API_KEY", "")
 
@@ -700,15 +708,15 @@ def main():
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "**국립어린이과학관**에 와줘서 정말 반가워! 🎉\n"
+                "**국립어린이과학관**에 와줘서 정말 반가워! 🎉<br>"
                 "**📅 AI 가이드 사용기간:** 5.22.(금) ~ 5.31.(일)\n\n"
                 "**🏙️ 과학관 안내** — 어디로 갈지 모르겠어? 무슨 프로그램이 있는지 궁금해? 아래 채팅에 물어봐 줘! 🎤 사이드바에서 말로도 물어볼 수 있어.\n\n"
                 "**🥰 또만나 놀이터** — 오늘 본 전시물, 다시 만나러 가볼까?! 재밌는 **퀴즈**도 풀고, 궁금한 거 **질문**도 하고, 인공지능이 만들어주는 신기한 **과학동화**까지 들어볼 수 있어~ 밑에 탭을 눌러봐!\n\n"
                 "**💡 팁:** 화면 왼쪽 위 **>>** 를 누르면 언어·모드 변경, 음성 질문, 설문조사까지 할 수 있어!"
             ),
             "청소년/성인": (
-                "과학이 기쁨이 되는 **국립어린이과학관**에 오신 걸 환영해요! 🎉\n"
-                "편리하고 풍성한 관람을 제공해 드리기 위해, 실시간 안내 AI 가이드 서비스를 시범 운영합니다."
+                "과학이 기쁨이 되는 **국립어린이과학관**에 오신 걸 환영해요! 🎉<br>"
+                "편리하고 풍성한 관람을 제공해 드리기 위해, 실시간 안내 AI 가이드 서비스를 시범 운영합니다.<br>"
                 "**📅 AI 가이드 시범운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
                 "**🏙️ 과학관 안내** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 답해드려요. "
                 "아래 채팅창에 입력하거나, 왼쪽 사이드바에서 🎤 음성으로도 질문할 수 있어요.\n\n"
@@ -719,23 +727,23 @@ def main():
         },
         "English": {
             "어린이": (
-                "Welcome to the **National Children's Science Center**! 🎉\n"
+                "Welcome to the **National Children's Science Center**! 🎉<br>"
                 "**📅 AI Guide Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
                 "**🏙️ Museum Guide** — Don't know where to go? Wondering what's on today? Just ask me "
                 "in the chat below! 🎤 You can also ask out loud using the sidebar.\n\n"
-                "**🥰 또만나 (See-You-Again) Zone** — Want to play with today's exhibits again?! Take fun "
+                "**🥰 Playground** — Want to play with today's exhibits again?! Take fun "
                 "**quizzes**, ask **questions** about anything you're curious about, and listen to magical "
                 "AI-made **science stories**~ Tap the tab below!\n\n"
                 "**💡 Tip:** Tap **>>** on the top left to change language, ask by voice, and take a survey!"
             ),
             "청소년/성인": (
-                "Welcome to the **National Children's Science Center**! 🎉\n"
-                "To provide you with a convenient and enriching visit, we are piloting a real-time AI guide service. "
+                "Welcome to the **National Children's Science Center**! 🎉<br>"
+                "To provide you with a convenient and enriching visit, we are piloting a real-time AI guide service.<br>"
                 "**📅 AI Guide Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
                 "**🏙️ Museum Guide** — I'll answer questions about floors, programs, fees, reservations, "
                 "and directions before or after your visit. Type in the chat below, or use 🎤 voice input "
                 "from the left sidebar.\n\n"
-                "**🥰 또만나 (See-You-Again) Zone** — Want to relive the fun?! Take **quizzes** on the "
+                "**🥰 Playground** — Want to relive the fun?! Take **quizzes** on the "
                 "science behind the exhibits, ask **questions** about anything you're still curious about, "
                 "and listen to magical AI-generated **science stories** in real time~ Switch using the tab below!\n\n"
                 "** Tip:** Tap **>>** on the top left to change Language·mode, ask by voice, and take a survey!"
@@ -743,21 +751,21 @@ def main():
         },
         "日本語": {
             "어린이": (
-                "**国立こども科学館** へようこそ！🎉\n"
-                "**📅 AIガイド利用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
+                "**国立こども科学館** へようこそ！🎉<br>"
+                "**📅 AIガイド利用期間：** 5月22日(金) 〜 5月31日(日)<br>"
                 "**🏙️ 科学館案内** — どこに行こうか迷ってる？今日のプログラムが知りたい？下のチャットで聞いてみてね！"
                 "🎤 サイドバーから声でも聞けるよ。\n\n"
-                "**🥰 또만나 (またね) ゾーン** — 今日見た展示、もう一度遊びに行こうよ！楽しい **クイズ** に答えて、"
+                "**🥰 あそび** — 今日見た展示、もう一度遊びに行こうよ！楽しい **クイズ** に答えて、"
                 "気になることを **質問** して、AIが作る不思議な **サイエンス童話** まで聞いてみよう〜 下のタブを押してみてね！\n\n"
                 "** ヒント：** 画面左上の **>>** を押すと、言語変更・音声質問・アンケートができるよ！"
             ),
             "청소년/성인": (
-                "**国立こども科学館** へようこそ！🎉\n"
-                "便利で充実した見学を提供するため、リアルタイム案内AIガイドサービスを試験運用しています。"
+                "**国立こども科学館** へようこそ！🎉<br>"
+                "便利で充実した見学を提供するため、リアルタイム案内AIガイドサービスを試験運用しています。<br>"
                 "**📅 AIガイド試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
                 "**🏙️ 科学館案内** — フロア案内・プログラム・料金・予約・アクセスなど、来館前後の疑問にお答えします。"
                 "下のチャットに入力、または左サイドバーから 🎤 音声でどうぞ。\n\n"
-                "**🥰 또만나 (またね) ゾーン** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
+                "**🥰 あそび** — 楽しかった科学館、もう一度楽しもう！展示に込められた科学原理をもとに "
                 "**クイズ** を解いて、気になることを **質問** して、AIがリアルタイムで作る不思議な **サイエンス童話** "
                 "まで聴いてみよう〜 下のタブで切り替えてみてね！\n\n"
                 "**💡 ヒント：** 左上の **>>** を押すと、言語(Language)・モード変更、音声質問、アンケートができます！"
@@ -769,7 +777,7 @@ def main():
                 "**📅 AI导览使用期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
                 "**🏙️ 科学馆导览** — 不知道去哪儿？想知道今天有什么节目？在下方聊天框问我吧！"
                 "🎤 也可以从侧边栏用语音问哦。\n\n"
-                "**🥰 또만나 (再见) 展区** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
+                "**🥰 游乐** — 今天看到的展品，再一起玩一次吧！来做有趣的 **测验**、"
                 "**提问** 感兴趣的内容、还能听AI做的奇妙 **科学故事** 哦~ 点点下面的标签试试！\n\n"
                 "**💡 提示：** 点击左上角的 **>>**，可以切换语言、语音提问和填写问卷哦！"
             ),
@@ -779,7 +787,7 @@ def main():
                 "**📅 AI导览试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
                 "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等参观前后的问题随时为你解答。"
                 "在下方聊天框输入，或在侧边栏使用 🎤 语音提问。\n\n"
-                "**🥰 또만나 (再见) 展区** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
+                "**🥰 游乐** — 想再次回味乐趣吗？！基于展品中蕴含的科学原理来做 **测验**、"
                 "自由 **提问** 感兴趣的内容、还能听到AI实时创作的奇妙 **科学故事** 哦~ 请切换下方标签试试！\n\n"
                 "** 提示：** 点击左上角的 **>>**，可以切换语言(Language)、模式、语音提问和填写问卷！"
             ),
@@ -787,9 +795,9 @@ def main():
     }
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
     if isinstance(intro_dict, dict):
-        st.markdown(intro_dict.get(user_mode, intro_dict["청소년/성인"]))
+        st.markdown(intro_dict.get(user_mode, intro_dict["청소년/성인"]), unsafe_allow_html=True)
     else:
-        st.markdown(intro_dict)
+        st.markdown(intro_dict, unsafe_allow_html=True)
 
     if st.session_state.get("mode_language_changed"):
         st.info(ui_text.get(language_mode, ui_text["한국어"])["mode_lang_changed"])
@@ -820,39 +828,47 @@ def main():
                 st.rerun()
     
     # Tab navigation
-    tab1, tab2 = st.tabs([
-        ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
-        ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
-    ])
-    
-    # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
-    # Only switch when both flags are set (ensures it only triggers from sidebar buttons)
-    if st.session_state.get("switch_to_guide_tab") and st.session_state.get("pending_user_input"):
-        try:
-            st.toast("과학관 안내 탭에서 답변을 확인하세요!", icon="🔔")
-        except Exception:
-            pass
-        st.markdown("""
-        <script>
-            (function() {
-                try {
-                    var doc = window.parent.document;
-                    var tabs = doc.querySelectorAll('[role="tab"]');
-                    if (tabs && tabs.length >= 2) { tabs[0].click(); }
-                } catch(e) {}
-            })();
-        </script>
-        """, unsafe_allow_html=True)
+    if "active_tab" not in st.session_state:
+        st.session_state.active_tab = "guide"
+    if st.session_state.get("switch_to_guide_tab"):
+        st.session_state.active_tab = "guide"
         try:
             del st.session_state["switch_to_guide_tab"]
+        except Exception:
+            pass
+
+    tab_labels = [
+        ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
+        ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
+    ]
+    tab_cols = st.columns(2)
+    with tab_cols[0]:
+        tab0_type = "primary" if st.session_state.active_tab == "guide" else "secondary"
+        if st.button(tab_labels[0], key="tab_btn_guide", use_container_width=True, type=tab0_type):
+            st.session_state.active_tab = "guide"
+            st.rerun()
+    with tab_cols[1]:
+        tab1_type = "primary" if st.session_state.active_tab == "learning" else "secondary"
+        if st.button(tab_labels[1], key="tab_btn_learning", use_container_width=True, type=tab1_type):
+            st.session_state.active_tab = "learning"
+            st.rerun()
+
+    # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
+    if st.session_state.get("active_tab") == "guide" and st.session_state.get("pending_user_input"):
+        try:
+            st.toast("과학관 안내 탭에서 답변을 확인하세요!", icon="🔔")
         except Exception:
             pass
         try:
             del st.session_state["pending_user_input"]
         except Exception:
             pass
+    try:
+        del st.session_state["pending_user_input"]
+    except Exception:
+        pass
     
-    with tab1:
+    if st.session_state.active_tab == "guide":
         if "messages" not in st.session_state:
             st.session_state.messages = []
         if "thread_id" not in st.session_state:
@@ -914,27 +930,38 @@ def main():
 
                     # 답변 품질 피드백 (👍/👎)
                     if msg["role"] == "assistant" and not msg.get("feedback_given"):
-                        fb_cols = st.columns([1, 1, 10])
-                        with fb_cols[0]:
-                            if st.button("👍", key=f"fb_up_{i}_{msg.get('intent', 'unknown')}"):
-                                _queue_ga_event("answer_feedback", {
-                                    "feedback": "positive",
-                                    "intent": msg.get("intent", ""),
-                                    "answer_type": msg.get("answer_type", ""),
-                                    "language": language_mode
-                                })
-                                msg["feedback_given"] = True
-                                st.rerun()
-                        with fb_cols[1]:
-                            if st.button("👎", key=f"fb_down_{i}_{msg.get('intent', 'unknown')}"):
+                        fb_neg_key = f"fb_negative_{i}"
+                        if st.session_state.get(fb_neg_key):
+                            st.caption("어떤 문제가 있었나요?")
+                            opts = ["답변이 이상해요", "정보가 틀렸어요", "너무 길어요", "기타"]
+                            selected = st.radio("선택", opts, key=f"fb_opts_{i}", horizontal=True, label_visibility="collapsed")
+                            if st.button("제출", key=f"fb_submit_{i}"):
                                 _queue_ga_event("answer_feedback", {
                                     "feedback": "negative",
+                                    "reason": selected,
                                     "intent": msg.get("intent", ""),
                                     "answer_type": msg.get("answer_type", ""),
                                     "language": language_mode
                                 })
                                 msg["feedback_given"] = True
+                                del st.session_state[fb_neg_key]
                                 st.rerun()
+                        else:
+                            fb_cols = st.columns([1, 1])
+                            with fb_cols[0]:
+                                if st.button("�", key=f"fb_up_{i}_{msg.get('intent', 'unknown')}"):
+                                    _queue_ga_event("answer_feedback", {
+                                        "feedback": "positive",
+                                        "intent": msg.get("intent", ""),
+                                        "answer_type": msg.get("answer_type", ""),
+                                        "language": language_mode
+                                    })
+                                    msg["feedback_given"] = True
+                                    st.rerun()
+                            with fb_cols[1]:
+                                if st.button("👎", key=f"fb_down_{i}_{msg.get('intent', 'unknown')}"):
+                                    st.session_state[fb_neg_key] = True
+                                    st.rerun()
 
                     if msg.get("ui") == "program_buttons":
                         col1, col2, col3, col4 = st.columns(4)
@@ -1168,7 +1195,7 @@ def main():
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
     
-    with tab2:
+    else:
         # Post-visit learning system
         render_post_visit_learning(
             vector_db,

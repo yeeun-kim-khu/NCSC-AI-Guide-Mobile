@@ -87,7 +87,7 @@ ZONE_GROUP_LABELS = {
         "1층놀이터(AI·행동·생각 놀이터)": "1F (AI / Activity / Thinking)",
         "2층(관찰·탐구 놀이터)": "2F (Discovery / Exploration)",
         "천체투영관": "Planetarium",
-        "빛놀이터": "Light Zone",
+        "빛놀이터": "Interactive Theater",
     },
     "日本語": {
         "1층놀이터(AI·행동·생각 놀이터)": "1階 (AI・うごき・考える)",
