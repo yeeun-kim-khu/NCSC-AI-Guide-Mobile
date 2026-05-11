@@ -1177,10 +1177,10 @@ def main():
     else:
         typed_input = None
 
-    # 플로팅 "위로" 버튼 (페이지 스크롤을 맨 위로)
-    components.html("""
+    # 플로팅 "위로" 버튼 (페이지 스크롤을 맨 위로) — parent document에 직접 주입
+    st.markdown("""
     <style>
-      #scroll-top-btn {
+      .scroll-top-btn {
         position: fixed;
         bottom: 80px;
         right: 24px;
@@ -1199,11 +1199,12 @@ def main():
         justify-content: center;
         opacity: 0.85;
         transition: opacity 0.2s;
+        text-decoration: none;
       }
-      #scroll-top-btn:hover { opacity: 1; }
+      .scroll-top-btn:hover { opacity: 1; }
     </style>
-    <button id="scroll-top-btn" onclick="parent.document.querySelector('section.main').scrollTo({top:0,behavior:'smooth'})" title="맨 위로">⬆</button>
-    """, height=0)
+    <a href="#" class="scroll-top-btn" onclick="window.parent.document.querySelector('section.main').scrollTo({top:0,behavior:'smooth'}); return false;" title="맨 위로">⬆</a>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
