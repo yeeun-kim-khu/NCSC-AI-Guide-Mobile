@@ -499,6 +499,7 @@ def main():
     <style>
     .stApp.running { opacity: 1 !important; }
     .stApp.running * { opacity: 1 !important; }
+    [data-testid="chatAvatarIcon-assistant"] { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
