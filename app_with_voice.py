@@ -506,11 +506,8 @@ def main():
         padding: 0 !important;
         margin: 0 !important;
     }
-    [data-testid="stToolbar"] { display: none !important; }
-    [data-testid="stDeployButton"] { display: none !important; }
-    #MainMenu { display: none !important; }
-    footer { display: none !important; }
-    [data-testid="stDecoration"] { display: none !important; }
+    [data-testid="stChatMessage"] { padding-top: 4px !important; padding-bottom: 4px !important; }
+    .stChatMessage { margin-top: 4px !important; margin-bottom: 4px !important; }
     </style>
     """, unsafe_allow_html=True)
 
