@@ -553,9 +553,6 @@ def main():
         debug_show_ko = False
         debug_backtranslate = False
 
-        if st.button("⬆ 맨 위로", key="scroll_top_btn", use_container_width=True):
-            st.rerun()
-
         st.markdown("---")
 
         auto_clear_on_change = True
