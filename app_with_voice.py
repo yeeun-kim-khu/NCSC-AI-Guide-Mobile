@@ -1177,5 +1177,33 @@ def main():
     else:
         typed_input = None
 
+    # 플로팅 "위로" 버튼 (페이지 스크롤을 맨 위로)
+    components.html("""
+    <style>
+      #scroll-top-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        z-index: 9999;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #4F8BF9;
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+      }
+      #scroll-top-btn:hover { opacity: 1; }
+    </style>
+    <button id="scroll-top-btn" onclick="parent.document.querySelector('section.main').scrollTo({top:0,behavior:'smooth'})" title="맨 위로">⬆</button>
+    """, height=0)
+
 if __name__ == "__main__":
     main()
