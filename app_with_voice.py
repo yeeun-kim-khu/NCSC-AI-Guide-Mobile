@@ -56,7 +56,7 @@ ga_code = f"""
   }});
 </script>
 """
-components.html(ga_code, height=0)
+components.html(ga_code, width=1, height=1)
 
 
 def _track_ga_event(event_name: str, params: dict | None = None) -> None:
