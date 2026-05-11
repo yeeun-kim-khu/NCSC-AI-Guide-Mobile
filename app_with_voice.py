@@ -1029,6 +1029,7 @@ def main():
             if any(token in lowered_input for token in ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "입장권", "qr", "정원", "1600"]):
                 st.session_state["pending_ui_reservation_links"] = True
             
+            st.markdown('<div id="answer-anchor"></div>', unsafe_allow_html=True)
             with st.chat_message("assistant"):
                 if intent in ["notice", "basic"]:
                     # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
@@ -1157,23 +1158,26 @@ def main():
                 del st.session_state["pending_ui_reservation_links"]
             st.session_state.messages.append(assistant_msg)
 
-            st.session_state["scroll_to_bottom"] = True
+            st.session_state["scroll_to_answer"] = True
 
-        if st.session_state.get("scroll_to_bottom"):
+        if st.session_state.get("scroll_to_answer"):
             scroll_html = """
             <script>
-              const parentDoc = window.parent.document;
-              const main = parentDoc.querySelector('section.main') || parentDoc.body;
-              if (main && main.scrollHeight) {
-                main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
-              } else {
-                window.parent.scrollTo({ top: parentDoc.documentElement.scrollHeight, behavior: 'smooth' });
+              function scrollToAnswer() {
+                const parentDoc = window.parent.document;
+                const anchor = parentDoc.getElementById('answer-anchor');
+                if (anchor) {
+                  anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
               }
+              // Streamlit auto-scroll이 끝난 뒤 실행되도록 딜레이
+              setTimeout(scrollToAnswer, 300);
+              setTimeout(scrollToAnswer, 800);
             </script>
             """
             data_url = "data:text/html," + urllib.parse.quote(scroll_html)
             st.iframe(data_url, height=1)
-            del st.session_state["scroll_to_bottom"]
+            del st.session_state["scroll_to_answer"]
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
     
