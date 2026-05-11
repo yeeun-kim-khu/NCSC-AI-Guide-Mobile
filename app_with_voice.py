@@ -499,7 +499,13 @@ def main():
     <style>
     .stApp.running { opacity: 1 !important; }
     .stApp.running * { opacity: 1 !important; }
-    [data-testid="chatAvatarIcon-assistant"] { display: none !important; }
+    [data-testid="stChatMessageAvatarAssistant"] {
+        display: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
