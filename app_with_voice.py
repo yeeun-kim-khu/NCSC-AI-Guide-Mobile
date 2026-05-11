@@ -553,6 +553,9 @@ def main():
         debug_show_ko = False
         debug_backtranslate = False
 
+        if st.button("⬆ 맨 위로", key="scroll_top_btn", use_container_width=True):
+            st.rerun()
+
         st.markdown("---")
 
         auto_clear_on_change = True
@@ -910,41 +913,6 @@ def main():
                             if bt:
                                 st.caption(f"BT: {bt}")
 
-                    # 답변 품질 피드백 (👍/👎)
-                    if msg["role"] == "assistant" and not msg.get("feedback_given"):
-                        fb_neg_key = f"fb_negative_{i}"
-                        if st.session_state.get(fb_neg_key):
-                            st.caption("어떤 문제가 있었나요?")
-                            opts = ["답변이 이상해요", "정보가 틀렸어요", "너무 길어요", "기타"]
-                            selected = st.radio("선택", opts, key=f"fb_opts_{i}", horizontal=True, label_visibility="collapsed")
-                            if st.button("제출", key=f"fb_submit_{i}"):
-                                _queue_ga_event("answer_feedback", {
-                                    "feedback": "negative",
-                                    "reason": selected,
-                                    "intent": msg.get("intent", ""),
-                                    "answer_type": msg.get("answer_type", ""),
-                                    "language": language_mode
-                                })
-                                msg["feedback_given"] = True
-                                del st.session_state[fb_neg_key]
-                                st.rerun()
-                        else:
-                            fb_cols = st.columns([1, 1])
-                            with fb_cols[0]:
-                                if st.button("�", key=f"fb_up_{i}_{msg.get('intent', 'unknown')}"):
-                                    _queue_ga_event("answer_feedback", {
-                                        "feedback": "positive",
-                                        "intent": msg.get("intent", ""),
-                                        "answer_type": msg.get("answer_type", ""),
-                                        "language": language_mode
-                                    })
-                                    msg["feedback_given"] = True
-                                    st.rerun()
-                            with fb_cols[1]:
-                                if st.button("👎", key=f"fb_down_{i}_{msg.get('intent', 'unknown')}"):
-                                    st.session_state[fb_neg_key] = True
-                                    st.rerun()
-
                     if msg.get("ui") == "program_buttons":
                         col1, col2, col3, col4 = st.columns(4)
                         with col1:
@@ -1177,34 +1145,6 @@ def main():
     else:
         typed_input = None
 
-    # 플로팅 "위로" 버튼 (페이지 스크롤을 맨 위로) — parent document에 직접 주입
-    st.markdown("""
-    <style>
-      .scroll-top-btn {
-        position: fixed;
-        bottom: 80px;
-        right: 24px;
-        z-index: 9999;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: #4F8BF9;
-        color: white;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0.85;
-        transition: opacity 0.2s;
-        text-decoration: none;
-      }
-      .scroll-top-btn:hover { opacity: 1; }
-    </style>
-    <a href="#" class="scroll-top-btn" onclick="window.parent.document.querySelector('section.main').scrollTo({top:0,behavior:'smooth'}); return false;" title="맨 위로">⬆</a>
-    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
