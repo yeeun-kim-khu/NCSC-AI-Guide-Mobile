@@ -41,14 +41,19 @@ def load_rag_db():
 # ---- Google Analytics 4 ----
 GA_MEASUREMENT_ID = "G-7VS14G0T7P"
 
-# Google Analytics 코드 삽입
+# Google Analytics 코드 삽입 (스트림릿 iframe 우회 적용)
 ga_code = f"""
 <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
-  gtag('config', '{GA_MEASUREMENT_ID}');
+
+  // 구글에게 진짜 앱 주소와 이름을 강제로 인식시킵니다
+  gtag('config', '{GA_MEASUREMENT_ID}', {{
+    page_location: 'https://ncsc-ai-guide-mobile.streamlit.app/',
+    page_title: '국립어린이과학관 AI 가이드'
+  }});
 </script>
 """
 components.html(ga_code, height=0)
