@@ -158,7 +158,8 @@ def _render_privacy_notice_gate() -> None:
         return
 
     notice_md = """
-서비스 이용 전 안내드립니다! 꼭 확인해주세요.
+**AI 가이드 이용 안내**
+서비스 이용 전, 소중한 개인정보 보호를 위해 아래 내용을 꼭 확인해주세요!
 
 **✔️ 입력하신 내용 활용**
 - 적어주신 글·말하신 음성은 **답변을 만들 때만 잠깐** 사용되고, **답변이 끝나면 바로 사라져요.**
@@ -173,6 +174,8 @@ def _render_privacy_notice_gate() -> None:
 - 어린이 친구들은 **성인 보호자와 함께** 이용해 주세요.
 - 음성 기능 사용 전 보호자 동의를 권장합니다.
 
+※ 서비스 개선을 위한 익명 통계 데이터(접속 시간, 클릭 등)는 수집될 수 있습니다.
+
 확인 후 서비스를 이용해 주세요.
 """
 
@@ -186,7 +189,8 @@ def _render_privacy_notice_gate() -> None:
         @st.dialog("이용 안내", width="large")
         def _privacy_dialog():
             st.markdown(notice_md)
-            if st.button("확인하고 시작하기 ✨", type="primary", use_container_width=True):
+            agreed = st.checkbox("위 내용을 확인했으며 이에 동의합니다")
+            if agreed and st.button("시작하기", type="primary", use_container_width=True):
                 _ack()
 
         _privacy_dialog()
@@ -195,7 +199,8 @@ def _render_privacy_notice_gate() -> None:
     else:
         # 폴백: 페이지 상단 카드 형태
         st.warning(notice_md)
-        if st.button("확인하고 시작하기 ✨", type="primary"):
+        agreed = st.checkbox("위 내용을 확인했으며 이에 동의합니다")
+        if agreed and st.button("시작하기", type="primary"):
             _ack()
         st.stop()
 
