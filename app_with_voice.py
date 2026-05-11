@@ -2,6 +2,7 @@
 import os
 import uuid
 import streamlit as st
+import streamlit.components.v1 as components
 import urllib.parse
 import warnings
 from langchain_openai import ChatOpenAI
@@ -37,36 +38,24 @@ def load_rag_db():
     return vector_db
 
 
-# ---- Google Analytics 4 (privacy-preserving) ----
+# ---- Google Analytics 4 ----
 GA_MEASUREMENT_ID = "G-7VS14G0T7P"
 
-
-def _init_google_analytics() -> None:
-    """Initialize GA4 once per session with de-identification settings."""
-    if st.session_state.get("_ga_initialized"):
-        return
-    ga_script = f"""
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){{dataLayer.push(arguments);}}
-      gtag('js', new Date());
-      gtag('config', '{GA_MEASUREMENT_ID}', {{
-        'anonymize_ip': true,
-        'allow_google_signals': false,
-        'allow_ad_personalization_signals': false,
-        'restricted_data_processing': true,
-        'send_page_view': true,
-        'transport_type': 'beacon'
-      }});
-    </script>
-    """
-    st.markdown(ga_script, unsafe_allow_html=True)
-    st.session_state._ga_initialized = True
+# Google Analytics 코드 삽입
+ga_code = f"""
+<script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{GA_MEASUREMENT_ID}');
+</script>
+"""
+components.html(ga_code, height=0)
 
 
 def _track_ga_event(event_name: str, params: dict | None = None) -> None:
-    """Send a privacy-safe custom event to GA4. No PII or chat content."""
+    """Send a custom event to GA4."""
     safe_params = dict(params or {})
     for key in list(safe_params.keys()):
         if key.lower() in ("user_id", "email", "name", "content", "message", "query"):
@@ -297,8 +286,7 @@ def main():
     # 첫 진입 시 개인정보 안내 팝업 (동의 전 본문 차단)
     _render_privacy_notice_gate()
 
-    # Google Analytics 4 (비식별 설정)
-    _init_google_analytics()
+    # Google Analytics 이벤트 플러시
     _flush_ga_events()
 
     if "language_mode" not in st.session_state:
