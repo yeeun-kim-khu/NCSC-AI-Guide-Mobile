@@ -899,6 +899,24 @@ def main():
                         st.text(msg["content"])
             else:
                 with st.chat_message(msg["role"]):
+                    if enable_voice_output and msg["role"] == "assistant" and msg.get("content"):
+                        lang_code = get_language_code(language_mode)
+                        tts_ns = get_tts_cache_namespace(language=lang_code)
+                        tts_text = msg["content"]
+                        if len(tts_text) > 1200:
+                            tts_text = tts_text[:1200]
+                        cache_key = f"{language_mode}::{tts_ns}::" + str(hash(tts_text))
+                        if cache_key not in st.session_state.tts_cache:
+                            with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
+                                audio_bytes = text_to_speech(tts_text, language=lang_code)
+                                if audio_bytes:
+                                    st.session_state.tts_cache[cache_key] = audio_bytes
+                        audio_bytes = st.session_state.tts_cache.get(cache_key)
+                        if audio_bytes:
+                            if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
+                                _queue_ga_event("tts_played", {"language": language_mode})
+                                autoplay_audio(audio_bytes)
+                            st.audio(audio_bytes, format="audio/mp3")
                     st.markdown(msg["content"])
 
                     # 디버그: 어시스턴트 답변에 KO 원문 / 역번역 캡션 (외국어 모드 전용)
@@ -985,28 +1003,6 @@ def main():
                             with col3:
                                 st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_edu']}](https://www.csc.go.kr/new1/reservation/education_creation.jsp)")
 
-                    if enable_voice_output and msg["role"] == "assistant" and msg.get("content"):
-                        lang_code = get_language_code(language_mode)
-                        tts_ns = get_tts_cache_namespace(language=lang_code)
-
-                        tts_text = msg["content"]
-                        if len(tts_text) > 1200:
-                            tts_text = tts_text[:1200]
-
-                        cache_key = f"{language_mode}::{tts_ns}::" + str(hash(tts_text))
-                        if cache_key not in st.session_state.tts_cache:
-                            with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
-                                audio_bytes = text_to_speech(tts_text, language=lang_code)
-                                if audio_bytes:
-                                    st.session_state.tts_cache[cache_key] = audio_bytes
-
-                        audio_bytes = st.session_state.tts_cache.get(cache_key)
-                        if audio_bytes:
-                            st.audio(audio_bytes, format="audio/mp3")
-
-                            if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
-                                _queue_ga_event("tts_played", {"language": language_mode})
-                                autoplay_audio(audio_bytes)
 
         user_input = None
 
@@ -1029,7 +1025,6 @@ def main():
             if any(token in lowered_input for token in ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "입장권", "qr", "정원", "1600"]):
                 st.session_state["pending_ui_reservation_links"] = True
             
-            st.markdown('<div id="answer-anchor"></div>', unsafe_allow_html=True)
             with st.chat_message("assistant"):
                 if intent in ["notice", "basic"]:
                     # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
@@ -1048,6 +1043,7 @@ def main():
                     })
                     if language_mode == "한국어":
                         ko_original = ""
+                    render_tts_for_answer(answer)
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_show_ko and ko_original:
                         st.caption(f"KO: {ko_original}")
@@ -1070,7 +1066,6 @@ def main():
                             rule_sources = [CSC_URLS.get("이용안내")]
                     rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
                     render_source_buttons(rule_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
                     _t0 = time.time()
@@ -1119,13 +1114,13 @@ def main():
                         "user_mode": user_mode
                     })
 
+                    render_tts_for_answer(answer)
                     st.markdown(answer)
                     if language_mode != "한국어" and debug_backtranslate:
                         bt = _backtranslate_to_korean_cached(answer, language_mode)
                         if bt:
                             st.caption(f"BT: {bt}")
                     render_source_buttons(rag_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
                     
                     # 디버깅 정보 표시 (답변 뒤)
                     debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"
@@ -1158,26 +1153,6 @@ def main():
                 del st.session_state["pending_ui_reservation_links"]
             st.session_state.messages.append(assistant_msg)
 
-            st.session_state["scroll_to_answer"] = True
-
-        if st.session_state.get("scroll_to_answer"):
-            scroll_html = """
-            <script>
-              function scrollToAnswer() {
-                const parentDoc = window.parent.document;
-                const anchor = parentDoc.getElementById('answer-anchor');
-                if (anchor) {
-                  anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }
-              // Streamlit auto-scroll이 끝난 뒤 실행되도록 딜레이
-              setTimeout(scrollToAnswer, 300);
-              setTimeout(scrollToAnswer, 800);
-            </script>
-            """
-            data_url = "data:text/html," + urllib.parse.quote(scroll_html)
-            st.iframe(data_url, height=1)
-            del st.session_state["scroll_to_answer"]
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
     
