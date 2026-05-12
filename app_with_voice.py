@@ -1079,19 +1079,7 @@ def main():
                     "user_mode": user_mode
                 })
 
-            # Step 2: TTS 미리 캐시 (채팅 버블 외부 — 스피너 표시 후 캐시 저장)
-            if enable_voice_output and answer:
-                _tts_lang = get_language_code(language_mode)
-                _tts_ns = get_tts_cache_namespace(language=_tts_lang)
-                _tts_text = answer[:1200] if len(answer) > 1200 else answer
-                _tts_key = f"{language_mode}::{_tts_ns}::" + str(hash(_tts_text))
-                if _tts_key not in st.session_state.tts_cache:
-                    with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
-                        _tts_audio = text_to_speech(_tts_text, language=_tts_lang)
-                        if _tts_audio:
-                            st.session_state.tts_cache[_tts_key] = _tts_audio
-
-            # Step 3: 채팅 버블 렌더링 (TTS 캐시로 즉시 표시 → 자동스크롤 정상 동작)
+            # Step 2: 채팅 버블 렌더링 (즉시 표시 → 자동스크롤 정상 동작)
             with st.chat_message("assistant"):
                 st.markdown(answer)
                 if language_mode != "한국어" and debug_show_ko and ko_original:
@@ -1116,7 +1104,6 @@ def main():
                                 with st.container(height=400):
                                     st.text(debug_info)
                             st.session_state.messages.append({"role": "debug", "content": debug_info})
-                render_tts_for_answer(answer)
 
             answer_type = "rule_based" if intent in ["notice", "basic"] else "llm_rag"
             assistant_msg = {"role": "assistant", "content": answer, "intent": intent, "answer_type": answer_type}
@@ -1135,6 +1122,7 @@ def main():
                 assistant_msg["ui"] = "reservation_links"
                 del st.session_state["pending_ui_reservation_links"]
             st.session_state.messages.append(assistant_msg)
+            render_tts_for_answer(answer)
 
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
