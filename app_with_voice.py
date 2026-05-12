@@ -1026,10 +1026,10 @@ def main():
                 else:
                     if any(k in lowered for k in ["오시는길", "오는길", "교통", "길찾기", "주소", "위치"]):
                         rule_sources = [CSC_URLS.get("오시는길")]
+                    elif "천체투영관" in lowered:
+                        rule_sources = [CSC_URLS.get("천체투영관")]
                     elif any(k in lowered for k in ["예약", "예매", "단체", "개인", "교육"]):
                         rule_sources = [CSC_URLS.get("예약안내"), CSC_URLS.get("개인예약"), CSC_URLS.get("단체예약"), CSC_URLS.get("교육예약")]
-                    elif any(k in lowered for k in ["천체투영관"]):
-                        rule_sources = [CSC_URLS.get("천체투영관")]
                     else:
                         rule_sources = [CSC_URLS.get("이용안내")]
                 rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
@@ -1144,6 +1144,7 @@ def main():
         )
         if typed_input and not st.session_state.get("pending_user_input"):
             st.session_state["pending_user_input"] = typed_input
+            st.rerun()
     else:
         typed_input = None
 

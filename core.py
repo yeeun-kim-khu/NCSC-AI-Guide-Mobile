@@ -215,6 +215,10 @@ def classify_basic_category(message: str) -> str:
     if any(k in lowered for k in ["재입장", "다시 들어", "다시 입장", "나갔다", "나갔다가", "재입국", "다시 와도"]):
         return "reentry_policy"
 
+    # 천체투영관 예약/예매 → planetarium_timetable (reservation_guide보다 우선)
+    if "천체투영관" in lowered and any(k in lowered for k in ["예약", "예매"]):
+        return "planetarium_timetable"
+
     rules = [
         # 가장 구체적인 카테고리 먼저
         ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
@@ -620,7 +624,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 예약 기본 안내
 - 하루 입장 인원은 **최대 1,600명**으로 제한됩니다.
 - **홈페이지 사전예약이 원칙**이며, 잔여석에 한해 현장 판매가 일부 진행됩니다.
-- 🚫 **전화 예약은 불가능**합니다. 모든 예약은 홈페이지(www.csc.go.kr)에서!
+- 🚫 **전화 예약은 불가능**합니다. 모든 예약은 [홈페이지](https://www.csc.go.kr)에서!
 
 ### (중요) 어린이 동반 없는 성인/청소년 관람객 안내
 - **어린이(신체연령 초등학생 이하)를 동반하지 않은 성인 및 청소년**은 사전 협의 필요.
