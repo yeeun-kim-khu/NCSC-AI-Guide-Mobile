@@ -894,6 +894,10 @@ def main():
                     autoplay_audio(audio_bytes)
                 st.audio(audio_bytes, format="audio/mp3")
 
+        last_assistant_idx = max(
+            (j for j, m in enumerate(st.session_state.messages) if m["role"] == "assistant"),
+            default=-1
+        )
         for i, msg in enumerate(st.session_state.messages):
             if msg["role"] == "debug":
                 with st.expander(ui_text.get(language_mode, ui_text["한국어"])["debug_tool_calls"]):
@@ -935,7 +939,7 @@ def main():
                                 st.session_state["pending_user_input"] = "빛놀이터 자세히 알려줘"
                                 st.rerun()
 
-                    if enable_voice_output and msg["role"] == "assistant" and msg.get("content"):
+                    if enable_voice_output and msg["role"] == "assistant" and msg.get("content") and i == last_assistant_idx:
                         lang_code = get_language_code(language_mode)
                         tts_ns = get_tts_cache_namespace(language=lang_code)
                         tts_text = msg["content"]
