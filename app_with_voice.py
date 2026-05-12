@@ -1059,7 +1059,7 @@ def main():
                         _lang_override = {
                             "English": "[REQUIRED OUTPUT LANGUAGE: English] You MUST answer ENTIRELY in English, even though the question above may be in Korean. Translate place names using the official glossary in the system prompt (e.g., AI놀이터 → AI Zone). Do NOT output Korean text.",
                             "日本語": "[出力言語指定: 日本語] 上の質問が韓国語であっても、必ず日本語だけで答えてください。場所名はシステムプロンプトのグロッサリーに従い、「日本語名称 (English Official Name)」の形式で記してください（例: 考えるゾーン (Thinking Zone)）。韓国語文字をそのまま出力しないこと。",
-                            "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以"中文名称 (English Official Name)"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
+                            "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以\"中文名称 (English Official Name)\"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
                         }.get(language_mode, "")
                         if _lang_override:
                             llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
