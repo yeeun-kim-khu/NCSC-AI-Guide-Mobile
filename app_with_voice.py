@@ -946,11 +946,6 @@ def main():
                         if len(tts_text) > 1200:
                             tts_text = tts_text[:1200]
                         cache_key = f"{language_mode}::{tts_ns}::" + str(hash(tts_text))
-                        if cache_key not in st.session_state.tts_cache:
-                            with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["tts_rendering"]):
-                                audio_bytes = text_to_speech(tts_text, language=lang_code)
-                                if audio_bytes:
-                                    st.session_state.tts_cache[cache_key] = audio_bytes
                         audio_bytes = st.session_state.tts_cache.get(cache_key)
                         if audio_bytes:
                             if st.button(ui_text.get(language_mode, ui_text["한국어"])["tts_listen"], key=f"tts_play_msg_{i}_{cache_key}"):
