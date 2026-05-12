@@ -1033,7 +1033,6 @@ def main():
                             rule_sources = [CSC_URLS.get("이용안내")]
                     rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
                     render_source_buttons(rule_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
                 else:
                     # LLM + RAG + Crawling 엔진 동작
                     _t0 = time.time()
@@ -1088,7 +1087,6 @@ def main():
                         if bt:
                             st.caption(f"BT: {bt}")
                     render_source_buttons(rag_sources, language_mode=language_mode)
-                    render_tts_for_answer(answer)
                     
                     # 디버깅 정보 표시 (답변 뒤)
                     debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"
@@ -1120,6 +1118,7 @@ def main():
                 assistant_msg["ui"] = "reservation_links"
                 del st.session_state["pending_ui_reservation_links"]
             st.session_state.messages.append(assistant_msg)
+            render_tts_for_answer(answer)
 
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
