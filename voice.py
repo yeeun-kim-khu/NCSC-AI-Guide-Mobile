@@ -1,11 +1,13 @@
 # voice.py - 음성 입출력 처리 (voice_handler.py에서 이름 변경)
 import os
+import asyncio
 from openai import OpenAI
 import tempfile
 import streamlit as st
 import base64
 import re
 import requests
+import edge_tts
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -71,46 +73,35 @@ def speech_to_text(audio_bytes):
             pass
         return None
 
-def _tts_elevenlabs(text: str, language: str = "ko") -> bytes | None:
-    """ElevenLabs TTS 호출. 키가 없거나 실패하면 None."""
-    eleven_key = _get_secret("ELEVENLABS_API_KEY")
-    if not eleven_key:
-        return None
+EDGE_TTS_VOICES = {
+    "ko": "ko-KR-SunHiNeural",
+    "en": "en-US-AriaNeural",
+    "ja": "ja-JP-NanamiNeural",
+    "zh": "zh-CN-XiaoxiaoNeural",
+}
 
-    voice_map = {
-        "ko": "uyVNoMrnUku1dZyVEXwD",
-        "en": "8LVfoRdkh4zgjr8v5ObE",
-        "ja": "3JDquces8E8bkmvbh6Bc",
-        "zh": "vZZLclMx4wouUtKBRfZn",
-    }
-    voice_id = _get_secret("ELEVENLABS_VOICE_ID") or voice_map.get(language, "uyVNoMrnUku1dZyVEXwD")
-    model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
 
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    headers = {
-        "xi-api-key": eleven_key,
-        "accept": "audio/mpeg",
-        "content-type": "application/json",
-    }
-    payload = {
-        "text": text,
-        "model_id": model_id,
-        "voice_settings": {
-            "stability": 0.45,
-            "similarity_boost": 0.75,
-            "style": 0.0,
-            "use_speaker_boost": True,
-        },
-    }
+async def _tts_edge_async(text: str, voice: str) -> bytes:
+    communicate = edge_tts.Communicate(text, voice)
+    audio_data = b""
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_data += chunk["data"]
+    return audio_data
+
+
+def _tts_edge(text: str, language: str = "ko") -> bytes | None:
+    """edge-tts (Microsoft Neural, 무료, 빠름)."""
+    voice = EDGE_TTS_VOICES.get(language, "ko-KR-SunHiNeural")
     try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=60)
-        if resp.status_code == 200 and resp.content:
-            print(f"[TTS] ElevenLabs voice_id={voice_id} model={model_id} ok ({len(resp.content)} bytes)")
-            return resp.content
-        print(f"[TTS] ElevenLabs error status={resp.status_code} body={resp.text[:300]}")
-        return None
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        audio_data = loop.run_until_complete(_tts_edge_async(text, voice))
+        loop.close()
+        print(f"[TTS] edge-tts voice={voice} ok ({len(audio_data)} bytes)")
+        return audio_data if audio_data else None
     except Exception as e:
-        print(f"[TTS] ElevenLabs exception: {e}")
+        print(f"[TTS] edge-tts exception: {e}")
         return None
 
 
@@ -133,13 +124,13 @@ def _tts_openai(text: str, language: str = "ko") -> bytes | None:
 
 
 def text_to_speech(text, language="ko"):
-    """TTS 우선순위: ElevenLabs(키 있을 때) → OpenAI 폴백."""
+    """TTS 우선순위: edge-tts(빠름, 무료) → OpenAI 폴백."""
     text = preprocess_tts_text(text, language=language)
     if not text:
         return None
 
-    # 1) ElevenLabs (사용자 설정 음성)
-    audio = _tts_elevenlabs(text, language=language)
+    # 1) edge-tts (Microsoft Neural, 무료)
+    audio = _tts_edge(text, language=language)
     if audio:
         return audio
 
@@ -148,22 +139,9 @@ def text_to_speech(text, language="ko"):
 
 
 def get_tts_cache_namespace(language: str = "ko") -> str:
-    """캐시 키. ElevenLabs 사용 시 voice_id를 키에 포함해야 음성 변경 시 재생성됨."""
-    eleven_key = _get_secret("ELEVENLABS_API_KEY")
-    if eleven_key:
-        voice_map = {
-            "ko": "uyVNoMrnUku1dZyVEXwD",
-            "en": "8LVfoRdkh4zgjr8v5ObE",
-            "ja": "3JDquces8E8bkmvbh6Bc",
-            "zh": "vZZLclMx4wouUtKBRfZn",
-        }
-        voice_id = _get_secret("ELEVENLABS_VOICE_ID") or voice_map.get(language, "uyVNoMrnUku1dZyVEXwD")
-        model_id = _get_secret("ELEVENLABS_MODEL_ID") or "eleven_multilingual_v2"
-        return f"elevenlabs::{model_id}::{voice_id}"
-
-    voice_map = {"ko": "alloy", "en": "nova", "ja": "shimmer", "zh": "fable"}
-    voice = voice_map.get(language, "alloy")
-    return f"openai::tts-1::{voice}"
+    """캐시 키. 음성 변경 시 자동 재생성되도록 voice 이름 포함."""
+    voice = EDGE_TTS_VOICES.get(language, "ko-KR-SunHiNeural")
+    return f"edge-tts::{voice}"
 
 def get_language_code(language_mode):
     """Convert language mode to language code"""

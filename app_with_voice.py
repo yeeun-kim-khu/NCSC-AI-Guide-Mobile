@@ -992,90 +992,90 @@ def main():
             if any(token in lowered_input for token in ["예약", "예매", "방문신청", "방문 신청", "단체예약", "개인예약", "교육예약", "입장권", "qr", "정원", "1600"]):
                 st.session_state["pending_ui_reservation_links"] = True
             
-            # Step 1: 답변 생성 (채팅 버블 외부)
+            # 답변 생성 + 렌더링: 버블 안에서 스피너 실행 → 버블 밖 공백 없음, 자동스크롤 정상
             _t0 = time.time()
             ko_original = ""
             rule_sources = []
             rag_sources = []
             rag_context = ""
             result = None
+            answer = ""
 
-            if intent in ["notice", "basic"]:
-                # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
-                with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["spinner_rule"]):
-                    answer, ko_original = answer_rule_based_localized(
-                        intent, user_input, user_mode, language_mode
-                    )
-                log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
-                _track_ga_event("answer_delivered", {
-                    "intent": intent,
-                    "answer_type": "rule_based",
-                    "language": language_mode,
-                    "user_mode": user_mode
-                })
-                if language_mode == "한국어":
-                    ko_original = ""
-                lowered = user_input.lower()
-                if intent == "notice":
-                    rule_sources = [CSC_URLS.get("공지사항")]
-                else:
-                    if any(k in lowered for k in ["오시는길", "오는길", "교통", "길찾기", "주소", "위치"]):
-                        rule_sources = [CSC_URLS.get("오시는길")]
-                    elif "천체투영관" in lowered:
-                        rule_sources = [CSC_URLS.get("천체투영관")]
-                    elif any(k in lowered for k in ["예약", "예매", "단체", "개인", "교육"]):
-                        rule_sources = [CSC_URLS.get("예약안내"), CSC_URLS.get("개인예약"), CSC_URLS.get("단체예약"), CSC_URLS.get("교육예약")]
-                    else:
-                        rule_sources = [CSC_URLS.get("이용안내")]
-                rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
-            else:
-                # LLM + RAG + Crawling 엔진 동작
-                with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
-                    if st.session_state.get("directions_origin"):
-                        origin = st.session_state.get("directions_origin")
-                        del st.session_state["directions_origin"]
-                        user_input = (
-                            f"출발지: {origin}\n"
-                            "목적지: 국립어린이과학관(국립어린이과학관, 서울 종로구 창경궁로 215)\n"
-                            "요청: 대중교통(지하철/버스) 기준으로 가장 쉬운 경로를 단계별로 자세하고 친절하게 안내해줘. "
-                            "출입구/도보 이동/환승 포인트가 있으면 같이 알려줘. "
-                            "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.csc.go.kr) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
-                        )
-                    # FAISS RAG에서 관련 정보 사전 검색하여 컨텍스트 주입
-                    retrieved_docs = vector_db.similarity_search(user_input, k=3)
-                    rag_context = "\n\n".join([f"[{doc.metadata.get('source', 'N/A')}]\n{doc.page_content}" for doc in retrieved_docs])
-                    rag_sources = [doc.metadata.get("source", "N/A") for doc in retrieved_docs if getattr(doc, "metadata", None)]
-                    rag_sources = [s for s in dict.fromkeys([s for s in rag_sources if s])]
-                    # 시스템 프롬프트와 RAG 컨텍스트를 시스템 메시지로 추가
-                    config = {"configurable": {"thread_id": st.session_state.thread_id}}
-                    # 외국어 모드에서 FAQ 트리거가 한국어일 경우에도 LLM이 반드시 대상 언어로 답하도록 강제 프리픽스 추가
-                    llm_user_input = user_input
-                    if language_mode != "한국어":
-                        _lang_override = {
-                            "English": "[REQUIRED OUTPUT LANGUAGE: English] You MUST answer ENTIRELY in English, even though the question above may be in Korean. Translate place names using the official glossary in the system prompt (e.g., AI놀이터 → AI Zone). Do NOT output Korean text.",
-                            "日本語": "[出力言語指定: 日本語] 上の質問が韓国語であっても、必ず日本語だけで答えてください。場所名はシステムプロンプトのグロッサリーに従い、「日本語名称 (English Official Name)」の形式で記してください（例: 考えるゾーン (Thinking Zone)）。韓国語文字をそのまま出力しないこと。",
-                            "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以\"中文名称 (English Official Name)\"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
-                        }.get(language_mode, "")
-                        if _lang_override:
-                            llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
-                    messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
-                    # 이전 대화 내용 포함 (최근 10개 메시지, user/assistant만)
-                    for hist_msg in st.session_state.messages[-10:]:
-                        if hist_msg["role"] in ("user", "assistant"):
-                            messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
-                    messages.append({"role": "user", "content": llm_user_input})
-                    result = agent.invoke({"messages": messages}, config=config)
-                    answer = result["messages"][-1].content
-                log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
-                _track_ga_event("answer_delivered", {
-                    "intent": intent,
-                    "answer_type": "llm_rag",
-                    "language": language_mode,
-                    "user_mode": user_mode
-                })
-
-            # Step 2: 채팅 버블 렌더링 (즉시 표시 → 자동스크롤 정상 동작)
             with st.chat_message("assistant"):
+                if intent in ["notice", "basic"]:
+                    # 규칙 기반 엔진 동작 (RAG/LLM 미사용, 속도 최적화)
+                    with st.spinner(ui_text.get(language_mode, ui_text["한국어"])["spinner_rule"]):
+                        answer, ko_original = answer_rule_based_localized(
+                            intent, user_input, user_mode, language_mode
+                        )
+                    log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
+                    _track_ga_event("answer_delivered", {
+                        "intent": intent,
+                        "answer_type": "rule_based",
+                        "language": language_mode,
+                        "user_mode": user_mode
+                    })
+                    if language_mode == "한국어":
+                        ko_original = ""
+                    lowered = user_input.lower()
+                    if intent == "notice":
+                        rule_sources = [CSC_URLS.get("공지사항")]
+                    else:
+                        if any(k in lowered for k in ["오시는길", "오는길", "교통", "길찾기", "주소", "위치"]):
+                            rule_sources = [CSC_URLS.get("오시는길")]
+                        elif "천체투영관" in lowered:
+                            rule_sources = [CSC_URLS.get("천체투영관")]
+                        elif any(k in lowered for k in ["예약", "예매", "단체", "개인", "교육"]):
+                            rule_sources = [CSC_URLS.get("예약안내"), CSC_URLS.get("개인예약"), CSC_URLS.get("단체예약"), CSC_URLS.get("교육예약")]
+                        else:
+                            rule_sources = [CSC_URLS.get("이용안내")]
+                    rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
+                else:
+                    # LLM + RAG + Crawling 엔진 동작
+                    with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
+                        if st.session_state.get("directions_origin"):
+                            origin = st.session_state.get("directions_origin")
+                            del st.session_state["directions_origin"]
+                            user_input = (
+                                f"출발지: {origin}\n"
+                                "목적지: 국립어린이과학관(국립어린이과학관, 서울 종로구 창경궁로 215)\n"
+                                "요청: 대중교통(지하철/버스) 기준으로 가장 쉬운 경로를 단계별로 자세하고 친절하게 안내해줘. "
+                                "출입구/도보 이동/환승 포인트가 있으면 같이 알려줘. "
+                                "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.csc.go.kr) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
+                            )
+                        # FAISS RAG에서 관련 정보 사전 검색하여 컨텍스트 주입
+                        retrieved_docs = vector_db.similarity_search(user_input, k=3)
+                        rag_context = "\n\n".join([f"[{doc.metadata.get('source', 'N/A')}]\n{doc.page_content}" for doc in retrieved_docs])
+                        rag_sources = [doc.metadata.get("source", "N/A") for doc in retrieved_docs if getattr(doc, "metadata", None)]
+                        rag_sources = [s for s in dict.fromkeys([s for s in rag_sources if s])]
+                        # 시스템 프롬프트와 RAG 컨텍스트를 시스템 메시지로 추가
+                        config = {"configurable": {"thread_id": st.session_state.thread_id}}
+                        # 외국어 모드에서 FAQ 트리거가 한국어일 경우에도 LLM이 반드시 대상 언어로 답하도록 강제 프리픽스 추가
+                        llm_user_input = user_input
+                        if language_mode != "한국어":
+                            _lang_override = {
+                                "English": "[REQUIRED OUTPUT LANGUAGE: English] You MUST answer ENTIRELY in English, even though the question above may be in Korean. Translate place names using the official glossary in the system prompt (e.g., AI놀이터 → AI Zone). Do NOT output Korean text.",
+                                "日本語": "[出力言語指定: 日本語] 上の質問が韓国語であっても、必ず日本語だけで答えてください。場所名はシステムプロンプトのグロッサリーに従い、「日本語名称 (English Official Name)」の形式で記してください（例: 考えるゾーン (Thinking Zone)）。韓国語文字をそのまま出力しないこと。",
+                                "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以\"中文名称 (English Official Name)\"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
+                            }.get(language_mode, "")
+                            if _lang_override:
+                                llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
+                        messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
+                        # 이전 대화 내용 포함 (최근 10개 메시지, user/assistant만)
+                        for hist_msg in st.session_state.messages[-10:]:
+                            if hist_msg["role"] in ("user", "assistant"):
+                                messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
+                        messages.append({"role": "user", "content": llm_user_input})
+                        result = agent.invoke({"messages": messages}, config=config)
+                        answer = result["messages"][-1].content
+                    log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
+                    _track_ga_event("answer_delivered", {
+                        "intent": intent,
+                        "answer_type": "llm_rag",
+                        "language": language_mode,
+                        "user_mode": user_mode
+                    })
+
                 st.markdown(answer)
                 if language_mode != "한국어" and debug_show_ko and ko_original:
                     st.caption(f"KO: {ko_original}")
@@ -1099,6 +1099,7 @@ def main():
                                 with st.container(height=400):
                                     st.text(debug_info)
                             st.session_state.messages.append({"role": "debug", "content": debug_info})
+                render_tts_for_answer(answer)
 
             answer_type = "rule_based" if intent in ["notice", "basic"] else "llm_rag"
             assistant_msg = {"role": "assistant", "content": answer, "intent": intent, "answer_type": answer_type}
@@ -1117,7 +1118,6 @@ def main():
                 assistant_msg["ui"] = "reservation_links"
                 del st.session_state["pending_ui_reservation_links"]
             st.session_state.messages.append(assistant_msg)
-            render_tts_for_answer(answer)
 
             
             # Voice output is rendered alongside assistant messages above (stable across reruns)
