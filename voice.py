@@ -74,7 +74,7 @@ def speech_to_text(audio_bytes):
         return None
 
 EDGE_TTS_VOICES = {
-    "ko": "ko-KR-SunHiNeural",
+    "ko": "ko-KR-JiMinNeural",
     "en": "en-US-AriaNeural",
     "ja": "ja-JP-NanamiNeural",
     "zh": "zh-CN-XiaoxiaoNeural",
