@@ -1896,7 +1896,40 @@ def search_csc_live_info(keyword: str) -> str:
         return f"Observation: '{keyword}' 페이지 로드 중 오류 발생: {str(e)}"
 
 
+def _load_notices_cache(limit: int = 5) -> list[tuple[str, str]] | None:
+    """data/notices_cache.json 에서 공지 목록 로드. 2시간 이상 지났으면 None 반환."""
+    import json as _json
+    cache_path = os.path.join(os.path.dirname(__file__), "data", "notices_cache.json")
+    try:
+        if not os.path.exists(cache_path):
+            return None
+        raw = open(cache_path, encoding="utf-8").read()
+        data = _json.loads(raw)
+        fetched_at_str = data.get("fetched_at", "")
+        if fetched_at_str:
+            fetched_at = datetime.fromisoformat(fetched_at_str)
+            age_hours = (datetime.now(timezone.utc) - fetched_at).total_seconds() / 3600
+            if age_hours > 2:
+                print(f"[notices_cache] {age_hours:.1f}h 경과 — 라이브 크롤링 시도")
+                return None
+        notices = data.get("notices", [])
+        return [(n["title"], n["href"]) for n in notices[:limit] if n.get("title") and n.get("href")]
+    except Exception as e:
+        print(f"[notices_cache] 읽기 오류: {e}")
+        return None
+
+
 def get_latest_notices_text(limit: int = 5) -> str:
+    # 1) GitHub Actions가 사전 수집한 캐시 파일 우선 사용
+    cached = _load_notices_cache(limit)
+    if cached:
+        lines = ["최근 공지사항을 정리해드릴게요! (공식 홈페이지 기준)", ""]
+        for i, (title, href) in enumerate(cached, start=1):
+            lines.append(f"{i}. {title}\n- {href}")
+        lines.append("\n원하시면 \"공지 1번 자세히\"처럼 번호를 말해주면 본문도 요약해서 보여줄게요.")
+        return "\n".join(lines)
+
+    # 2) 캐시 없으면 라이브 크롤링 (Streamlit Cloud에서 실패할 수 있음)
     url = CSC_URLS.get("공지사항")
     if not url:
         return "공지사항 URL을 찾을 수 없습니다."
