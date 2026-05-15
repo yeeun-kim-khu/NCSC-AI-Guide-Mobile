@@ -47,7 +47,7 @@ CSC_URLS = {
     "오시는길": f"{MUSEUM_BASE_URL}/new1/information/direction.jsp",
     "교통안내": f"{MUSEUM_BASE_URL}/new1/information/direction.jsp",
     "자주묻는질문": f"{MUSEUM_BASE_URL}/boardList.do?bbspkid=10&type=F&page=1",
-    "공지사항": f"{MUSEUM_BASE_URL}/boardList.do?bbspkid=22",
+    "공지사항": f"{MUSEUM_BASE_URL}/news/notice",
     
     # 예약
     "예약안내": f"{MUSEUM_BASE_URL}/new1/reservation/guide.jsp",
@@ -285,33 +285,17 @@ def get_today_status() -> str:
 def answer_rule_based(intent: str, message: str, mode: str) -> str:
     """규칙 기반 답변 생성"""
     if intent == "notice":
-        m_num = re.search(r"공지\s*(?P<num>\d+)\s*(번)?\s*(자세히|상세)", message)
-        m_pkid = re.search(r"pkid=(?P<pkid>\d+)", message)
+        notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
+        return f"""공지사항을 안내해드릴게요! 📢
 
-        if m_pkid:
-            return get_notice_detail_text(m_pkid.group("pkid"))
+국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
 
-        if m_num:
-            num = int(m_num.group("num"))
-            cached = st.session_state.get("latest_notices")
-            if isinstance(cached, list) and 1 <= num <= len(cached):
-                _, href = cached[num - 1]
-                m2 = re.search(r"pkid=(?P<pkid>\d+)", href)
-                if m2:
-                    return get_notice_detail_text(m2.group("pkid"))
-            return "최근 공지사항 번호를 찾지 못했어요. 먼저 \"공지사항 알려줘\"라고 물어봐 주세요."
+🔗 **공지사항 바로가기**: {notice_url}
 
-        text = get_latest_notices_text(limit=5)
-        latest = []
-        for line in text.splitlines():
-            m = re.match(r"\d+\.\s+(?P<title>.+)", line.strip())
-            if m:
-                latest.append((m.group("title"), ""))
-            elif line.strip().startswith("-") and latest:
-                latest[-1] = (latest[-1][0], line.strip().lstrip("- "))
-        if latest:
-            st.session_state["latest_notices"] = latest
-        return text
+> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
+
+급한 문의가 있으시면 대표번호로 연락해 주세요.
+📞 **02-3668-3350**"""
     if intent == "basic":
         category = classify_basic_category(message)
         if category == "education_guide":
@@ -2066,354 +2050,32 @@ def _load_education_programs_text() -> str:
         return ""
 
 
-def _load_notices_cache(limit: int = 5) -> list[tuple[str, str]] | None:
-    """data/notices_cache.json 에서 공지 목록 로드. 2시간 이상 지났으면 None 반환."""
-    import json as _json
-    cache_path = os.path.join(os.path.dirname(__file__), "data", "notices_cache.json")
-    try:
-        if not os.path.exists(cache_path):
-            return None
-        raw = open(cache_path, encoding="utf-8").read()
-        data = _json.loads(raw)
-        fetched_at_str = data.get("fetched_at", "")
-        if fetched_at_str:
-            fetched_at = datetime.fromisoformat(fetched_at_str)
-            age_hours = (datetime.now(timezone.utc) - fetched_at).total_seconds() / 3600
-            if age_hours > 2:
-                print(f"[notices_cache] {age_hours:.1f}h 경과 — 라이브 크롤링 시도")
-                return None
-        notices = data.get("notices", [])
-        return [(n["title"], n["href"]) for n in notices[:limit] if n.get("title") and n.get("href")]
-    except Exception as e:
-        print(f"[notices_cache] 읽기 오류: {e}")
-        return None
-
-
 def get_latest_notices_text(limit: int = 5) -> str:
-    # 1) GitHub Actions가 사전 수집한 캐시 파일 우선 사용
-    cached = _load_notices_cache(limit)
-    if cached:
-        lines = ["최근 공지사항을 정리해드릴게요! (공식 홈페이지 기준)", ""]
-        for i, (title, href) in enumerate(cached, start=1):
-            lines.append(f"{i}. {title}\n- {href}")
-        lines.append("\n원하시면 \"공지 1번 자세히\"처럼 번호를 말해주면 본문도 요약해서 보여줄게요.")
-        return "\n".join(lines)
+    notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
+    return f"""공지사항을 안내해드릴게요! 📢
 
-    # 2) 캐시 없으면 라이브 크롤링 (Streamlit Cloud에서 실패할 수 있음)
-    url = CSC_URLS.get("공지사항")
-    if not url:
-        return "공지사항 URL을 찾을 수 없습니다."
+국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
 
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Encoding": "identity",
-            "Connection": "close",
-        }
+🔗 **공지사항 바로가기**: {notice_url}
 
-        html = _fetch_html_bytes(url, headers=headers, must_contain=[b"goView", b"rbbs", b"boardList"])
-        soup = BeautifulSoup(html, "html.parser")
+> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
 
-        links = []
-
-        notice_anchors = soup.select(
-            "div.rbbs_list_sec a[onclick*='goView'], div.rbbs_list a[onclick*='goView'], table a[onclick*='goView']"
-        )
-        if not notice_anchors:
-            notice_anchors = soup.select("a[onclick*='goView']")
-
-        for a in notice_anchors:
-            onclick = a.get("onclick", "")
-            m_full = re.search(
-                r"goView\(\s*'(?P<pkid>\d+)'\s*,\s*'(?P<num>\d+)'\s*,\s*'(?P<page>\d+)'\s*\)",
-                onclick,
-            )
-            m = m_full or re.search(r"goView\(\s*'(?P<pkid>\d+)'", onclick)
-            if not m:
-                continue
-            pkid = m.group("pkid")
-            num = m.group("num") if m_full else "0"
-
-            title_el = a.select_one("div.title_line div.title div.text")
-            title = title_el.get_text(" ", strip=True) if title_el else a.get_text(" ", strip=True)
-            if not title:
-                continue
-
-            if (
-                "요청하신 페이지를 찾을 수 없습니다" in title
-                or "죄송합니다" in title
-                or "이전페이지" in title
-                or "대표번호" in title
-                or "Science Center Information" in title
-                or "국립어린이과학관 메인" in title
-            ):
-                continue
-
-            if len(title) > 120:
-                continue
-
-            href = f"{MUSEUM_BASE_URL}/boardView.do?bbspkid=22&pkid={pkid}&num={num}"
-            links.append((title, href))
-
-        if not links:
-            for a in soup.select("a[href*='boardView.do']"):
-                href = a.get("href", "").strip()
-                title = a.get_text(" ", strip=True)
-                if not href or not title:
-                    continue
-                if href.startswith("/"):
-                    href = f"{MUSEUM_BASE_URL}{href}"
-                elif href.startswith("boardView.do"):
-                    href = f"{MUSEUM_BASE_URL}/{href}"
-                links.append((title, href))
-
-        uniq = []
-        seen = set()
-        for title, href in links:
-            if href in seen:
-                continue
-            seen.add(href)
-            uniq.append((title, href))
-            if len(uniq) >= limit:
-                break
-
-        if not uniq:
-            candidates = []
-            for onclick in re.findall(r"goView\(\s*'\d+'\s*,\s*'\d+'\s*,\s*'\d+'\s*\)", soup.decode() if hasattr(soup, 'decode') else str(soup)):
-                m = re.search(r"goView\(\s*'(?P<pkid>\d+)'\s*,\s*'(?P<num>\d+)'\s*,\s*'(?P<page>\d+)'\s*\)", onclick)
-                if not m:
-                    continue
-                pkid = m.group("pkid")
-                num = m.group("num")
-                href = f"{MUSEUM_BASE_URL}/boardView.do?bbspkid=22&pkid={pkid}&num={num}"
-                candidates.append((pkid, num, href))
-
-            resolved = []
-            for pkid, num, href in candidates:
-                if href in seen:
-                    continue
-                seen.add(href)
-                title = _resolve_notice_title(pkid=pkid, num=num)
-                if not title:
-                    continue
-                resolved.append((title, href))
-                if len(resolved) >= limit:
-                    break
-            uniq = resolved
-
-        if not uniq:
-            return (
-                "현재 공지사항 목록을 자동으로 불러오지 못했어요.\n\n"
-                "아래 공식 공지사항 페이지에서 최신 글을 확인해 주세요.\n"
-                f"- {CSC_URLS.get('공지사항', MUSEUM_BASE_URL)}\n\n"
-                "급한 문의는 대표번호로 연락해 주세요.\n"
-                "- 02-3668-3350"
-            )
-
-        lines = ["최근 공지사항을 정리해드릴게요! (공식 홈페이지 기준)", ""]
-        for i, (title, href) in enumerate(uniq, start=1):
-            lines.append(f"{i}. {title}\n- {href}")
-
-        lines.append("\n원하시면 \"공지 1번 자세히\"처럼 번호를 말해주면 본문도 요약해서 보여줄게요.")
-        return "\n".join(lines)
-    except Exception:
-        return (
-            "현재 공지사항 목록을 자동으로 불러오지 못했어요.\n\n"
-            "아래 공식 공지사항 페이지에서 최신 글을 확인해 주세요.\n"
-            f"- {CSC_URLS.get('공지사항', MUSEUM_BASE_URL)}\n\n"
-            "급한 문의는 대표번호로 연락해 주세요.\n"
-            "- 02-3668-3350"
-        )
-
-
-def _resolve_notice_title(pkid: str, num: str = "0") -> str:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding": "identity",
-        "Connection": "close",
-    }
-    url = f"{MUSEUM_BASE_URL}/boardView.do?bbspkid=22&pkid={pkid}&num={num}"
-
-    try:
-        html = _fetch_html_bytes(url, headers=headers)
-        soup = BeautifulSoup(html, "html.parser")
-        title = soup.select_one("div.sub_contents.sub_depth_content h3")
-        if not title:
-            title = soup.select_one("div.sub_contents.sub_depth_content .sub_tit")
-        title_text = title.get_text(" ", strip=True) if title else ""
-        if not title_text:
-            return ""
-        if (
-            "요청하신 페이지를 찾을 수 없습니다" in title_text
-            or "죄송합니다" in title_text
-            or "Science Center Information" in title_text
-        ):
-            return ""
-        return title_text
-    except Exception:
-        return ""
-
-
-def _build_retry_session() -> requests.Session:
-    session = requests.Session()
-    retries = Retry(
-        total=6,
-        connect=6,
-        read=6,
-        backoff_factor=0.7,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET"],
-        raise_on_status=False,
-    )
-    adapter = HTTPAdapter(max_retries=retries)
-    session.mount("https://", adapter)
-    session.mount("http://", adapter)
-    return session
-
-
-def _read_response_bytes(resp: requests.Response, max_bytes: int = 2_000_000) -> bytes:
-    data = bytearray()
-    try:
-        for chunk in resp.iter_content(chunk_size=64 * 1024):
-            if not chunk:
-                continue
-            data.extend(chunk)
-            if len(data) >= max_bytes:
-                break
-    except Exception:
-        pass
-    return bytes(data)
-
-
-def _fetch_html_bytes(
-    url: str,
-    headers: dict,
-    max_attempts: int = 3,
-    must_contain: list[bytes] | None = None,
-) -> bytes:
-    last_err = None
-    for attempt in range(1, max_attempts + 1):
-        try:
-            session = _build_retry_session()
-            resp = session.get(url, timeout=(10, 25), verify=False, headers=headers, stream=True)
-            resp.raise_for_status()
-            data = _read_response_bytes(resp)
-            if data and (not must_contain or any(tok in data for tok in must_contain)):
-                return data
-        except Exception as e:
-            last_err = e
-
-        try:
-            resp2 = requests.get(url, timeout=(10, 25), verify=False, headers=headers)
-            resp2.raise_for_status()
-            if resp2.content and (not must_contain or any(tok in resp2.content for tok in must_contain)):
-                return resp2.content
-        except Exception as e:
-            last_err = e
-
-        time.sleep(0.6 * attempt)
-
-    raise RuntimeError(str(last_err) if last_err else "unknown error")
-
-
-def _extract_notice_body_text(substance) -> str:
-    """공지 상세 본문 텍스트를 자손 노드 순회 방식으로 추출.
-
-    개선점(클로드 제안 중 유효한 부분만 적용):
-    1) p/span/li 일괄 select() 대신 트리를 한 번만 순회 → 중첩 텍스트 중복 추출 방지
-       (예: <p>안녕<span>하세요</span></p> 가 두 번 나오는 문제)
-    2) <br>는 줄바꿈으로 처리
-    3) div.txc-textbox(점선 강조 박스)는 📌 프리픽스로 강조
-    4) 블록 요소(p/li/div/h*) 경계마다 줄바꿈 추가
-    """
-    BLOCK_TAGS = {"p", "li", "div", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "blockquote", "pre"}
-    SKIP_TAGS = {"script", "style", "noscript"}
-
-    lines: list[str] = []
-    buf: list[str] = []
-
-    def flush(prefix: str = "") -> None:
-        text = "".join(buf).strip()
-        buf.clear()
-        if text:
-            lines.append((prefix + text) if prefix else text)
-
-    def walk(node, in_textbox: bool = False) -> None:
-        from bs4 import NavigableString, Tag
-        for child in node.children:
-            if isinstance(child, NavigableString):
-                buf.append(str(child))
-                continue
-            if not isinstance(child, Tag):
-                continue
-            tag = (child.name or "").lower()
-            if tag in SKIP_TAGS:
-                continue
-            if tag == "br":
-                flush("📌 " if in_textbox else "")
-                continue
-            if tag in BLOCK_TAGS:
-                flush("📌 " if in_textbox else "")
-                walk(child, in_textbox=in_textbox)
-                flush("📌 " if in_textbox else "")
-            else:
-                walk(child, in_textbox=in_textbox)
-
-    walk(substance)
-    flush()
-
-    # 공백 정리 + 빈 줄 압축
-    cleaned = []
-    prev_blank = False
-    for line in lines:
-        s = re.sub(r"\s+", " ", line).strip()
-        if not s:
-            if not prev_blank and cleaned:
-                cleaned.append("")
-                prev_blank = True
-            continue
-        cleaned.append(s)
-        prev_blank = False
-    merged = "\n".join(cleaned).strip()
-    merged = re.sub(r"\n{3,}", "\n\n", merged)
-    return merged
+급한 문의가 있으시면 대표번호로 연락해 주세요.
+📞 **02-3668-3350**"""
 
 
 def get_notice_detail_text(pkid: str) -> str:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding": "identity",
-        "Connection": "close",
-    }
-    url = f"{MUSEUM_BASE_URL}/boardView.do?bbspkid=22&pkid={pkid}&num=0"
+    notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
+    return f"""공지사항을 안내해드릴게요! 📢
 
-    try:
-        html = _fetch_html_bytes(url, headers=headers)
-        soup = BeautifulSoup(html, "html.parser")
+국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
 
-        title = soup.select_one("div.sub_contents.sub_depth_content h3")
-        if not title:
-            title = soup.select_one("div.sub_contents.sub_depth_content .sub_tit")
-        title_text = title.get_text(" ", strip=True) if title else "공지사항"
+🔗 **공지사항 바로가기**: {notice_url}
 
-        substance = soup.select_one("div.rbbs_read_sec div.substance")
-        if not substance:
-            substance = soup.select_one("div.sub_contents.sub_depth_content div.rbbs_read_sec")
+> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
 
-        if not substance:
-            return f"공지 본문을 찾지 못했어요.\n- {url}"
-
-        merged = _extract_notice_body_text(substance)
-        if not merged:
-            merged = substance.get_text("\n", strip=True)
-
-        merged = merged.strip()
-        return f"{title_text}\n\n{merged[:2500]}\n\n출처: {url}"
-    except Exception as e:
-        return f"공지사항 본문을 불러오는 중 오류가 발생했어요: {str(e)}\n- {url}"
+급한 문의가 있으시면 대표번호로 연락해 주세요.
+📞 **02-3668-3350**"""
 
 
 @tool
