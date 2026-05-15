@@ -29,7 +29,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # CONSTANTS - 상수 정의
 # ============================================================================
 
-MUSEUM_BASE_URL = "https://www.csc.go.kr"
+MUSEUM_BASE_URL = "https://www.sciencecenter.go.kr/csc"
 
 # 국립어린이과학관 주요 URL 맵
 CSC_URLS = {
@@ -170,6 +170,8 @@ def route_intent(text: str) -> str:
         "교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실",
         "유아특화교실", "방학과정", "나눔과정", "창경궁 과학",
         "k-사이언스", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학",
+        # 야간관측
+        "야간관측", "야간 관측", "야간 프로그램", "천체관측소", "별 관찰", "별 보기", "별 관측",
     ]
     if any(token in lowered for token in basic_keywords):
         return "basic"
@@ -222,6 +224,10 @@ def classify_basic_category(message: str) -> str:
     # 천체투영관 예약/예매 → planetarium_timetable (reservation_guide보다 우선)
     if "천체투영관" in lowered and any(k in lowered for k in ["예약", "예매"]):
         return "planetarium_timetable"
+
+    # 야간관측 키워드
+    if any(k in lowered for k in ["야간관측", "야간 관측", "야간 프로그램", "천체관측소", "별 관찰", "별 보기", "별 관측"]):
+        return "night_observation"
 
     # 교육 키워드: reservation_guide보다 먼저 잡아야 교육예약이 아닌 교육안내로 분기
     if any(k in lowered for k in ["교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "k-사이언스", "k사이언스", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
@@ -332,9 +338,11 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
             base += """
 
 ## 📋 신청 방법
-- **홈페이지 예약**: [신청콕](https://www.csc.go.kr) 접속 → 교육 → 원하는 과정 선택 → 결제
+- **예약**: [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) 접속 → 날짜·프로그램 선택 → **성명·연락처 입력 후 결제** (회원가입·로그인 불필요)
 - **공지 일정**: 매월 두 번째 수요일 홈페이지 공지
 - **문의**: 과학교실·SW공학교실·수학교실 02-3668-3313, 3318 / 유아특화교실 02-3668-3314
+
+> ⚡ **교육 신청 꿀팁**: 공지 당일 수요일 11시에 신청이 열리는 즉시 **수분 내 마감**되는 경우가 많아요! 정각에 바로 신청하시길 강력 추천드립니다. 오늘 이 안내를 받으셨다면 **이미 예약이 마감됐을 수도 있으니**, 신청콕에서 잔여석을 꼭 확인해 보세요.
 
 특정 프로그램이나 날짜에 대해 더 자세히 알고 싶으시면 말씀해 주세요! 😊"""
             return base
@@ -458,7 +466,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 💬 특정 놀이터가 궁금하면 **"AI놀이터 전시물 뭐 있어?"** 처럼 이름을 말해주세요. 더 자세한 전시물 목록을 찾아드릴게요.
 
-⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지(www.csc.go.kr)에서 확인해 주세요."""
+⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지(www.sciencecenter.go.kr/csc)에서 확인해 주세요."""
 
         if category == "route_by_age":
             return """🧒 연령별 추천 관람 동선
@@ -657,19 +665,79 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 원하시면 "과학쇼 자세히", "전시해설 자세히", "천체투영관 시간표"처럼 말해주면 안내 규정/입장방법까지 더 자세히 설명해줄게요."""
 
+        if category == "night_observation":
+            return """🌙 「서울에서 별 본다」 천체관측 프로그램 안내
+
+> ⚠️ **현재 공사로 인해 프로그램이 중단 중입니다.**
+> 천체관측소 노후 시설 개선 공사 기간: **2026년 5월 15일 ~ 6월 11일**
+> 공사 완료 후 재개될 예정이니 공지사항을 확인해 주세요.
+
+---
+
+### 📌 프로그램 기본 정보
+
+| 항목 | 내용 |
+|---|---|
+| **운영일** | 매주 금요일 야간 |
+| **운영시간** | 20:00 ~ 21:00 (운영일별로 변동, 매달 공지 확인) |
+| **정원** | 25명 |
+| **참가비** | 5,000원 (연령 구분 없음) |
+| **참가대상** | 연나이 4세(2022년생) 이상 어린이 및 보호자 |
+
+### �‍👩‍👧 참가 대상 상세
+
+- **미취학 아동**: 보호자 동반 필수 (예약 시 성인 권종 선택)
+- **초등 3학년 이상**: 단독 참여 가능 (보호자 실내 대기 불가)
+- **연나이 4세 미만(2023년생 이후)**: 보호자 동반해도 참여 불가
+- **성인만 참여**: 불가 (반드시 어린이와 함께 예약)
+- 1인 최대 **4명**까지 신청 가능
+
+### 📋 예약 방법
+[신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) → 신청시작 및 확인 → **천문** → 서울에서 별 본다 → 날짜 선택 → 시간·인원 선택 → 신청하기 → 결제
+
+- **예약 오픈**: 운영일 **7일 전 20:00**
+- **예약 마감**: 운영일 **전날**까지 (당일 예약 불가)
+- **취소 가능**: 당일 **16:00**까지
+- ⚠️ 참여 인원 **7명 미만** 시 프로그램 자동 취소
+
+### 🔭 기상 관련 안내
+
+- 눈·비·구름 등 기상 악화 시 관측 불가 → **대체 프로그램 진행** (사계절 별자리 북 만들기 키트)
+- 운영 여부는 당일 **16시 이후** 확정 / 예약자에게 **문자로 안내**
+- 기상청 예보 기준으로 판단하며, 현장 상황과 다를 수 있음
+
+### ⚠️ 기타 유의사항
+
+- 시작 **15분 전** 입장 시작 / 늦을 경우 입장 어려울 수 있음
+- 과학관은 폐관 후 자동 잠금 → 시간 내 도착 필수
+- 주차장 없음 → 대중교통 이용 권장
+
+📞 문의: **02-3668-3310, 3307**"""
+
         if category == "reservation_guide":
             return """예약안내를 친절하게 정리해서 알려드릴게요! 😊
 
+### 🎟️ 프로그램별 예약 방법
+
+| 프로그램 | 예약처 | 방식 |
+|---|---|---|
+| **상설전시관** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
+| **천체투영관** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
+| **야간관측** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
+| **빛놀이터** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
+| **교육 프로그램** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
+| **단체관람** | [과학관 홈페이지](https://www.sciencecenter.go.kr/csc/) | 100% 사전예약 필수 |
+
 ### 예약 기본 안내
 - 하루 입장 인원은 **최대 1,600명**으로 제한됩니다.
-- **홈페이지 사전예약이 원칙**이며, 잔여석에 한해 현장 판매가 일부 진행됩니다.
-- 🚫 **전화 예약은 불가능**합니다. 모든 예약은 [홈페이지](https://www.csc.go.kr)에서!
+- **사전예약이 원칙**이며, 잔여석에 한해 현장 판매가 일부 진행됩니다.
+- 🚫 **전화 예약은 불가능**합니다.
 
 ### (중요) 어린이 동반 없는 성인/청소년 관람객 안내
 - **어린이(신체연령 초등학생 이하)를 동반하지 않은 성인 및 청소년**은 사전 협의 필요.
 - 방문 **3일 전까지** 방문신청서를 담당자 메일로 발송:
   - 담당자 메일: **proxima11@korea.kr**
-  - 양식: ‘성인 및 청소년 관람객 입장안내’ 게시글 첨부파일 참고
+  - 양식: '성인 및 청소년 관람객 입장안내' 게시글 첨부파일 참고
 
 ### 체험별 예약 안내
 - **상설전시관**: 인터넷 사전예약 우선 / 잔여석에 한해 현장 판매
@@ -871,7 +939,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.csc.go.kr
+- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
 
 ⚠️ 특별 연장·임시 휴관은 바뀔 수 있으니, 출발 전에 공식 홈페이지 공지사항을 꼭 확인해줘!"""
             return f"""🕘 운영시간 안내
@@ -898,7 +966,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.csc.go.kr
+- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
 
 ⚠️ 임시 휴관·특별 연장 운영 등은 변경될 수 있으니, 방문 전 공식 홈페이지에서 꼭 확인해 주세요."""
 
@@ -934,7 +1002,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **전화**: 02-3668-3350
 
-⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.csc.go.kr)에서 한 번 더 확인해줘!"""
+⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.sciencecenter.go.kr/csc)에서 한 번 더 확인해줘!"""
 
             return """🚗 주차 안내
 
@@ -968,7 +1036,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 📍 주소 및 문의
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.csc.go.kr
+- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
 
 ⚠️ 주차장 및 교통편 관련 최신 안내는 방문 전 공식 홈페이지 '오시는 길' 페이지에서 꼭 확인해 주세요."""
 
@@ -1036,7 +1104,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.csc.go.kr
+- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
 
 💬 **출발지를 알려주시면** (예: 강남역, 잠실, OO구) 가장 편한 환승 경로를 구체적으로 안내해드릴게요.
 
@@ -1075,7 +1143,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 #### 📋 확인 자료
 신청·입장 시 연령 확인을 위해 **주민등록등본 같은 서류**를 요청할 수 있어요.
 
-⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지(www.csc.go.kr)나 02-3668-3350에서 한 번 더 확인해 주세요!"""
+⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지(www.sciencecenter.go.kr/csc)나 02-3668-3350에서 한 번 더 확인해 주세요!"""
             return f"""🎂 연나이 계산 안내
 
 국립어린이과학관 입장 및 프로그램 신청 시 사용하는 **연나이**는 다음과 같이 계산합니다.
@@ -1100,7 +1168,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 증빙 자료
 연령 확인을 위해 **주민등록등본** 등 증빙 서류 요청이 있을 수 있습니다.
 
-📞 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
         if category == "group_reservation":
             if mode == "어린이":
@@ -1170,7 +1238,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 사전예약 후 방문 못하게 되면 **꼭 취소**해주세요!
 - 무단 미방문 시 **해당일로부터 6개월간 관람 제한**
 
-📞 단체 문의: **02-3668-3350** / 🌐 www.csc.go.kr"""
+📞 단체 문의: **02-3668-3350** / 🌐 www.sciencecenter.go.kr/csc"""
             return """👨‍👩‍👧‍👦 단체 관람·예약 안내
 
 ### 단체 기준 및 예약 가능 일정
@@ -1244,7 +1312,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - **노쇼(No Show) 페널티**: 무단 미방문 시 해당일로부터 **6개월 관람 제한**
 - 단체관람 시 인솔자의 안전 관리 필수
 
-📞 단체 문의: **02-3668-3350** / 🌐 www.csc.go.kr
+📞 단체 문의: **02-3668-3350** / 🌐 www.sciencecenter.go.kr/csc
 
 ⚠️ 단체별 세부 운영(차량, 도착 시간, 식사 등)은 예약 시 담당자와 별도 협의해 주세요."""
 
@@ -1313,7 +1381,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 장애인 전용 화장실 비치
 - **의무실(1층 로비)** — 편의점 판매 수준 일반의약품 구비, 응급 상황 시 가까운 직원에게 요청
 
-📞 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
         if category == "food_drink":
             if mode == "어린이":
@@ -1385,7 +1453,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 단체 도시락 식사는 예약 시 휴게실 시간대 별도 협의
 - 문의: **02-3668-3350**
 
-⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지(www.csc.go.kr) 또는 대표전화로 확인해 주세요."""
+⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지(www.sciencecenter.go.kr/csc) 또는 대표전화로 확인해 주세요."""
 
         if category == "pet_policy":
             if mode == "어린이":
@@ -1418,7 +1486,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 동반 입장 불가 안내를 미리 숙지하시고, 반려동물은 자택 또는 신뢰할 수 있는 위탁 시설에 맡겨주세요.
 - 차량 내 방치는 안전·동물복지 관점에서 권장되지 않습니다.
 
-📞 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
         if category == "wifi_info":
             if mode == "어린이":
@@ -1456,7 +1524,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 보안 권고
 - 공공 무선 인터넷이므로 **금융거래·민감한 개인정보 입력은 자제**해 주세요.
 
-📞 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
         if category == "lost_found":
             if mode == "어린이":
@@ -1494,7 +1562,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 1층 로비 / 2층 휴게실에 **비밀번호 물품보관함** 비치 — 귀중품은 보관함 이용
 - 자녀의 옷·가방에 연락처 표시
 
-📞 분실물 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 분실물 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
         if category == "reentry_policy":
             if mode == "어린이":
@@ -1529,7 +1597,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 천체투영관·과학극장은 **회차별 입장**이므로 시작 시각 이후 입장 불가
 - 단체관람은 별도 운영 (회차 시간 엄수)
 
-📞 문의: 02-3668-3350 / 🌐 www.csc.go.kr"""
+📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
 
     return ""
 
@@ -1779,7 +1847,7 @@ def initialize_vector_db():
     
     # Add static exhibit info
     for name, desc in STATIC_EXHIBIT_INFO.items():
-        url = CSC_URLS.get(name, "https://www.csc.go.kr")
+        url = CSC_URLS.get(name, "https://www.sciencecenter.go.kr/csc/")
         docs.append(Document(page_content=f"[{name}] {desc}", metadata={"source": url}))
     
     # Add CSV data
@@ -2441,7 +2509,7 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 
 === 환각 방지 가드레일 ===
 - 운영시간, 입장료, 휴관일 → 반드시 RAG 또는 도구 결과 기반
-- RAG/도구에 없는 정보 → "공식 홈페이지(www.csc.go.kr)에서 확인해주세요"
+- RAG/도구에 없는 정보 → "공식 홈페이지(www.sciencecenter.go.kr/csc)에서 확인해주세요"
    - "정확한 정보는 02-3668-1500으로 문의해주세요."
 - **주차 안내**: 국립어린이과학관은 **전용 주차장이 없습니다**. "주차 가능", "주차장 마련" 같은 말은 절대 하지 말 것. 자가용 이용 권장 금지. 대중교통 이용 안내 필수.
 
