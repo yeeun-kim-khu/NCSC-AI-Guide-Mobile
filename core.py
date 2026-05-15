@@ -37,47 +37,50 @@ CSC_URLS = {
     "홈페이지": f"{MUSEUM_BASE_URL}/index.do",
     
     # 과학관 소개
-    "인사말": f"{MUSEUM_BASE_URL}/new1/introduce/introduce.jsp",
-    "연혁": f"{MUSEUM_BASE_URL}/new1/introduce/overview.jsp",
-    "조직도": f"{MUSEUM_BASE_URL}/new1/introduce/organization.jsp",
-    "시설안내": f"{MUSEUM_BASE_URL}/new1/information/facility.jsp",
+    "인사말": f"{MUSEUM_BASE_URL}/intro/greeting",
+    "연혁": f"{MUSEUM_BASE_URL}/intro/history",
+    "조직도": f"{MUSEUM_BASE_URL}/intro/organization",
+    "시설안내": f"{MUSEUM_BASE_URL}/intro/facility",
     
     # 관람안내
-    "이용안내": f"{MUSEUM_BASE_URL}/new1/information/tourinfo.jsp",
-    "오시는길": f"{MUSEUM_BASE_URL}/new1/information/direction.jsp",
-    "교통안내": f"{MUSEUM_BASE_URL}/new1/information/direction.jsp",
-    "자주묻는질문": f"{MUSEUM_BASE_URL}/boardList.do?bbspkid=10&type=F&page=1",
+    "이용안내": f"{MUSEUM_BASE_URL}/intro/usage",
+    "오시는길": f"{MUSEUM_BASE_URL}/intro/location",
+    "교통안내": f"{MUSEUM_BASE_URL}/intro/location",
+    "자주묻는질문": f"{MUSEUM_BASE_URL}/intro/faq",
     "공지사항": f"{MUSEUM_BASE_URL}/news/notice",
     
     # 예약
-    "예약안내": f"{MUSEUM_BASE_URL}/new1/reservation/guide.jsp",
-    "개인예약": f"{MUSEUM_BASE_URL}/new1/reservation/reservation_person.jsp",
-    "단체예약": f"{MUSEUM_BASE_URL}/new1/reservation/reservation_group.jsp",
-    "교육예약": f"{MUSEUM_BASE_URL}/new1/reservation/education_creation.jsp",
+    "예약안내": f"{MUSEUM_BASE_URL}/reserve/reserve-guide",
+    "개인예약": f"{MUSEUM_BASE_URL}/reserve/personal",
+    "단체예약": f"{MUSEUM_BASE_URL}/reserve/group",
+    "교육예약": f"{MUSEUM_BASE_URL}/reserve/edu-reserve",
     
     # 전시관 - 상설전시관 (5개 놀이터)
-    "탐구놀이터": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_1.jsp",
-    "관찰놀이터": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_2.jsp",
-    "행동놀이터": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_3.jsp",
-    "생각놀이터": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_4.jsp",
-    "AI놀이터": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_5.jsp",
+    "상설전시관": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
+    "탐구놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
+    "관찰놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
+    "행동놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
+    "생각놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
+    "AI놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/permanent",
     
     # 전시관 - 천문우주
-    "천체투영관": f"{MUSEUM_BASE_URL}/new1/centers/space.jsp",
-    "천체관측소": f"{MUSEUM_BASE_URL}/new1/centers/space_2.jsp",
-    "메타버스과학관": f"{MUSEUM_BASE_URL}/new1/centers/metaverse.jsp",
+    "천체투영관": f"{MUSEUM_BASE_URL}/exhibition-hall/planetarium",
+    "천체관측소": f"{MUSEUM_BASE_URL}/exhibition-hall/observatory",
+    "빛놀이터": f"{MUSEUM_BASE_URL}/exhibition-hall/light-playground",
+    "메타버스과학관": f"{MUSEUM_BASE_URL}/exhibition-hall/metaverse",
     
     # 과학교육
-    "과학교육실": f"{MUSEUM_BASE_URL}/new1/centers/ckdwkr.jsp",
-    "창작교실1": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_49.jsp",
-    "창작교실2": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_50.jsp",
-    "창작교실3": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_51.jsp",
-    "창작교실4": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_58.jsp",
-    "어린이교실": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_59.jsp",
+    "과학교육": f"{MUSEUM_BASE_URL}/science-edu/program",
+    "과학교육실": f"{MUSEUM_BASE_URL}/science-edu/edu-room",
+    "교육갤러리": f"{MUSEUM_BASE_URL}/science-edu/edu-gallery",
+    "온라인과학교육": f"{MUSEUM_BASE_URL}/science-edu/online-edu",
     
     # 문화행사
-    "과학쇼": f"{MUSEUM_BASE_URL}/new1/centers/exhibitinfo_57.jsp",
-    "전시해설": f"{MUSEUM_BASE_URL}/new1/centers/explanation.jsp",
+    "과학쇼": f"{MUSEUM_BASE_URL}/cultural-event/science-show",
+    "전시해설": f"{MUSEUM_BASE_URL}/cultural-event/docent",
+    "행사": f"{MUSEUM_BASE_URL}/cultural-event/event",
+    "행사갤러리": f"{MUSEUM_BASE_URL}/cultural-event/event-gallery",
+    "보도자료": f"{MUSEUM_BASE_URL}/news/press",
 }
 
 # RAG vector DB core data (LLM reference)
@@ -450,7 +453,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 💬 특정 놀이터가 궁금하면 **"AI놀이터 전시물 뭐 있어?"** 처럼 이름을 말해주세요. 더 자세한 전시물 목록을 찾아드릴게요.
 
-⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지(www.sciencecenter.go.kr/csc)에서 확인해 주세요."""
+⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지({CSC_URLS['홈페이지']})에서 확인해 주세요."""
 
         if category == "route_by_age":
             return """🧒 연령별 추천 관람 동선
@@ -710,7 +713,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 | **야간관측** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
 | **빛놀이터** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
 | **교육 프로그램** | [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) | 성명·연락처 입력 (회원가입 불필요) |
-| **단체관람** | [과학관 홈페이지](https://www.sciencecenter.go.kr/csc/) | 100% 사전예약 필수 |
+| **단체관람** | [과학관 홈페이지]({CSC_URLS['홈페이지']}) | 100% 사전예약 필수 |
 
 ### 예약 기본 안내
 - 하루 입장 인원은 **최대 1,600명**으로 제한됩니다.
@@ -923,7 +926,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
+- **공식 홈페이지**: {CSC_URLS['홈페이지']}
 
 ⚠️ 특별 연장·임시 휴관은 바뀔 수 있으니, 출발 전에 공식 홈페이지 공지사항을 꼭 확인해줘!"""
             return f"""🕘 운영시간 안내
@@ -950,7 +953,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
+- **공식 홈페이지**: {CSC_URLS['홈페이지']}
 
 ⚠️ 임시 휴관·특별 연장 운영 등은 변경될 수 있으니, 방문 전 공식 홈페이지에서 꼭 확인해 주세요."""
 
@@ -986,7 +989,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **전화**: 02-3668-3350
 
-⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.sciencecenter.go.kr/csc)에서 한 번 더 확인해줘!"""
+⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지({CSC_URLS['홈페이지']})에서 한 번 더 확인해줘!"""
 
             return """🚗 주차 안내
 
@@ -1020,7 +1023,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 📍 주소 및 문의
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
+- **공식 홈페이지**: {CSC_URLS['홈페이지']}
 
 ⚠️ 주차장 및 교통편 관련 최신 안내는 방문 전 공식 홈페이지 '오시는 길' 페이지에서 꼭 확인해 주세요."""
 
@@ -1088,7 +1091,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 ### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc/
+- **공식 홈페이지**: {CSC_URLS['홈페이지']}
 
 💬 **출발지를 알려주시면** (예: 강남역, 잠실, OO구) 가장 편한 환승 경로를 구체적으로 안내해드릴게요.
 
@@ -1127,7 +1130,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 #### 📋 확인 자료
 신청·입장 시 연령 확인을 위해 **주민등록등본 같은 서류**를 요청할 수 있어요.
 
-⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지(www.sciencecenter.go.kr/csc)나 02-3668-3350에서 한 번 더 확인해 주세요!"""
+⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지({CSC_URLS['홈페이지']})나 02-3668-3350에서 한 번 더 확인해 주세요!"""
             return f"""🎂 연나이 계산 안내
 
 국립어린이과학관 입장 및 프로그램 신청 시 사용하는 **연나이**는 다음과 같이 계산합니다.
@@ -1152,7 +1155,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 증빙 자료
 연령 확인을 위해 **주민등록등본** 등 증빙 서류 요청이 있을 수 있습니다.
 
-📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
 
         if category == "group_reservation":
             if mode == "어린이":
@@ -1365,7 +1368,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 장애인 전용 화장실 비치
 - **의무실(1층 로비)** — 편의점 판매 수준 일반의약품 구비, 응급 상황 시 가까운 직원에게 요청
 
-📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
 
         if category == "food_drink":
             if mode == "어린이":
@@ -1437,7 +1440,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 단체 도시락 식사는 예약 시 휴게실 시간대 별도 협의
 - 문의: **02-3668-3350**
 
-⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지(www.sciencecenter.go.kr/csc) 또는 대표전화로 확인해 주세요."""
+⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지({CSC_URLS['홈페이지']}) 또는 대표전화로 확인해 주세요."""
 
         if category == "pet_policy":
             if mode == "어린이":
@@ -1470,7 +1473,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 동반 입장 불가 안내를 미리 숙지하시고, 반려동물은 자택 또는 신뢰할 수 있는 위탁 시설에 맡겨주세요.
 - 차량 내 방치는 안전·동물복지 관점에서 권장되지 않습니다.
 
-📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
 
         if category == "wifi_info":
             if mode == "어린이":
@@ -1508,7 +1511,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ### 보안 권고
 - 공공 무선 인터넷이므로 **금융거래·민감한 개인정보 입력은 자제**해 주세요.
 
-📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
 
         if category == "lost_found":
             if mode == "어린이":
@@ -1581,7 +1584,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 천체투영관·과학극장은 **회차별 입장**이므로 시작 시각 이후 입장 불가
 - 단체관람은 별도 운영 (회차 시간 엄수)
 
-📞 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
 
     return ""
 
@@ -2171,7 +2174,7 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 
 === 환각 방지 가드레일 ===
 - 운영시간, 입장료, 휴관일 → 반드시 RAG 또는 도구 결과 기반
-- RAG/도구에 없는 정보 → "공식 홈페이지(www.sciencecenter.go.kr/csc)에서 확인해주세요"
+- RAG/도구에 없는 정보 → "공식 홈페이지({CSC_URLS['홈페이지']})에서 확인해주세요"
    - "정확한 정보는 02-3668-1500으로 문의해주세요."
 - **주차 안내**: 국립어린이과학관은 **전용 주차장이 없습니다**. "주차 가능", "주차장 마련" 같은 말은 절대 하지 말 것. 자가용 이용 권장 금지. 대중교통 이용 안내 필수.
 
