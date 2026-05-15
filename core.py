@@ -305,9 +305,10 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
     if intent == "basic":
         category = classify_basic_category(message)
         if category == "education_guide":
-            return """국립어린이과학관에서는 다양한 교육 프로그램을 운영하고 있어요! 😊
+            programs_text = _load_education_programs_text()
+            base = """국립어린이과학관에서는 다양한 교육 프로그램을 운영하고 있어요! 😊
 
-## 📚 주말교육 과정 (상반기 3~6월 / 하반기 9~12월, 매주 토요일)
+## 📚 상시 주말교육 과정 (상반기 3~6월 / 하반기 9~12월, 매주 토요일)
 
 | 프로그램 | 대상 | 장소 | 교육비 |
 |---|---|---|---|
@@ -319,14 +320,12 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ## 🗓️ 특별교육 과정
 
 - **방학과정**: 여름방학(7~8월)·겨울방학(1~2월) / 초등 1~4학년 / 5,000~25,000원
-- **나눔과정**: 지역아동 및 장애아동 / 무료 (기관 공문 신청)
+- **나눔과정**: 지역아동 및 장애아동 / 무료 (기관 공문 신청)"""
 
-## 📅 이번 달 교육 프로그램
+            if programs_text:
+                base += "\n\n" + programs_text
 
-- **창경궁 과학 나들이** (5월): 유아6세~초4 / 매주 일요일 / 15,000원
-- **과학마블 전시연계 특별교육 「얼음공」** (5월): 유아6세~초2 / 매주 토요일 / 5,000원
-- **K-사이언스** (6월): 세종과 장영실의 시간 여행 / 초1~4 / 매주 일요일 / 13,000원
-- **빛놀이터 전시연계 교육** (6월): 유아6세~초2 / 매주 토요일 / 5,000원
+            base += """
 
 ## 📋 신청 방법
 - **홈페이지 예약**: [신청콕](https://www.csc.go.kr) 접속 → 교육 → 원하는 과정 선택 → 결제
@@ -334,6 +333,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - **문의**: 과학교실·SW공학교실·수학교실 02-3668-3313, 3318 / 유아특화교실 02-3668-3314
 
 특정 프로그램이나 날짜에 대해 더 자세히 알고 싶으시면 말씀해 주세요! 😊"""
+            return base
 
         if category == "floor_guide":
             return """층별 안내를 한눈에 보기 쉽게 정리해드릴게요! 😊
@@ -1936,6 +1936,62 @@ def search_csc_live_info(keyword: str) -> str:
 
     except Exception as e:
         return f"Observation: '{keyword}' 페이지 로드 중 오류 발생: {str(e)}"
+
+
+def _load_education_programs_text() -> str:
+    """data/교육프로그램.csv 를 읽어 월별 교육 프로그램 안내 텍스트 반환."""
+    csv_path = os.path.join(os.path.dirname(__file__), "data", "교육프로그램.csv")
+    if not os.path.exists(csv_path):
+        return ""
+    try:
+        df = None
+        for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
+            try:
+                df = pd.read_csv(csv_path, encoding=enc)
+                break
+            except Exception:
+                continue
+        if df is None or df.empty:
+            return ""
+        df.columns = [str(c).strip() for c in df.columns]
+
+        # 월별로 그룹핑 — title에서 "(5월)", "(6월)" 패턴 추출
+        months_order = []
+        seen_months = {}
+        for _, row in df.iterrows():
+            title   = str(row.get("title", "")).strip()
+            cat     = str(row.get("category", "")).strip()
+            content = str(row.get("content", "")).strip()
+            detail  = str(row.get("detail",  "")).strip()
+            if not title or title == "nan":
+                continue
+            m_month = re.search(r"\((\d+월)\)", title)
+            month = m_month.group(1) if m_month else "기타"
+            if month not in seen_months:
+                seen_months[month] = []
+                months_order.append(month)
+            seen_months[month].append((title, cat, content, detail))
+
+        if not seen_months:
+            return ""
+
+        lines = []
+        for month in months_order:
+            lines.append(f"\n### 📅 {month} 교육 프로그램\n")
+            for title, cat, content, detail in seen_months[month]:
+                # title에서 (N월) 제거해서 깔끔하게
+                clean_title = re.sub(r"\s*\(\d+월\)", "", title).strip()
+                lines.append(f"**{clean_title}** ({cat})")
+                # content에서 핵심 항목만 파싱해서 bullet로 표시
+                if content and content != "nan":
+                    for part in content.split(" / "):
+                        part = part.strip()
+                        if part:
+                            lines.append(f"- {part}")
+                lines.append("")
+        return "\n".join(lines).strip()
+    except Exception:
+        return ""
 
 
 def _load_notices_cache(limit: int = 5) -> list[tuple[str, str]] | None:
