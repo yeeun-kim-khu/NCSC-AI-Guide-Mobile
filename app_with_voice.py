@@ -67,13 +67,20 @@ def _track_ga_event(event_name: str, params: dict | None = None) -> None:
             del safe_params[key]
     params_json = json.dumps(safe_params, ensure_ascii=False)
     script = f"""
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
     <script>
-      if (typeof gtag !== 'undefined') {{
-        gtag('event', '{event_name}', {params_json});
-      }}
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', '{GA_MEASUREMENT_ID}', {{
+        page_location: 'https://ncsc-ai-guide-mobile.streamlit.app/',
+        page_title: '국립어린이과학관 AI 가이드',
+        send_page_view: false
+      }});
+      gtag('event', '{event_name}', {params_json});
     </script>
     """
-    st.markdown(script, unsafe_allow_html=True)
+    components.html(script, width=0, height=0)
 
 
 def _queue_ga_event(event_name: str, params: dict | None = None) -> None:
