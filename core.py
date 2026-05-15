@@ -1605,30 +1605,37 @@ def load_csv_data():
             print(f"CSV shape: {df.shape}")
             print(f"CSV columns: {df.columns.tolist()}")
             
+            # Determine zone name from filename (once per file)
+            zone_name = os.path.splitext(os.path.basename(csv_file))[0]
+            if "AI놀이터" in csv_file:
+                zone_name = "AI놀이터"
+            elif "탐구놀이터" in csv_file or "탐구놀이터널" in csv_file:
+                zone_name = "탐구놀이터"
+            elif "관찰놀이터" in csv_file:
+                zone_name = "관찰놀이터"
+            elif "행동놀이터" in csv_file:
+                zone_name = "행동놀이터"
+            elif "생각놀이터" in csv_file:
+                zone_name = "생각놀이터"
+            elif "빛놀이터" in csv_file:
+                zone_name = "빛놀이터"
+
             for idx, row in df.iterrows():
                 if pd.isna(row.get('title', '')):
                     continue
                     
-                title = str(row.get('title', ''))
-                content = str(row.get('content', ''))
-                detail = str(row.get('detail', ''))
-                category = str(row.get('category', ''))
-                
-                # Determine zone name from filename
-                zone_name = os.path.splitext(os.path.basename(csv_file))[0]
-                if "AI놀이터" in csv_file:
-                    zone_name = "AI놀이터"
-                elif "탐구놀이터" in csv_file or "탐구놀이터널" in csv_file:
-                    zone_name = "탐구놀이터"
-                elif "관찰놀이터" in csv_file:
-                    zone_name = "관찰놀이터"
-                elif "행동놀이터" in csv_file:
-                    zone_name = "행동놀이터"
-                elif "생각놀이터" in csv_file:
-                    zone_name = "생각놀이터"
-                elif "빛놀이터" in csv_file:
-                    zone_name = "빛놀이터"
-                
+                title = str(row.get('title', '')).strip()
+                content = str(row.get('content', '')).strip()
+                detail = str(row.get('detail', '')).strip()
+                category = str(row.get('category', '')).strip()
+
+                # Skip rows with no real title
+                if not title or title in ('nan', ''):
+                    continue
+                # Skip noise rows (× is a web-scraping artifact for empty/button elements)
+                if content in ('×', 'nan', '') and detail in ('nan', '') and not category:
+                    continue
+
                 text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
                 metadata = {
                     "source": f"csv_{zone_name}", 
