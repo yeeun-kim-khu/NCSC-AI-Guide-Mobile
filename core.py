@@ -224,7 +224,7 @@ def classify_basic_category(message: str) -> str:
         return "planetarium_timetable"
 
     # 교육 키워드: reservation_guide보다 먼저 잡아야 교육예약이 아닌 교육안내로 분기
-    if any(k in lowered for k in ["교육 알려", "교육 뭐", "교육 있어", "교육 안내", "교육 프로그램", "교육프로그램", "어떤 교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "k-사이언스", "k사이언스", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
+    if any(k in lowered for k in ["교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "k-사이언스", "k사이언스", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
         return "education_guide"
 
     rules = [
