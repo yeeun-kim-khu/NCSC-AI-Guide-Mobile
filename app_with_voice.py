@@ -1108,6 +1108,17 @@ def main():
                             st.session_state.messages.append({"role": "debug", "content": debug_info})
                 render_tts_for_answer(answer)
 
+            components.html("""<script>
+            (function() {
+                const parent = window.parent;
+                if (!parent) return;
+                const el = parent.document.querySelector('[data-testid="stMain"]')
+                        || parent.document.querySelector('.main')
+                        || parent.document.documentElement;
+                if (el) el.scrollTop = el.scrollHeight + 9999;
+            })();
+            </script>""", height=0)
+
             answer_type = "rule_based" if intent in ["notice", "basic"] else "llm_rag"
             assistant_msg = {"role": "assistant", "content": answer, "intent": intent, "answer_type": answer_type}
             assistant_msg["tts_autoplayed"] = False
