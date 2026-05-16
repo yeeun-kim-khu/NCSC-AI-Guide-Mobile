@@ -9,6 +9,8 @@ import pandas as pd
 import urllib3
 import time
 import streamlit as st
+import json
+from pathlib import Path
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -115,6 +117,10 @@ def route_intent(text: str) -> str:
     # 공지사항 → 전용 크롤러 경로
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
+
+    # 과학쇼/로봇쇼/사이언스랩 → 전용 답변 경로
+    if any(token in lowered for token in ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]):
+        return "science_show"
 
     # ── 동적 질의 (LLM 에이전트로 보내야 하는 케이스) ────────────────────────
     # 1) 길찾기에 출발지가 명시 → search_directions 툴 필요
@@ -238,6 +244,7 @@ def classify_basic_category(message: str) -> str:
 
     rules = [
         # 가장 구체적인 카테고리 먼저
+        ("science_show", ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]),
         ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
         ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "천체투영관 시간", "투영관 시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노"]),
         ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사"]),
@@ -288,17 +295,36 @@ def get_today_status() -> str:
 def answer_rule_based(intent: str, message: str, mode: str) -> str:
     """규칙 기반 답변 생성"""
     if intent == "notice":
-        notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
-        return f"""공지사항을 안내해드릴게요! 📢
+        return get_latest_notices_text(limit=5)
+    if intent == "science_show":
+        return f"""로봇쇼와 사이언스랩에 대해 안내해드릴게요! 🤖
 
-국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
+## 📍 장소
+**1층 과학극장**
 
-🔗 **공지사항 바로가기**: {notice_url}
+## ⏰ 운영 시간
+- **11:40, 13:40** (하루 2회)
+- 소요시간: 약 15분
+- 정원: 95명
 
-> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
+## 📅 연간 일정
+- **로봇쇼**: 짝수월 (2·4·6·8·10·12월)
+  - 축구로봇, 댄스로봇, 로봇개 등 다양한 로봇을 통해 로봇의 구조와 작동 원리를 쉽게 이해할 수 있어요
+  
+- **사이언스랩**: 홀수월 (1·3·5·7·9·11월)
+  - 월별 테마: 5월 비눗방울 / 7월 공기 / 9월 힘 / 11월 공기
+  - 어린이의 호기심을 자극하는 주제로 과학 원리를 쉽고 재미있게 전달해요
 
-급한 문의가 있으시면 대표번호로 연락해 주세요.
-📞 **02-3668-3350**"""
+## 🎫 이용 안내
+- 비용: 무료
+- 이용방법: 선착순 입장 및 관람
+- 입장 가능 시간: 회차 시작 25분부터 (예: 11:40 회차는 11:15부터 입장)
+- 입장 마감: 회차 시작 29분 59초
+- 프로그램 진행 중에는 입장 및 퇴장 불가
+
+> 💡 **팁**: 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
+
+🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
     if intent == "basic":
         category = classify_basic_category(message)
         if category == "education_guide":
@@ -1662,10 +1688,12 @@ def load_csv_data():
 
             df.columns = [str(c).strip() for c in df.columns]
             expected_cols = {"title", "content", "detail", "category"}
+            pages_cols = {"page_key", "url", "block_type", "order", "title", "content"}
             has_expected = len(expected_cols.intersection(set(df.columns))) >= 2
+            has_pages = len(pages_cols.intersection(set(df.columns))) >= 4
             has_unnamed = any(str(c).startswith("Unnamed") for c in df.columns)
 
-            if (not has_expected) and (has_unnamed or df.shape[1] >= 2):
+            if (not has_expected) and (not has_pages) and (has_unnamed or df.shape[1] >= 2):
                 try:
                     df.columns = [str(v).strip() for v in df.iloc[0].tolist()]
                     df = df.iloc[1:].reset_index(drop=True)
@@ -1714,30 +1742,57 @@ def load_csv_data():
             elif "빛놀이터" in csv_file:
                 zone_name = "빛놀이터"
 
-            for idx, row in df.iterrows():
-                if pd.isna(row.get('title', '')):
-                    continue
+            # Handle pages CSV structure (page_key, url, block_type, order, title, content)
+            if has_pages:
+                for idx, row in df.iterrows():
+                    if pd.isna(row.get('title', '')):
+                        continue
                     
-                title = str(row.get('title', '')).strip()
-                content = str(row.get('content', '')).strip()
-                detail = str(row.get('detail', '')).strip()
-                category = str(row.get('category', '')).strip()
+                    title = str(row.get('title', '')).strip()
+                    content = str(row.get('content', '')).strip()
+                    block_type = str(row.get('block_type', '')).strip()
+                    
+                    # Skip rows with no real title
+                    if not title or title in ('nan', ''):
+                        continue
+                    # Skip noise rows
+                    if content in ('×', 'nan', '') and not block_type:
+                        continue
 
-                # Skip rows with no real title
-                if not title or title in ('nan', ''):
-                    continue
-                # Skip noise rows (× is a web-scraping artifact for empty/button elements)
-                if content in ('×', 'nan', '') and detail in ('nan', '') and not category:
-                    continue
+                    text = f"[{zone_name}] {title}\nContent: {content}"
+                    metadata = {
+                        "source": f"csv_{zone_name}", 
+                        "title": title, 
+                        "category": zone_name,
+                        "subcategory": block_type
+                    }
+                    docs.append(Document(page_content=text, metadata=metadata))
+            else:
+                # Handle standard CSV structure (title, content, detail, category)
+                for idx, row in df.iterrows():
+                    if pd.isna(row.get('title', '')):
+                        continue
+                        
+                    title = str(row.get('title', '')).strip()
+                    content = str(row.get('content', '')).strip()
+                    detail = str(row.get('detail', '')).strip()
+                    category = str(row.get('category', '')).strip()
 
-                text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
-                metadata = {
-                    "source": f"csv_{zone_name}", 
-                    "title": title, 
-                    "category": zone_name,
-                    "subcategory": category
-                }
-                docs.append(Document(page_content=text, metadata=metadata))
+                    # Skip rows with no real title
+                    if not title or title in ('nan', ''):
+                        continue
+                    # Skip noise rows (× is a web-scraping artifact for empty/button elements)
+                    if content in ('×', 'nan', '') and detail in ('nan', '') and not category:
+                        continue
+
+                    text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
+                    metadata = {
+                        "source": f"csv_{zone_name}", 
+                        "title": title, 
+                        "category": zone_name,
+                        "subcategory": category
+                    }
+                    docs.append(Document(page_content=text, metadata=metadata))
                 
             print(f"Loaded {len(docs)} docs from {csv_file}")
                 
@@ -2055,6 +2110,32 @@ def _load_education_programs_text() -> str:
 
 def get_latest_notices_text(limit: int = 5) -> str:
     notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
+    
+    # 캐시 파일에서 공지사항 읽기
+    cache_path = Path(__file__).parent.parent / "data" / "notices_cache.json"
+    try:
+        if cache_path.exists():
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cache = json.load(f)
+            notices = cache.get("notices", [])
+            if notices:
+                notices = notices[:limit]
+                notice_list = "\n".join([f"{i+1}. {notice['title']}" for i, notice in enumerate(notices)])
+                return f"""공지사항을 안내해드릴게요! 📢
+
+## 최신 공지사항
+{notice_list}
+
+🔗 **공지사항 바로가기**: {notice_url}
+
+> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
+
+급한 문의가 있으시면 대표번호로 연락해 주세요.
+📞 **02-3668-3350**"""
+    except Exception as e:
+        print(f"[get_latest_notices_text] 캐시 읽기 실패: {e}")
+    
+    # 캐시가 없거나 읽기 실패 시 기본 메시지
     return f"""공지사항을 안내해드릴게요! 📢
 
 국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
@@ -2069,6 +2150,38 @@ def get_latest_notices_text(limit: int = 5) -> str:
 
 def get_notice_detail_text(pkid: str) -> str:
     notice_url = CSC_URLS.get("공지사항", "https://www.sciencecenter.go.kr/csc/news/notice")
+    
+    # 캐시 파일에서 공지사항 읽기
+    cache_path = Path(__file__).parent.parent / "data" / "notices_cache.json"
+    try:
+        if cache_path.exists():
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cache = json.load(f)
+            notices = cache.get("notices", [])
+            if notices:
+                # pkid로 공지사항 찾기
+                notice = None
+                for n in notices:
+                    if str(n.get("pkid")) == str(pkid):
+                        notice = n
+                        break
+                if notice:
+                    title = notice.get("title", "")
+                    href = notice.get("href", "")
+                    return f"""공지사항을 안내해드릴게요! 📢
+
+## {title}
+
+🔗 **상세보기**: {href}
+
+> 💡 **팁**: 공지사항에는 휴관일, 특별행사, 예약 마감 안내 등 방문 전 꼭 확인해야 할 중요한 정보가 포함되어 있어요. 방문 전에 한 번씩 확인해 주시면 감사하겠습니다!
+
+급한 문의가 있으시면 대표번호로 연락해 주세요.
+📞 **02-3668-3350**"""
+    except Exception as e:
+        print(f"[get_notice_detail_text] 캐시 읽기 실패: {e}")
+    
+    # 캐시가 없거나 읽기 실패 시 기본 메시지
     return f"""공지사항을 안내해드릴게요! 📢
 
 국립어린이과학관의 최신 공지사항은 아래 공식 홈페이지에서 확인하실 수 있습니다.
@@ -2164,6 +2277,14 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 
 === 핵심 임무 ===
 국립어린이과학관의 모든 시설, 전시관, 프로그램, 운영 정보를 정확하고 친절하게 안내하는 것입니다.
+
+=== ⚠️ 중요: 기관 혼동 방지 ===
+- **국립어린이과학관**은 **서울특별시 종로구 창경궁로 215**에 위치합니다.
+- **과천과학관(국립과천과학관)**은 경기도 과천시에 위치합니다.
+- 국립어린이과학관은 과천과학관의 소속기관입니다.
+- **하지만 이 챗봇은 국립어린이과학관 전용 안내 챗봇입니다.**
+- **절대로 과천과학관 홈페이지(scipia)로 안내하지 마세요.**
+- 홈페이지 URL을 안내할 때는 반드시 **https://www.sciencecenter.go.kr/csc/** 를 사용하세요.
 
 === 답변해야 할 주요 영역 ===
 1. 운영 정보: 관람시간, 휴관일, 입장료, 교통안내

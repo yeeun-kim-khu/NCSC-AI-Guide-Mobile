@@ -56,7 +56,7 @@ _PARKING_KR_KID = """🚗 주차 안내
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **전화**: 02-3668-3350
 
-⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.csc.go.kr)에서 한 번 더 확인해줘!"""
+⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지(www.sciencecenter.go.kr/csc)에서 한 번 더 확인해줘!"""
 
 _PARKING_KR_DEFAULT = """🚗 주차 안내
 
@@ -91,7 +91,7 @@ _PARKING_KR_DEFAULT = """🚗 주차 안내
 ### 📍 주소 및 문의
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: https://www.csc.go.kr
+- **공식 홈페이지**: https://www.sciencecenter.go.kr/csc
 
 ⚠️ 주차장 및 교통편 관련 최신 안내는 방문 전 공식 홈페이지 '오시는 길' 페이지에서 꼭 확인해 주세요."""
 
@@ -128,7 +128,7 @@ Note: Rates and operating hours vary by parking lot. Please check in advance.
 ### 📍 Address & Contact
 - **Address**: 215 Changgyeonggung-ro, Jongno-gu, Seoul
 - **Phone**: +82-2-3668-3350
-- **Official website**: https://www.csc.go.kr
+- **Official website**: https://www.sciencecenter.go.kr/csc
 
 ⚠️ Parking and transit information can change. Please confirm on the official website's "Directions" page before your visit."""
 
@@ -162,7 +162,7 @@ _PARKING_EN_KID = """🚗 Parking & How to Get Here
 - **Address**: 215 Changgyeonggung-ro, Jongno-gu, Seoul
 - **Phone**: +82-2-3668-3350
 
-⚠️ Please check the official website (www.csc.go.kr) before leaving home, in case anything changes!"""
+⚠️ Please check the official website (www.sciencecenter.go.kr/csc) before leaving home, in case anything changes!"""
 
 _PARKING_JP_DEFAULT = """🚗 駐車・交通のご案内
 
@@ -197,7 +197,7 @@ _PARKING_JP_DEFAULT = """🚗 駐車・交通のご案内
 ### 📍 所在地・お問い合わせ
 - **住所**:ソウル特別市 鍾路区 昌慶宮路 215 (臥龍洞 2-1)
 - **代表電話**:+82-2-3668-3350
-- **公式サイト**:https://www.csc.go.kr
+- **公式サイト**:https://www.sciencecenter.go.kr/csc
 
 ⚠️ 駐車・交通情報は変更される場合があります。ご来館前に公式サイトの「オシヌンギル(交通案内)」ページを必ずご確認ください。"""
 
@@ -231,7 +231,7 @@ _PARKING_JP_KID = """🚗 ちゅうしゃ・アクセスのご案内
 - **住所**:ソウル特別市 鍾路区 昌慶宮路 215
 - **電話**:+82-2-3668-3350
 
-⚠️ 出発する前に、公式サイト(www.csc.go.kr)で一度チェックしてね!"""
+⚠️ 出発する前に、公式サイト(www.sciencecenter.go.kr/csc)で一度チェックしてね!"""
 
 _PARKING_ZH_DEFAULT = """🚗 停车与交通指南
 
@@ -266,7 +266,7 @@ _PARKING_ZH_DEFAULT = """🚗 停车与交通指南
 ### 📍 地址与联系方式
 - **地址**:首尔特别市 钟路区 昌庆宫路 215 (卧龙洞 2-1)
 - **电话**:+82-2-3668-3350
-- **官方网站**:https://www.csc.go.kr
+- **官方网站**:https://www.sciencecenter.go.kr/csc
 
 ⚠️ 停车与交通信息可能有变,来访前请务必在官网"交通指南"页面再次确认。"""
 
@@ -300,7 +300,7 @@ _PARKING_ZH_KID = """🚗 停车和怎么来
 - **地址**:首尔特别市 钟路区 昌庆宫路 215
 - **电话**:+82-2-3668-3350
 
-⚠️ 出发前再到官网(www.csc.go.kr)看一下最新信息哦!"""
+⚠️ 出发前再到官网(www.sciencecenter.go.kr/csc)看一下最新信息哦!"""
 
 _PARKING = {
     "한국어": {

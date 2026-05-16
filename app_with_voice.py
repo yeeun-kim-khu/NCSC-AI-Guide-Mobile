@@ -964,18 +964,18 @@ def main():
                         col1, col2, col3 = st.columns(3)
                         if hasattr(st, "link_button"):
                             with col1:
-                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_person"], "https://www.csc.go.kr/new1/reservation/reservation_person.jsp")
+                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_person"], "https://www.sciencecenter.go.kr/csc/new1/reservation/reservation_person.jsp")
                             with col2:
-                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_group"], "https://www.csc.go.kr/new1/reservation/reservation_group.jsp")
+                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_group"], "https://www.sciencecenter.go.kr/csc/new1/reservation/reservation_group.jsp")
                             with col3:
-                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_edu"], "https://www.csc.go.kr/new1/reservation/education_creation.jsp")
+                                st.link_button(ui_text.get(language_mode, ui_text["한국어"])["reservation_edu"], "https://www.sciencecenter.go.kr/csc/new1/reservation/education_creation.jsp")
                         else:
                             with col1:
-                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_person']}](https://www.csc.go.kr/new1/reservation/reservation_person.jsp)")
+                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_person']}](https://www.sciencecenter.go.kr/csc/new1/reservation/reservation_person.jsp)")
                             with col2:
-                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_group']}](https://www.csc.go.kr/new1/reservation/reservation_group.jsp)")
+                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_group']}](https://www.sciencecenter.go.kr/csc/new1/reservation/reservation_group.jsp)")
                             with col3:
-                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_edu']}](https://www.csc.go.kr/new1/reservation/education_creation.jsp)")
+                                st.markdown(f"[{ui_text.get(language_mode, ui_text['한국어'])['reservation_edu']}](https://www.sciencecenter.go.kr/csc/new1/reservation/education_creation.jsp)")
 
 
         user_input = None
@@ -1027,6 +1027,8 @@ def main():
                     lowered = user_input.lower()
                     if intent == "notice":
                         rule_sources = [CSC_URLS.get("공지사항")]
+                    elif intent == "science_show":
+                        rule_sources = [CSC_URLS.get("과학쇼")]
                     else:
                         if any(k in lowered for k in ["오시는길", "오는길", "교통", "길찾기", "주소", "위치"]):
                             rule_sources = [CSC_URLS.get("오시는길")]
@@ -1048,7 +1050,7 @@ def main():
                                 "목적지: 국립어린이과학관(국립어린이과학관, 서울 종로구 창경궁로 215)\n"
                                 "요청: 대중교통(지하철/버스) 기준으로 가장 쉬운 경로를 단계별로 자세하고 친절하게 안내해줘. "
                                 "출입구/도보 이동/환승 포인트가 있으면 같이 알려줘. "
-                                "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.csc.go.kr) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
+                                "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.sciencecenter.go.kr/csc) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
                             )
                         # FAISS RAG에서 관련 정보 사전 검색하여 컨텍스트 주입
                         retrieved_docs = vector_db.similarity_search(user_input, k=3)
