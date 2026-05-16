@@ -752,15 +752,6 @@ def main():
 
     st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
 
-    # 어린이 모드 연한 노란색 배경
-    if user_mode == "어린이":
-        st.markdown("""
-        <style>
-        .stApp { background-color: #FFFDE7 !important; }
-        section[data-testid="stSidebar"] { background-color: #FFF9C4 !important; }
-        </style>
-        """, unsafe_allow_html=True)
-
     # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
     _render_mascot_animation()
 
@@ -883,13 +874,15 @@ def main():
     ]
     tab_cols = st.columns(2)
     with tab_cols[0]:
-        tab0_type = "primary" if st.session_state.active_tab == "guide" else "secondary"
-        if st.button(tab_labels[0], key="tab_btn_guide", use_container_width=True, type=tab0_type):
+        is_guide = st.session_state.active_tab == "guide"
+        label0 = ("✅ " if is_guide else "") + tab_labels[0]
+        if st.button(label0, key="tab_btn_guide", use_container_width=True, type="secondary"):
             st.session_state.active_tab = "guide"
             st.rerun()
     with tab_cols[1]:
-        tab1_type = "primary" if st.session_state.active_tab == "learning" else "secondary"
-        if st.button(tab_labels[1], key="tab_btn_learning", use_container_width=True, type=tab1_type):
+        is_learning = st.session_state.active_tab == "learning"
+        label1 = ("✅ " if is_learning else "") + tab_labels[1]
+        if st.button(label1, key="tab_btn_learning", use_container_width=True, type="secondary"):
             st.session_state.active_tab = "learning"
             st.rerun()
 
