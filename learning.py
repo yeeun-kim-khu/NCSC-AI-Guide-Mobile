@@ -956,7 +956,37 @@ def get_random_story_dna(language="한국어"):
             {"name": "작은 영웅",      "desc": "아무도 주목하지 않던 평범한 아이가 세상을 구한다."},
             {"name": "꿈속 모험",      "desc": "잠들었다가 깨어난 꿈속 세계. 현실과 꿈의 경계가 흐릿하다."},
             {"name": "변신 이야기",    "desc": "주인공이 다른 존재로 변해 완전히 다른 시각으로 세상을 본다."},
-        ]
+        ],
+        "English": [
+            {"name": "Mystery Detective",  "desc": "A detective adventure solving a puzzle, gathering clues one by one to reach the truth."},
+            {"name": "Friendship Quest",   "desc": "Impossible alone, but achievable together — friendship drives the scientific discovery."},
+            {"name": "Rescue Mission",     "desc": "An adventure to save someone (or something) precious before it's too late."},
+            {"name": "Young Inventor",     "desc": "Failing again and again, the hero finally completes a remarkable invention."},
+            {"name": "Time Travel",        "desc": "Journeying to the past or future, using science to fix a broken timeline."},
+            {"name": "Unlikely Hero",      "desc": "An ordinary kid nobody noticed ends up saving the world with science."},
+            {"name": "Dream Adventure",    "desc": "A dream world where the boundary between reality and imagination blurs."},
+            {"name": "Transformation",     "desc": "The hero transforms into another being and sees the world from a completely new perspective."},
+        ],
+        "日本語": [
+            {"name": "ミステリー探偵",    "desc": "謎を解く探偵アドベンチャー。手がかりを一つずつ集めて真実に近づいていく。"},
+            {"name": "友情の成長物語",    "desc": "一人ではできないけど、一緒ならできる。友情が科学的な発見を導く。"},
+            {"name": "救出作戦",          "desc": "大切な誰か（または何か）を救うために冒険に出かける。"},
+            {"name": "発明家の物語",      "desc": "何度も失敗しながら、ついに驚くべき発明を完成させる物語。"},
+            {"name": "タイムトラベル",    "desc": "過去または未来へ移動し、科学の原理で問題を解決する。"},
+            {"name": "ちいさな英雄",      "desc": "誰も注目しなかった普通の子どもが世界を救う。"},
+            {"name": "夢の冒険",          "desc": "眠りについた夢の世界。現実と夢の境界がぼんやりしている。"},
+            {"name": "変身の物語",        "desc": "主人公が別の存在に変わり、まったく違う視点から世界を見る。"},
+        ],
+        "中文": [
+            {"name": "神秘侦探",    "desc": "解谜侦探冒险。一点一点收集线索，逐渐接近真相。"},
+            {"name": "友情成长",    "desc": "一个人做不到，但一起就能做到。友情引领科学发现。"},
+            {"name": "救援行动",    "desc": "为了拯救珍贵的某人（或某物）而踏上冒险之旅。"},
+            {"name": "小发明家",    "desc": "屡次失败，最终完成惊人发明的故事。"},
+            {"name": "时间旅行",    "desc": "穿越过去或未来，用科学原理解决问题。"},
+            {"name": "无名英雄",    "desc": "没人注意的普通孩子，用科学拯救了世界。"},
+            {"name": "梦境冒险",    "desc": "进入梦中世界，现实与梦境的边界模糊不清。"},
+            {"name": "变身故事",    "desc": "主人公变成另一种存在，以全新的视角看待世界。"},
+        ],
     }
 
     conflicts = {
@@ -968,7 +998,34 @@ def get_random_story_dna(language="한국어"):
             "점점 작아지거나 커지고 있다 (몸이 변하고 있다)",
             "혼자 남겨졌다 (동반자를 찾아야 한다)",
             "기억이 사라지고 있다 (원리를 기억해내야만 한다)",
-        ]
+        ],
+        "English": [
+            "Something precious has vanished (a friend, a color, a sound, the light)",
+            "The world has frozen still (time, movement, seasons have stopped)",
+            "Someone is lying — the truth must be uncovered",
+            "A choice must be made between two things that can't be given up",
+            "The hero is slowly shrinking or growing (the body is changing)",
+            "Left completely alone — must find the companion again",
+            "Memories are fading — the science principle must be remembered to survive",
+        ],
+        "日本語": [
+            "大切なものが消えてしまった（友だち、色、音、光）",
+            "世界が止まってしまった（時間、動き、季節）",
+            "誰かが嘘をついている（真実を明らかにしなければならない）",
+            "二つのうちどちらかを選ばなければならない（どちらもあきらめられない）",
+            "だんだん小さくなっている、または大きくなっている（体が変わっている）",
+            "一人ぼっちになってしまった（仲間を見つけなければならない）",
+            "記憶が消えていく（科学の原理を思い出さなければ助からない）",
+        ],
+        "中文": [
+            "珍贵的东西消失了（朋友、颜色、声音、光）",
+            "世界停止了（时间、运动、季节都静止了）",
+            "有人在撒谎——必须揭开真相",
+            "必须在两件都无法放弃的事情中做出选择",
+            "身体越来越小或越来越大（正在发生变化）",
+            "被独自留下了——必须找到同伴",
+            "记忆正在消失——必须想起科学原理才能得救",
+        ],
     }
 
     world_textures = {
@@ -979,7 +1036,31 @@ def get_random_story_dna(language="한국어"):
             "크기가 없는 세상 (모든 것이 주인공 마음대로 커지고 작아진다)",
             "소리로 만들어진 세상 (건물도 나무도 모두 음악으로 되어있다)",
             "그림자가 살아있는 세상 (그림자가 따로 움직인다)",
-        ]
+        ],
+        "English": [
+            "A world where everything is upside down (gravity, colors, and sounds are all reversed)",
+            "A world visible only at night (everything turns invisible in daylight)",
+            "A world where emotions become weather (joy brings sunshine, sadness brings rain)",
+            "A world without fixed size (everything grows or shrinks at the hero's will)",
+            "A world made entirely of sound (buildings, trees — everything is music)",
+            "A world where shadows are alive (shadows move on their own)",
+        ],
+        "日本語": [
+            "すべてが逆さまの世界（重力、色、音がひっくり返っている）",
+            "夜しか見えない世界（昼間は透明になってしまう）",
+            "感情が天気になる世界（うれしいと晴れ、悲しいと雨）",
+            "大きさのない世界（主人公の気持ちで何でも大きくなったり小さくなったりする）",
+            "音でできた世界（建物も木もすべて音楽でできている）",
+            "影が生きている世界（影が自分で動く）",
+        ],
+        "中文": [
+            "一切都颠倒的世界（重力、颜色、声音全都反过来了）",
+            "只在夜晚才能看见的世界（白天一切都变得透明）",
+            "情感变成天气的世界（高兴就晴天，悲伤就下雨）",
+            "没有固定大小的世界（一切都随主人公的意念变大变小）",
+            "由声音构成的世界（建筑、树木——一切都是音乐）",
+            "影子有生命的世界（影子自己会动）",
+        ],
     }
 
     lang = language if language in genres else "한국어"
@@ -1342,7 +1423,41 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 只能选一个
 """,
     }
 
-    dna_header = f"[이번 동화의 DNA — 매번 다름]\n▶ 장르: {genre['name']} — {genre['desc']}\n▶ 위기: {conflict}\n▶ 세계관 질감: {texture}\n\n위 DNA와 과학 재료를 조합해서, 매번 완전히 다른 이야기를 써주세요. 장르와 위기가 이야기 구조를 결정하고, 과학 현상은 그 위기를 해결하는 열쇠가 됩니다.\n\n"
+    _dna_header_templates = {
+        "한국어": (
+            f"[이번 동화의 DNA — 매번 다름]\n"
+            f"▶ 장르: {genre['name']} — {genre['desc']}\n"
+            f"▶ 위기: {conflict}\n"
+            f"▶ 세계관 질감: {texture}\n\n"
+            f"위 DNA와 과학 재료를 조합해서, 매번 완전히 다른 이야기를 써주세요. "
+            f"장르와 위기가 이야기 구조를 결정하고, 과학 현상은 그 위기를 해결하는 열쇠가 됩니다.\n\n"
+        ),
+        "English": (
+            f"[Story DNA — different every time]\n"
+            f"▶ Genre: {genre['name']} — {genre['desc']}\n"
+            f"▶ Conflict: {conflict}\n"
+            f"▶ World texture: {texture}\n\n"
+            f"Combine this DNA with the science ingredients to write a completely different story each time. "
+            f"Genre and conflict determine the story structure; the science phenomenon is the key that resolves the crisis.\n\n"
+        ),
+        "日本語": (
+            f"[この物語のDNA — 毎回ちがう]\n"
+            f"▶ ジャンル: {genre['name']} — {genre['desc']}\n"
+            f"▶ 危機: {conflict}\n"
+            f"▶ 世界観の質感: {texture}\n\n"
+            f"このDNAと科学の素材を組み合わせて、毎回まったく違う物語を書いてください。"
+            f"ジャンルと危機が物語の構造を決め、科学現象はその危機を解決する鍵になります。\n\n"
+        ),
+        "中文": (
+            f"[本次故事的DNA——每次都不同]\n"
+            f"▶ 类型: {genre['name']} — {genre['desc']}\n"
+            f"▶ 冲突: {conflict}\n"
+            f"▶ 世界观质感: {texture}\n\n"
+            f"将以上DNA与科学素材结合，每次写出完全不同的故事。"
+            f"类型和冲突决定故事结构，科学现象是化解危机的关键。\n\n"
+        ),
+    }
+    dna_header = _dna_header_templates.get(language, _dna_header_templates["한국어"])
     prompt = dna_header + language_prompts.get(language, language_prompts["한국어"])
 
     try:
