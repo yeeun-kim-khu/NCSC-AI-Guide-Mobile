@@ -738,7 +738,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 #### 🎟️ 프로그램별 예약 방법
 
-**신청콕 예약**: [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) - 성명·연락처 입력 (회원가입 불필요)
+**신청콕 예약**: [신청콕](https://www.applyto.kr/login/v1_register_and_sendSMS.asp?ukey=&School_id=505355&inning=&Z19_SN=15788&part_id=&student_id=&A50_ID=&number_id=&gate_id=) - 신청콕 접속 - 성명, 연락처 입력 - 예약
 - 대상 프로그램: 상설전시관, 천체투영관, 야간관측, 빛놀이터, 교육 프로그램
 
 **신청콕 단체예약**: [신청콕 단체예약](https://www.sciencecenter.go.kr/csc/reserve/group) - 성명·연락처 입력 (회원가입 불필요)
