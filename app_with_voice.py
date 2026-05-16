@@ -1163,22 +1163,25 @@ def main():
         )
         if typed_input and not st.session_state.get("pending_user_input"):
             st.session_state["pending_user_input"] = typed_input
+            st.session_state["_scroll_to_input"] = True
             st.rerun()
         
-        # 질문 입력 필드로 자동 스크롤
-        components.html("""<script>
-        (function() {
-            const parent = window.parent;
-            if (!parent) return;
-            setTimeout(function() {
-                const chatInput = parent.document.querySelector('[data-testid="stChatInput"]')
-                        || parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
-                if (chatInput) {
-                    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
-        })();
-        </script>""", height=0)
+        # 질문 입력 후에만 자동 스크롤
+        if st.session_state.get("_scroll_to_input"):
+            components.html("""<script>
+            (function() {
+                const parent = window.parent;
+                if (!parent) return;
+                setTimeout(function() {
+                    const chatInput = parent.document.querySelector('[data-testid="stChatInput"]')
+                            || parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+                    if (chatInput) {
+                        chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
+            })();
+            </script>""", height=0)
+            st.session_state["_scroll_to_input"] = False
     else:
         typed_input = None
 
