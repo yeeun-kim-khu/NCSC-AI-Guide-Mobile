@@ -872,17 +872,30 @@ def main():
         ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
         ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
     ]
-    tab_cols = st.columns(2)
-    with tab_cols[0]:
-        tab0_type = "primary" if st.session_state.active_tab == "guide" else "secondary"
-        if st.button(tab_labels[0], key="tab_btn_guide", use_container_width=True, type=tab0_type):
-            st.session_state.active_tab = "guide"
-            st.rerun()
-    with tab_cols[1]:
-        tab1_type = "primary" if st.session_state.active_tab == "learning" else "secondary"
-        if st.button(tab_labels[1], key="tab_btn_learning", use_container_width=True, type=tab1_type):
-            st.session_state.active_tab = "learning"
-            st.rerun()
+
+    # 라디오 글자 크기·굵기 CSS
+    st.markdown("""
+    <style>
+    div[data-testid="stRadio"] label {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    tab_default_idx = 0 if st.session_state.active_tab == "guide" else 1
+    selected_tab_label = st.radio(
+        "탭 선택",
+        options=tab_labels,
+        index=tab_default_idx,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="tab_radio",
+    )
+    new_tab = "guide" if selected_tab_label == tab_labels[0] else "learning"
+    if new_tab != st.session_state.active_tab:
+        st.session_state.active_tab = new_tab
+        st.rerun()
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
