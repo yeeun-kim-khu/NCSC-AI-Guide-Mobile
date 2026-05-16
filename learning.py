@@ -1835,7 +1835,7 @@ def render_post_visit_learning(
     
     text = texts.get(language_mode, texts["한국어"])
     
-    st.header(text["title"])
+    st.subheader(text["title"])
     st.markdown(text["subtitle"])
     
     # Load CSV data once with session state persistence

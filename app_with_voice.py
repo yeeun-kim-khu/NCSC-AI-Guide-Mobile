@@ -176,9 +176,9 @@ def _render_privacy_notice_gate() -> None:
             "title":   "AI 가이드 이용 안내",
             "body": (
                 "<b>이용 전, 아래 내용을 꼭 확인해주세요.</b><br>"
-                "✅ 입력한 글·음성은 <b>답변 생성에만 사용되며 저장되지 않습니다.</b> 새로고침하면 대화가 지워져요.<br>"
-                "✅ 주소·전화번호 등 <b>민감한 개인정보는 입력하지 마세요.</b><br>"
-                "✅ 어린이는 <b>보호자와 함께</b> 이용해 주세요.<br>"
+                "1. 입력한 글·음성은 <b>답변 생성에만 사용되며 저장되지 않습니다.</b> 새로고침하면 대화가 지워져요.<br>"
+                "2. 주소·전화번호 등 <b>민감한 개인정보는 입력하지 마세요.</b><br>"
+                "3. 어린이는 <b>보호자와 함께</b> 이용해 주세요.<br>"
                 "<small>※ 서비스 개선을 위한 익명 통계(접속 시간, 클릭 수)가 수집될 수 있습니다.</small>"
             ),
             "checkbox": "위 내용을 확인했으며 동의합니다.",
@@ -188,9 +188,9 @@ def _render_privacy_notice_gate() -> None:
             "title":   "AI Guide — Notice",
             "body": (
                 "<b>Please read before using this service.</b><br>"
-                "✅ Your text and voice are used <b>only to generate responses and are not stored.</b> Refreshing clears all conversation.<br>"
-                "✅ Do <b>not</b> enter sensitive personal information (address, phone number, etc.).<br>"
-                "✅ Children must use this service <b>with a guardian.</b><br>"
+                "1. Your text and voice are used <b>only to generate responses and are not stored.</b> Refreshing clears all conversation.<br>"
+                "2. Do <b>not</b> enter sensitive personal information (address, phone number, etc.).<br>"
+                "3. Children must use this service <b>with a guardian.</b><br>"
                 "<small>※ Anonymous usage statistics (session time, clicks) may be collected for service improvement.</small>"
             ),
             "checkbox": "I have read and agree to the above.",
@@ -200,9 +200,9 @@ def _render_privacy_notice_gate() -> None:
             "title":   "AIガイド ご利用案内",
             "body": (
                 "<b>ご利用前に以下をご確認ください。</b><br>"
-                "✅ 入力したテキスト・音声は<b>回答生成のみに使用され、保存されません。</b> 再読み込みすると会話が消えます。<br>"
-                "✅ 住所・電話番号などの<b>個人情報は入力しないでください。</b><br>"
-                "✅ お子様は<b>保護者の方と一緒に</b>ご利用ください。<br>"
+                "1. 入力したテキスト・音声は<b>回答生成のみに使用され、保存されません。</b> 再読み込みすると会話が消えます。<br>"
+                "2. 住所・電話番号などの<b>個人情報は入力しないでください。</b><br>"
+                "3. お子様は<b>保護者の方と一緒に</b>ご利用ください。<br>"
                 "<small>※ サービス改善のため、匿名の利用統計（接続時間、クリック数）が収集される場合があります。</small>"
             ),
             "checkbox": "上記の内容を確認し、同意します。",
@@ -212,9 +212,9 @@ def _render_privacy_notice_gate() -> None:
             "title":   "AI导览 使用须知",
             "body": (
                 "<b>使用前请阅读以下内容。</b><br>"
-                "✅ 您输入的文字和语音<b>仅用于生成回答，不会被存储。</b> 刷新页面后对话将被清除。<br>"
-                "✅ 请<b>勿输入</b>地址、电话号码等敏感个人信息。<br>"
-                "✅ 儿童请在<b>监护人陪同下</b>使用。<br>"
+                "1. 您输入的文字和语音<b>仅用于生成回答，不会被存储。</b> 刷新页面后对话将被清除。<br>"
+                "2. 请<b>勿输入</b>地址、电话号码等敏感个人信息。<br>"
+                "3. 儿童请在<b>监护人陪同下</b>使用。<br>"
                 "<small>※ 为改善服务，可能会收集匿名使用统计信息（连接时间、点击次数）。</small>"
             ),
             "checkbox": "我已阅读并同意以上内容。",

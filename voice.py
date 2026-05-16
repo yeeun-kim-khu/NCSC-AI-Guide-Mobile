@@ -224,10 +224,23 @@ def preprocess_tts_text(text: str, language: str = "ko") -> str:
     text = re.sub(r'`[^`]*`', '', text)             # `code`
     text = re.sub(r'\[([^\]]+)\]\([^)]*\)', r'\1', text)  # [link](url) → link䞬식만
     text = re.sub(r'^[-*+]\s+', '', text, flags=re.MULTILINE)  # 목록 기호
-    text = re.sub(r'\n{2,}', ' ', text)             # 여러 줄바꾸 → 공백
+    text = re.sub(r'\n{2,}', ' ', text)             # 여러 줄바꿈 → 공백
     text = text.strip()
     if language != "ko":
         return text
+
+    # 번호 목록(줄 시작 "1. " "2. ")을 한자어로 변환 — edge-tts가 "한번/두번"으로 읽는 것 방지
+    _sino = {1:'일',2:'이',3:'삼',4:'사',5:'오',6:'육',7:'칠',8:'팔',9:'구',10:'십'}
+    def _list_num(m):
+        n = int(m.group(1))
+        return _sino.get(n, str(n)) + '. '
+    text = re.sub(r'(?m)^(\d+)\.\s+', _list_num, text)
+
+    # 층(層)은 한자어로 읽는 게 자연스러움: "1층" → "일층"
+    def _floor_sino(m):
+        n = int(m.group(1))
+        return _sino.get(n, str(n)) + '층'
+    text = re.sub(r'(\d+)층', _floor_sino, text)
 
     def _format_time(hh: str, mm: str) -> str:
         h = int(hh)
