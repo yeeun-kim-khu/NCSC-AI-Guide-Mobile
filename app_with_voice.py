@@ -1168,19 +1168,16 @@ def main():
         
         # 질문 입력 후에만 자동 스크롤
         if st.session_state.get("_scroll_to_input"):
-            components.html("""<script>
-            (function() {
-                const parent = window.parent;
-                if (!parent) return;
-                setTimeout(function() {
-                    const chatInput = parent.document.querySelector('[data-testid="stChatInput"]')
-                            || parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
-                    if (chatInput) {
-                        chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 100);
-            })();
-            </script>""", height=0)
+            st.markdown("""<script>
+            setTimeout(function() {
+                const chatInput = document.querySelector('[data-testid="stChatInput"]')
+                        || document.querySelector('textarea[data-testid="stChatInputTextArea"]')
+                        || document.querySelector('textarea');
+                if (chatInput) {
+                    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 300);
+            </script>""", unsafe_allow_html=True)
             st.session_state["_scroll_to_input"] = False
     else:
         typed_input = None
