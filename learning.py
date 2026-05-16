@@ -223,7 +223,7 @@ def _extract_zone_keywords_llm(zone_name: str, language_mode: str, csv_compact_t
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
 
     if language_mode == "한국어":
-        prompt = f"""너는 4세~초등 저학년 어린이와 학부모를 위한 전시관 키워드 편집자야.
+        prompt = f"""너는 초등 4~6학년 어린이(10~12세)와 학부모를 위한 전시관 키워드 편집자야.
 
 아래는 '{zone_name}' 전시물 CSV에서 뽑은 제목/설명 일부야.
 이 내용을 보고, 아이가 이해하기 쉬운 '굵직한 키워드'만 8~12개 뽑아줘.
@@ -736,7 +736,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 [문제 품질 규칙 — 반드시 지킬 것]
 1) 사실 검증: 과학적으로 명백히 참인 정답 1개, 명백히 거짓인 오답 3개. 애매하거나 둘 다 맞을 수 있는 표현 금지.
 2) 구체성: "맞다/아니다"처럼 추상적인 선택지 금지. 각 선택지는 명사구 또는 짧은 문장으로 의미가 분명해야 함.
-3) 어휘 수준: 6~10세 어린이가 이해할 수 있는 단어. 학술 용어는 풀어서 설명.
+3) 어휘 수준: 초등 4~6학년(10~12세)이 이해할 수 있는 단어. 학술 용어는 풀어서 설명.
 4) 일관성: 4개 선택지의 문법 형태/길이를 비슷하게 맞추기 (정답만 길거나 짧으면 안 됨).
 5) 함정 주의: 오답은 흔한 오개념이나 비슷한 다른 현상에서 가져오기 (무관한 단어 나열 금지).
 6) 질문은 한 가지만 묻기. 이중 부정, 복수 조건 금지.
@@ -746,7 +746,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 [Quality rules — MUST follow]
 1) Factual: exactly 1 clearly correct answer; 3 clearly wrong distractors. No ambiguous wording.
 2) Concrete: each option must be a meaningful phrase, not vague yes/no.
-3) Vocabulary for ages 6–10. Avoid jargon.
+3) Vocabulary for ages 10–12 (upper elementary). Avoid heavy jargon.
 4) Consistent length/form across the 4 options.
 5) Distractors should be common misconceptions, not random unrelated words.
 6) Single, clear question. Avoid double negatives or compound conditions.
@@ -1132,7 +1132,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     world = random.choice(_world_candidates)
 
     language_prompts = {
-        "한국어": f"""너는 6~8세 어린이를 위한 감성적이고 재미있는 과학동화 작가야.
+        "한국어": f"""너는 초등 4~6학년(10~12세) 어린이를 위한 감성적이고 재미있는 과학동화 작가야.
 
 [재료 — 모두 CSV 실제 데이터 기반. 반드시 활용할 것]
 ※ 이 동화는 실재하는 전시관('{zone_name}')을 모티브로 한다. 아래 재료를 무시하고 무관한 설정을 만들지 말 것.
@@ -1167,7 +1167,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - **3막의 '아하 순간'에서 단 한 번** 원리명('{principles_text}')을 큰따옴표 대사로 명명할 것. 이때 한 줄짜리 쉬운 설명 추가 (예: "물건을 밀면 그 물건도 똑같은 힘으로 나를 밀어내는 거였어!").
    - 결말 부근에서 그 원리명을 **한 번 더 짧게 회상**하면서 위기를 해결 (총 명명 횟수: 2~3회).
    - 강의·백과사전 톤은 절대 금지. 동반자도 같이 깨닫는 친구.
-6) **문체 (6~8세 톤)**:
+6) **문체 (초등 4~6학년 톤)**:
    - 의성어·의태어를 최소 3번 사용 (예: 폴짝폴짝, 윙윙, 반짝반짝, 살랑살랑, 또르르).
    - 짧은 문장 위주, 대사 비중 40% 이상.
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
@@ -1184,7 +1184,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 동화 본문의 마지막 줄에 반드시 아래 형식으로 분위기 태그를 출력하세요:
 MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 중 하나만
 """,
-        "English": f"""You are a tender, imaginative science story writer for children aged 6–8.{glossary_rules}
+        "English": f"""You are a tender, imaginative science story writer for upper elementary children aged 10–12.{glossary_rules}
 
 [Ingredients — all from REAL CSV data. You MUST use them; do not ignore.]
 This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unrelated settings.
@@ -1219,7 +1219,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    - **At the Act-3 aha moment, name '{principles_text}' EXACTLY ONCE in dialogue**, followed by a one-sentence kid-friendly explanation (e.g., "When you push something, it pushes you back just as hard!").
    - Mention the term ONE more time near the resolution as the hero applies it. (Total namings: 2–3.)
    - Never lecture. The companion discovers WITH the hero, not as a teacher.
-6) **Style (ages 6–8)**:
+6) **Style (ages 10–12)**:
    - Use at least 3 onomatopoeia / mimetic words (whoosh, sparkle-sparkle, plip-plop, thump-thump).
    - Short sentences, dialogue ≥ 40%.
    - At least 2 sensory details (sound, light, smell, texture).
@@ -1236,7 +1236,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 At the very last line of the story, output a mood tag in this exact format:
 MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only one
 """,
-        "日本語": f"""あなたは6〜8歳の子ども向けに、やさしくて楽しい科学の物語を書く作家です。{glossary_rules}
+        "日本語": f"""あなたは小学4〜6年生（10〜12歳）向けに、感動的で楽しい科学の物語を書く作家です。{glossary_rules}
 
 [素材 — すべて実在のCSVデータ。必ず活用すること]
 この物語は実在の展示館（『{zone_name}』）をモチーフにする。下の素材を無視して無関係な設定を作らない。
@@ -1271,7 +1271,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
    - **第3幕のアハの瞬間でちょうど一度だけ** 用語『{principles_text}』をセリフで名づける。続けて子ども向けの一文説明（例：「ものを押すと、そのものも同じ強さで自分を押しかえすんだ！」）。
    - 結末近くでもう一度だけ、主人公がその用語を使って危機を解く（合計命名2〜3回）。
    - 講義・百科事典口調は厳禁。相棒は先生ではなく、いっしょに発見する友だち。
-6) **文体（6〜8歳向け）**:
+6) **文体（小学4〜6年生向け）**:
    - 擬音語・擬態語を3回以上使う（ぴょんぴょん、ぴかぴか、ふわふわ、ころころ、ぽとんなど）。
    - 短い文中心、会話の割合は40%以上。
    - 五感の描写（音・光・におい・感触）を2つ以上入れる。
@@ -1987,22 +1987,22 @@ def render_post_visit_learning(
                                     is_child = (user_mode == "어린이")
                                     lang_instruction = {
                                         "한국어": (
-                                            "초등 저학년 어린이가 이해할 수 있게, 쉬운 단어와 예시를 들어 한국어로 재미있게 설명해주세요. 짧게 2~3문장으로 마무리하고, 마지막에 '정말 신기하지?'처럼 어린이의 흥미를 돋우는 한마디를 추가해주세요."
+                                            "초등 4~6학년(10~12세) 어린이가 이해할 수 있게, 쉬운 단어와 실생활 예시를 들어 한국어로 재미있게 설명해주세요. 3~4문장으로 마무리하고, 마지막에 '신기하지 않아?'처럼 호기심을 자극하는 한마디를 추가해주세요."
                                             if is_child else
                                             "과학적으로 정확하고 자세하게 한국어로 설명해주세요. 전시물과 관련된 원리 및 실생활 예시를 포함해 주세요."
                                         ),
                                         "English": (
-                                            "Please explain in simple English for young children (ages 6-10), using easy words and fun examples. Keep it to 2-3 sentences and end with an exciting fact!"
+                                            "Please explain in clear English for upper elementary students (ages 10-12), using everyday examples and relatable comparisons. Keep it to 3-4 sentences and end with a curious 'Did you know?' hook!"
                                             if is_child else
                                             "Please answer in clear, accurate English with scientific detail and real-life examples related to the exhibit."
                                         ),
                                         "日本語": (
-                                            "小学校低学年の子どもにもわかるように、やさしい日本語と楽しい例えで2〜3文で説明してください。最後に「すごいね！」など興味を引く一言を加えてください。"
+                                            "小学4〜6年生（10〜12歳）にわかるように、身近な例えをつかって日本語で3〜4文で説明してください。最後に「不思議だと思わない？」など好奇心を刺激する一言を加えてください。"
                                             if is_child else
                                             "科学的に正確で詳しい日本語で、展示に関連した原理と実例を含めて説明してください。"
                                         ),
                                         "中文": (
-                                            "请用简单易懂的中文为小朋友（6-10岁）解释，使用有趣的比喻，用2-3句话说明，最后加一句激发好奇心的话。"
+                                            "请用通俗易懂的中文为小学高年级学生（10-12岁）解释，使用贴近生活的比喻，用3-4句话说明，最后加一句激发好奇心的话，例如"你有没有想过……？"。"
                                             if is_child else
                                             "请用科学准确、详细的中文说明，并结合展品相关的原理和实际例子。"
                                         ),

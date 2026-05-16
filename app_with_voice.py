@@ -98,7 +98,7 @@ def _flush_ga_events() -> None:
 
 
 def _render_mascot_animation() -> None:
-    """어린이 모드용 마스코트를 본문 글자 뒤 워터마크 배경으로 렌더링.
+    """모든 모드에서 마스코트를 본문 글자 뒤 워터마크 배경으로 렌더링.
 
     - 파일: assets/NCSC_character.png
     - 효과: 화면 중앙에 고정된 반투명 배경 (스크롤해도 따라옴)
@@ -282,71 +282,6 @@ def render_feedback(language_mode: str = "한국어", user_mode: str = "기본")
     st.link_button(ft["btn_text"], form_url, use_container_width=True, type="primary")
 
 
-_SCIENCE_RIDDLES = {
-    "한국어": [
-        {"q": "나는 눈에 보이지 않아요. 하지만 여름엔 뜨겁고 겨울엔 차가워요. 내가 없으면 아무것도 살 수 없어요. 나는 누구일까요? 🌬️", "a": "공기!", "hint": "우리 몸은 1분에 약 15번이나 나를 마셔요. 산소, 질소, 이산화탄소가 섞여 있답니다!"},
-        {"q": "나는 떨어져도 다시 올라오지 않아요. 사과도, 공도, 물도 다 나를 따라요. 뉴턴 아저씨가 사과를 보다가 나를 발견했대요. 나는 뭘까요? 🍎", "a": "중력!", "hint": "지구가 모든 물체를 아래로 잡아당기는 힘이에요. 달에서는 중력이 지구의 1/6이라 몸이 훨씬 가벼워요!"},
-        {"q": "나는 빛이 없으면 존재하지 않아요. 빨주노초파남보 7가지 색이 다 숨어있어요. 비 온 뒤에 하늘에 나타나요. 나는 뭘까요? 🌈", "a": "무지개!", "hint": "햇빛이 빗방울 속에서 꺾이고 반사되면서 색깔별로 나뉘어요. 빨강이 가장 바깥쪽, 보라가 가장 안쪽이에요!"},
-        {"q": "나를 만지면 따뜻함이 느껴져요. 나는 항상 따뜻한 곳에서 차가운 곳으로 흘러요. 겨울에 핫초코를 마시면 내가 손으로 전해져요. 나는 뭘까요? 🍫", "a": "열(열에너지)!", "hint": "열은 온도가 높은 곳에서 낮은 곳으로 이동해요. 냄비에 물을 끓이면 바닥에서부터 위로 열이 전달된답니다!"},
-        {"q": "종을 치면 내가 생겨나요. 기타 줄을 튕겨도 내가 퍼져나가요. 나는 공기를 흔들어 귀까지 전달돼요. 나는 뭘까요? 🔔", "a": "소리(진동)!", "hint": "소리는 공기 분자가 떨리며 전달돼요. 달에는 공기가 없어서 소리가 전혀 안 들린답니다!"},
-        {"q": "나는 밀면 반대로 밀어요. 로켓이 하늘로 올라가는 것도 나 덕분이에요. 수영할 때 발로 벽을 차면 앞으로 나가는 것도 나예요. 나는 뭘까요? 🚀", "a": "작용-반작용!", "hint": "힘이 작용하면 반드시 크기는 같고 방향은 반대인 힘이 생겨요. 뉴턴의 제3법칙이에요!"},
-        {"q": "나는 물 위에 뜨는 원리예요. 배도, 오리도 모두 나 덕분에 가라앉지 않아요. 목욕탕에서 몸이 가벼워지는 것도 나 때문이에요. 나는 뭘까요? 🛥️", "a": "부력!", "hint": "아르키메데스가 목욕탕에서 발견한 원리예요. 물체가 밀어낸 물의 무게만큼 위로 밀어올리는 힘이에요!"},
-        {"q": "나는 전기가 흐르게 해요. 구리선, 쇠막대 속에서 나는 달려요. 하지만 고무나 플라스틱은 나를 막아요. 나는 뭘까요? ⚡", "a": "전류(전기)!", "hint": "전기는 음(-) 전하를 띤 전자들이 이동하는 것이에요. 번개도 하늘에서 땅으로 흐르는 엄청난 전기랍니다!"},
-        {"q": "식물은 나와 물, 햇빛만 있으면 밥을 만들 수 있어요. 내가 없으면 지구에서 불도 못 피워요. 우리가 숨 쉴 때마다 나를 마셔요. 나는 뭘까요? 🌱", "a": "산소!", "hint": "식물이 광합성을 할 때 이산화탄소를 먹고 산소를 내뿜어요. 지구 공기의 약 21%가 산소랍니다!"},
-        {"q": "나는 당기는 힘이에요. 냉장고에 붙는 메모지, 나침반이 북쪽을 가리키는 것도 나 때문이에요. 같은 극끼리는 밀어내고, 다른 극끼리는 당겨요. 나는 뭘까요? 🧲", "a": "자기력(자석의 힘)!", "hint": "지구 자체도 커다란 자석이에요. 그래서 나침반의 N극이 항상 북쪽 지구 S극 방향을 가리킨답니다!"},
-    ],
-    "English": [
-        {"q": "I'm invisible, but you breathe me every moment. Plants need me to make food. Without me, nothing can burn. What am I? 🌬️", "a": "Air!", "hint": "Air is a mix of nitrogen (78%), oxygen (21%), and other gases. We breathe about 15 times a minute!"},
-        {"q": "I pull everything toward the ground. Newton discovered me when an apple fell. Without me, you'd float off into space! What am I? 🍎", "a": "Gravity!", "hint": "Gravity is the force that attracts objects toward each other. On the Moon, gravity is 1/6 of Earth's — you'd feel super light!"},
-        {"q": "I only exist when light is present. Raindrops split sunlight into 7 colors to reveal me. I appear after rain. What am I? 🌈", "a": "Rainbow!", "hint": "Red is always on the outside and violet on the inside. Each raindrop acts like a tiny prism!"},
-        {"q": "I always flow from hot to cold. Hot cocoa warms your hands because of me. I travel through metal really fast. What am I? 🍫", "a": "Heat (Thermal Energy)!", "hint": "Heat transfers in three ways: conduction (through objects), convection (through fluids), and radiation (through space)!"},
-        {"q": "Strike a bell and I appear. I travel through air as invisible waves. There's no sound on the Moon — because there's no air to carry me. What am I? 🔔", "a": "Sound (Vibration)!", "hint": "Sound travels at about 343 meters per second in air. But in water, it travels 4 times faster!"},
-    ],
-    "日本語": [
-        {"q": "目には見えないけど、毎日吸っているよ。植物が食べ物を作るのにも必要。これがないと火もつかない。わたしはだれ？🌬️", "a": "空気！", "hint": "空気は窒素78%、酸素21%などでできています。1分間に約15回も吸っているよ！"},
-        {"q": "りんごも、ボールも、みんなわたしに従って落ちるよ。ニュートンがりんごを見て発見したよ。わたしはなに？🍎", "a": "重力！", "hint": "月の重力は地球の約1/6。月では体がとっても軽く感じるよ！"},
-        {"q": "光がないと存在できないよ。雨の後、空に7色で現れるよ。赤・橙・黄・緑・青・藍・紫の順に並んでいるよ。わたしはなに？🌈", "a": "虹！", "hint": "雨粒がプリズムの役割をして、太陽の光を7色に分けるんだよ！"},
-    ],
-    "中文": [
-        {"q": "我看不见，但你每天都在吸我。植物需要我来做食物。没有我什么都不能燃烧。我是谁？🌬️", "a": "空气！", "hint": "空气由78%的氮气和21%的氧气等组成。我们每分钟呼吸约15次！"},
-        {"q": "苹果、球都跟着我往下落。牛顿看到苹果掉下来发现了我。我是什么？🍎", "a": "重力！", "hint": "月球的重力只有地球的1/6，所以在月球上你会感觉身体轻很多！"},
-        {"q": "没有光我就不存在。雨后出现在天空中，有7种颜色。我是什么？🌈", "a": "彩虹！", "hint": "雨滴像棱镜一样，把阳光分成7种颜色。红色在最外面，紫色在最里面！"},
-    ],
-}
-
-
-def _render_science_riddle(language_mode: str = "한국어") -> None:
-    """어린이 모드 전용: 오늘의 과학 수수께끼 위젯."""
-    riddles = _SCIENCE_RIDDLES.get(language_mode, _SCIENCE_RIDDLES["한국어"])
-    today_idx = datetime.now(timezone(timedelta(hours=9))).timetuple().tm_yday % len(riddles)
-    riddle = riddles[today_idx]
-
-    title_map = {
-        "한국어": "🧩 오늘의 과학 수수께끼",
-        "English": "🧩 Today's Science Riddle",
-        "日本語": "🧩 今日の科学なぞなぞ",
-        "中文": "🧩 今日科学谜语",
-    }
-    reveal_label_map = {
-        "한국어": ("💡 정답 보기", "🙈 정답 숨기기"),
-        "English": ("💡 Show Answer", "🙈 Hide Answer"),
-        "日本語": ("💡 答えを見る", "🙈 答えを隠す"),
-        "中文": ("💡 查看答案", "🙈 隐藏答案"),
-    }
-
-    with st.expander(title_map.get(language_mode, "🧩 오늘의 과학 수수께끼"), expanded=False):
-        st.markdown(f"**{riddle['q']}**")
-        reveal_key = f"riddle_reveal_{today_idx}_{language_mode}"
-        if reveal_key not in st.session_state:
-            st.session_state[reveal_key] = False
-        show_lbl, hide_lbl = reveal_label_map.get(language_mode, reveal_label_map["한국어"])
-        btn_lbl = hide_lbl if st.session_state[reveal_key] else show_lbl
-        if st.button(btn_lbl, key=f"btn_riddle_{today_idx}_{language_mode}"):
-            st.session_state[reveal_key] = not st.session_state[reveal_key]
-            st.rerun()
-        if st.session_state[reveal_key]:
-            st.success(f"**{riddle['a']}**")
-            st.caption(f"🔬 {riddle['hint']}")
 
 
 def main():
@@ -860,10 +795,6 @@ def main():
     if st.session_state.get("mode_language_changed"):
         st.info(ui_text.get(language_mode, ui_text["한국어"])["mode_lang_changed"])
         del st.session_state["mode_language_changed"]
-
-    # 어린이 모드 전용: 오늘의 과학 수수께끼
-    if user_mode == "어린이":
-        _render_science_riddle(language_mode)
 
     with st.expander(ui_text.get(language_mode, ui_text["한국어"])["quick_menu"], expanded=False):
         c1, c2, c3, c4 = st.columns(4)
