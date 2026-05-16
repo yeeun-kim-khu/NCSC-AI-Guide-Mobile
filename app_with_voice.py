@@ -239,7 +239,12 @@ def _render_privacy_notice_gate() -> None:
         chosen_lang = _LANG_OPTIONS[lang_label]
         notice = _NOTICE[chosen_lang]
 
-        st.markdown(notice["body"], unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown(
+            f"<div style='line-height:2.0;'>{notice['body']}</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown("---")
         agreed = st.checkbox(notice["checkbox"], key="popup_agreed")
         if agreed and st.button(notice["button"], type="primary", use_container_width=True):
             _ack(chosen_lang)
@@ -759,66 +764,58 @@ def main():
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "**국립어린이과학관**에 와줘서 정말 반가워! 🎉<br>"
-                "**📅 AI 가이드 시범운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
-                "**🏙️ 과학관 안내** — 어디로 갈지 모르겠어? 무슨 프로그램이 있는지 궁금해? 아래 채팅에 물어봐 줘! 🎤 사이드바에서 말로도 물어볼 수 있어.\n\n"
-                "**🥰 또만나 놀이터** — 오늘 본 전시물 다시 만나러 가볼까?! 재밌는 **퀴즈**, **질문**, AI가 만들어주는 **과학동화**까지! 아래 탭을 눌러봐.\n\n"
-                "**💡 팁:** 왼쪽 위 **>>** 누르면 언어·모드 변경, 음성 질문, 설문조사 가능!"
+                "**국립어린이과학관** AI 가이드야! 🎉 **📅 시범운영:** 5.22.(금) ~ 5.31.(일)\n\n"
+                "**🏙️ 과학관 안내** — 층별·프로그램·예약 등 아래 채팅에 물어봐! 🎤 음성도 가능!\n"
+                "**🥰 또만나 놀이터** — **퀴즈**, **질문**, AI **과학동화** (아래 탭)\n\n"
+                "**💡** 왼쪽 위 **>>** — 언어·모드·음성·설문"
             ),
             "성인": (
-                "**국립어린이과학관**에 오신 걸 환영해요! 🎉<br>"
-                "실시간 AI 가이드 서비스를 시범 운영 중입니다. — **📅 시범운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
-                "**🏙️ 과학관 안내** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 채팅이나 🎤 음성으로 질문하세요.\n\n"
-                "**🥰 또만나 놀이터** — 전시물 원리 **퀴즈**, 심화 **질문**, AI 실시간 **과학동화**를 아래 탭에서 이용하실 수 있어요.\n\n"
-                "**💡 팁:** 왼쪽 상단 **>>** 에서 언어·모드 변경, 음성 질문, 설문조사를 이용할 수 있어요."
+                "**국립어린이과학관** AI 가이드에 오신 걸 환영합니다! 🎉 **📅 시범운영:** 5.22.(금) ~ 5.31.(일)\n\n"
+                "**🏙️ 과학관 안내** — 층별·프로그램·관람료·예약·길찾기, 채팅 또는 🎤 음성으로 질문하세요.\n"
+                "**🥰 또만나 놀이터** — 전시물 **퀴즈**, **질문**, AI **과학동화** (아래 탭)\n\n"
+                "**💡** 왼쪽 위 **>>** — 언어·모드·음성·설문"
             ),
         },
         "English": {
             "어린이": (
-                "Welcome to the **National Children's Science Center**! 🎉<br>"
-                "**📅 AI Guide Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
-                "**🏙️ Museum Guide** — Not sure where to go? Curious about today's programs? Ask me in the chat below! 🎤 You can also speak using the sidebar.\n\n"
-                "**🥰 Again Zone** — Revisit today's exhibits! Take fun **quizzes**, ask **questions**, and listen to AI-made **science stories**~ Tap the tab below!\n\n"
-                "**💡 Tip:** Tap **>>** on the top left to change language, ask by voice, and take a survey!"
+                "**NCSC** AI Guide is here! 🎉 **📅 Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "**🏙️ Museum Guide** — Floors, programs, reservations? Ask in the chat! 🎤 Voice too!\n"
+                "**🥰 Again Zone** — **Quizzes**, **Q&A**, AI **science stories** (tab below)\n\n"
+                "**💡** Tap **>>** top-left — language, mode, voice, survey"
             ),
             "성인": (
-                "Welcome to the **National Children's Science Center**! 🎉<br>"
-                "We are piloting a real-time AI guide service. — **📅 Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
-                "**🏙️ Museum Guide** — Ask about floors, programs, fees, reservations, or directions — type in the chat or use 🎤 voice from the sidebar.\n\n"
-                "**🥰 Again Zone** — Take **quizzes**, ask deeper **questions**, and enjoy AI-generated **science stories** in real time. Switch tabs below!\n\n"
-                "**💡 Tip:** Tap **>>** on the top left to change language/mode, ask by voice, and take a survey."
+                "Welcome to the **NCSC** AI Guide! 🎉 **📅 Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "**🏙️ Museum Guide** — Floors, programs, fees, reservations, directions — chat or 🎤 voice.\n"
+                "**🥰 Again Zone** — **Quizzes**, **Q&A**, AI **science stories** (tab below)\n\n"
+                "**💡** Tap **>>** top-left — language, mode, voice, survey"
             ),
         },
         "日本語": {
             "어린이": (
-                "**国立こども科学館**に来てくれてうれしい！🎉<br>"
-                "**📅 AIガイド試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
-                "**🏙️ 科学館案内** — どこへ行けばいい？今日のプログラムは？下のチャットで聞いてね！🎤 サイドバーから音声でも聞けるよ。\n\n"
-                "**🥰 またねゾーン** — 今日の展示にもう一度会いに行こう！**クイズ**・**質問**・AIが作る **サイエンス童話** が楽しめるよ〜 下のタブを押してみてね！\n\n"
-                "**💡 ヒント：** 左上の **>>** を押すと、言語・モード変更、音声質問、アンケートができるよ！"
+                "**国立こども科学館** AIガイドへようこそ！🎉 **📅 試験運用：** 5月22日(金) 〜 5月31日(日)\n\n"
+                "**🏙️ 科学館案内** — フロア・プログラム・予約など、下のチャットで聞いてね！🎤 音声も OK!\n"
+                "**🥰 またねゾーン** — **クイズ**・**質問**・AI **サイエンス童話** (下のタブ)\n\n"
+                "**💡** 左上 **>>** — 言語・モード・音声・アンケート"
             ),
             "성인": (
-                "**国立こども科学館**へようこそ！🎉<br>"
-                "リアルタイム案内AIガイドサービスを試験運用しています。 — **📅 試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
-                "**🏙️ 科学館案内** — フロア・プログラム・料金・予約・アクセスなど、来館前後の疑問にお答えします。チャットまたは 🎤 音声でどうぞ。\n\n"
-                "**🥰 またねゾーン** — 展示の科学原理 **クイズ**・**質問**・AIがリアルタイムで作る **サイエンス童話** を下のタブでお楽しみください。\n\n"
-                "**💡 ヒント：** 左上の **>>** を押すと、言語・モード変更、音声質問、アンケートが利用できます。"
+                "**国立こども科学館** AIガイドへようこそ！🎉 **📅 試験運用：** 5月22日(金) 〜 5月31日(日)\n\n"
+                "**🏙️ 科学館案内** — フロア・プログラム・料金・予約・アクセス、チャットまたは 🎤 音声でどうぞ。\n"
+                "**🥰 またねゾーン** — **クイズ**・**質問**・AI **サイエンス童話** (下のタブ)\n\n"
+                "**💡** 左上 **>>** — 言語・モード・音声・アンケート"
             ),
         },
         "中文": {
             "어린이": (
-                "欢迎来到 **国立儿童科学馆**！🎉<br>"
-                "**📅 AI导览试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
-                "**🏙️ 科学馆导览** — 不知道去哪儿？想了解今天的节目？在下方聊天框问我吧！🎤 也可以从侧边栏用语音提问哦。\n\n"
-                "**🥰 再次乐园** — 再次探索今天的展品吧！做有趣的 **测验**、自由 **提问**，还能听AI创作的奇妙 **科学故事**~ 点击下方标签试试！\n\n"
-                "**💡 提示：** 点击左上角 **>>**，可切换语言、语音提问和填写问卷哦！"
+                "欢迎来到**国立儿童科学馆** AI导览！🎉 **📅 试运行：** 5月22日(周五) 〜 5月31日(周日)\n\n"
+                "**🏙️ 科学馆导览** — 楼层、节目、预约等，在下方聊天框问我吧！🎤 也可用语音！\n"
+                "**🥰 再次乐园** — **测验**、**提问**、AI **科学故事** (下方标签)\n\n"
+                "**💡** 点击左上角 **>>** — 语言·模式·语音·问卷"
             ),
             "성인": (
-                "欢迎来到 **国立儿童科学馆**！🎉<br>"
-                "我们正在试运行实时AI导览服务。 — **📅 试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
-                "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等问题随时解答。在下方聊天框输入，或使用侧边栏 🎤 语音提问。\n\n"
-                "**🥰 再次乐园** — 展品科学原理 **测验**、深度 **提问**、AI实时创作的 **科学故事**，请切换下方标签体验。\n\n"
-                "**💡 提示：** 点击左上角 **>>**，可切换语言/模式、语音提问和填写问卷。"
+                "欢迎使用**国立儿童科学馆** AI导览！🎉 **📅 试运行：** 5月22日(周五) 〜 5月31日(周日)\n\n"
+                "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通，聊天或 🎤 语音提问。\n"
+                "**🥰 再次乐园** — **测验**、**提问**、AI **科学故事** (下方标签)\n\n"
+                "**💡** 点击左上角 **>>** — 语言·模式·语音·问卷"
             ),
         },
     }
@@ -871,13 +868,13 @@ def main():
         ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
     ]
 
-    # 라디오 글자 크기·굵기 CSS (option text는 label > div > p 구조)
+    # 라디오 글자 크기·굵기 CSS
     st.markdown("""
     <style>
     div[data-testid="stRadio"] label p,
     div[data-testid="stRadio"] label span,
     div[data-testid="stRadio"] label {
-        font-size: 1.1rem !important;
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
     }
     </style>
@@ -1160,16 +1157,22 @@ def main():
 
             components.html("""<script>
             (function() {
-                const parent = window.parent;
-                if (!parent) return;
+                const p = window.parent;
+                if (!p) return;
                 setTimeout(function() {
-                    const el = parent.document.querySelector('[data-testid="stMain"]')
-                            || parent.document.querySelector('.main')
-                            || parent.document.documentElement;
+                    const candidates = [
+                        p.document.querySelector('[data-testid="stAppViewBlockContainer"]'),
+                        p.document.querySelector('section[data-testid="stMain"] > div'),
+                        p.document.querySelector('[data-testid="stMain"]'),
+                        p.document.querySelector('.main'),
+                    ];
+                    const el = candidates.find(function(e) { return e && e.scrollHeight > e.clientHeight + 10; });
                     if (el) {
                         el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+                    } else {
+                        p.scrollTo({ top: p.document.body.scrollHeight, behavior: 'smooth' });
                     }
-                }, 100);
+                }, 300);
             })();
             </script>""", height=0)
 
@@ -1219,15 +1222,15 @@ def main():
         if st.session_state.get("_scroll_to_input"):
             components.html("""<script>
             (function() {
-                const parent = window.parent;
-                if (!parent) return;
+                const p = window.parent;
+                if (!p) return;
                 setTimeout(function() {
-                    const el = parent.document.querySelector('[data-testid="stChatInput"]')
-                            || parent.document.querySelector('textarea');
+                    const el = p.document.querySelector('[data-testid="stChatInput"]')
+                            || p.document.querySelector('textarea');
                     if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     }
-                }, 300);
+                }, 500);
             })();
             </script>""", height=0)
             st.session_state["_scroll_to_input"] = False
