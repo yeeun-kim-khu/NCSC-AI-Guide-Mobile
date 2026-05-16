@@ -530,9 +530,10 @@ def _render_quiz_card(zone_name: str, keyword: str, quiz_obj, language_mode: str
         st.session_state[reveal_key] = new_reveal_state
         # 처음 정답을 확인하면 스탬프 적립
         if new_reveal_state:
-            if "science_stamps" not in st.session_state:
-                st.session_state.science_stamps = set()
-            st.session_state.science_stamps.add(zone_name)
+            stamps = list(st.session_state.get("science_stamps", []))
+            if zone_name not in stamps:
+                stamps.append(zone_name)
+            st.session_state["science_stamps"] = stamps
         st.rerun()
 
     if st.session_state[reveal_key]:
@@ -1773,31 +1774,34 @@ def render_post_visit_learning(
 
     if st.session_state.learning_sub_tab == "quiz_question":
         # 스탬프 진행 현황
-        earned = st.session_state.get("science_stamps", set())
-        all_zone_names = list(ZONE_INFO.keys())
-        if earned:
-            stamp_title = {
-                "한국어": f"🏅 과학 스탬프 모아요! {len(earned)}/{len(all_zone_names)}",
-                "English": f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}",
-                "日本語": f"🏅 スタンプ集め! {len(earned)}/{len(all_zone_names)}",
-                "中文": f"🏅 集科学印章! {len(earned)}/{len(all_zone_names)}",
-            }.get(language_mode, f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}")
-            st.markdown(stamp_title)
-            stamp_row = " ".join(
-                f"⭐ {_display_zone_name(z)}" if z in earned else f"○ {_display_zone_name(z)}"
-                for z in all_zone_names
-            )
-            st.caption(stamp_row)
-            st.progress(len(earned) / len(all_zone_names))
-            if len(earned) >= len(all_zone_names):
-                congrats = {
-                    "한국어": "🎉 모든 놀이터 탐험 완료! 너는 진짜 과학 탐험가야! 🔬",
-                    "English": "🎉 All zones explored! You're a true Science Explorer! 🔬",
-                    "日本語": "🎉 全ゾーン制覇！きみは本物の科学探検家だ！ 🔬",
-                    "中文": "🎉 全部区域探索完成！你是真正的科学探险家！🔬",
-                }.get(language_mode, "🎉 All zones explored!")
-                st.success(congrats)
-            st.markdown("---")
+        try:
+            earned = set(st.session_state.get("science_stamps", []))
+            all_zone_names = list(ZONE_INFO.keys())
+            if earned:
+                stamp_title = {
+                    "한국어": f"🏅 과학 스탬프 모아요! {len(earned)}/{len(all_zone_names)}",
+                    "English": f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}",
+                    "日本語": f"🏅 スタンプ集め! {len(earned)}/{len(all_zone_names)}",
+                    "中文": f"🏅 集科学印章! {len(earned)}/{len(all_zone_names)}",
+                }.get(language_mode, f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}")
+                st.markdown(stamp_title)
+                stamp_row = " ".join(
+                    f"⭐ {_display_zone_name(z)}" if z in earned else f"○ {_display_zone_name(z)}"
+                    for z in all_zone_names
+                )
+                st.caption(stamp_row)
+                st.progress(len(earned) / len(all_zone_names))
+                if len(earned) >= len(all_zone_names):
+                    congrats = {
+                        "한국어": "🎉 모든 놀이터 탐험 완료! 너는 진짜 과학 탐험가야! 🔬",
+                        "English": "🎉 All zones explored! You're a true Science Explorer! 🔬",
+                        "日本語": "🎉 全ゾーン制覇！きみは本物の科学探検家だ！ 🔬",
+                        "中文": "🎉 全部区域探索完成！你是真正的科学探险家！🔬",
+                    }.get(language_mode, "🎉 All zones explored!")
+                    st.success(congrats)
+                st.markdown("---")
+        except Exception as _stamp_err:
+            print(f"[STAMP] render error: {_stamp_err}")
 
         selected_zones = _render_zone_selector("quiz_question")
 
