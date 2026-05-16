@@ -116,9 +116,13 @@ def route_intent(text: str) -> str:
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
 
+    # 단체 예약 → 전용 답변 경로
+    if any(token in lowered for token in ["단체예약", "단체 예약", "단체관람", "단체 관람", "단체로", "유치원", "어린이집", "인솔자", "인솔교사", "학교 단체", "기관 단체", "워크인 단체"]):
+        return "basic"
+
     # 과학쇼/로봇쇼/사이언스랩 → 전용 답변 경로
     if any(token in lowered for token in ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]):
-        return "science_show"
+        return "basic"
 
     # ── 동적 질의 (LLM 에이전트로 보내야 하는 케이스) ────────────────────────
     # 1) 길찾기에 출발지가 명시 → search_directions 툴 필요
