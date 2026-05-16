@@ -247,7 +247,7 @@ def _render_privacy_notice_gate() -> None:
             _ack(chosen_lang)
 
     if hasattr(st, "dialog"):
-        @st.dialog("🌏 AI Guide", width="large")
+        @st.dialog("AI 가이드 이용 안내 (AI Guide Usage Notice)", width="large")
         def _privacy_dialog():
             _render_body()
 
