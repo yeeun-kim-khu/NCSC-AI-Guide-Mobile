@@ -1,70 +1,70 @@
 ﻿page_key,url,block_type,order,title,content
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,0,,예약안내
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,1,,개인예약
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,2,,단체예약
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,3,,교육예약
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,4,주말교육 과정,"과학체험 과학체험 과정 자세히보기 과학체험 과학체험에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 연중 대상 유아6세 ~ 초등 4학년 교육장소 1층 어린이교실 교육비 단회성 교육 : 13,000원 공지 개강 15일 전, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,5,과학체험,"기간 | 연중
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,0,,예약안내
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,1,,개인예약
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,2,,단체예약
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,3,,교육예약
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,4,주말교육 과정,"과학체험 과학체험 과정 자세히보기 과학체험 과학체험에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 연중 대상 유아6세 ~ 초등 4학년 교육장소 1층 어린이교실 교육비 단회성 교육 : 13,000원 공지 개강 15일 전, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,5,과학체험,"기간 | 연중
 대상 | 유아6세 ~ 초등 4학년
 교육장소 | 1층 어린이교실
 교육비 | 단회성 교육 : 13,000원
 공지 | 개강 15일 전, 과학관 홈페이지 공지
 예약접수 | 홈페이지 온라인 접수결제(신용카드)
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,6,과학체험,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,7,과학체험,"AI공학교실 4차 산업혁명 미래기술과정 자세히보기 AI공학교실 어린이 AI공학교실에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등 1 ~ 4학년 교육장소 2층 창작교실3 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두 번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,8,AI공학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,6,과학체험,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,7,과학체험,"AI공학교실 4차 산업혁명 미래기술과정 자세히보기 AI공학교실 어린이 AI공학교실에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등 1 ~ 4학년 교육장소 2층 창작교실3 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두 번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,8,AI공학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
 대상 | 초등 1 ~ 4학년
 교육장소 | 2층 창작교실3
 교육비 | 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원
 공지 | 두 번째 수요일, 과학관 홈페이지 공지
 예약접수 | 홈페이지 온라인 접수결제(신용카드)
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,9,AI공학교실,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,10,AI공학교실,"과학교실 VR활용 실험탐구과정 자세히보기 과학교실 어린이 과학교실에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등 1 ~ 4학년 교육장소 1층 어린이 교실 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두 번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,11,과학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,9,AI공학교실,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,10,AI공학교실,"과학교실 VR활용 실험탐구과정 자세히보기 과학교실 어린이 과학교실에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등 1 ~ 4학년 교육장소 1층 어린이 교실 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두 번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,11,과학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
 대상 | 초등 1 ~ 4학년
 교육장소 | 1층 어린이 교실
 교육비 | 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원
 공지 | 두 번째 수요일, 과학관 홈페이지 공지
 예약접수 | 홈페이지 온라인 접수결제(신용카드)
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,12,과학교실,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,13,과학교실,"수학교실 창의체험 수학놀이과정 자세히보기 수학교실 대상, 교육장소, 교육비, 공지, 예약접수, 문의 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등1 ~ 4학년 교육장소 2층 창작교실4 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,14,수학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,12,과학교실,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,13,과학교실,"수학교실 창의체험 수학놀이과정 자세히보기 수학교실 대상, 교육장소, 교육비, 공지, 예약접수, 문의 기간 상반기(3 ~ 6월), 하반기(9 ~ 12월) 대상 초등1 ~ 4학년 교육장소 2층 창작교실4 교육비 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원 공지 두번째 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,14,수학교실,"기간 | 상반기(3 ~ 6월), 하반기(9 ~ 12월)
 대상 | 초등1 ~ 4학년
 교육장소 | 2층 창작교실4
 교육비 | 4회차 교육 : 50,000원 2회차 교육 : 25,000원 단회성 교육 : 13,000원
 공지 | 두번째 수요일, 과학관 홈페이지 공지
 예약접수 | 홈페이지 온라인 접수결제(신용카드)
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,15,수학교실,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,16,특별교육 과정,"방학과정 차별화된 전시연계·진로탐구 어린이 맞춤과정 자세히보기 방학과정 방학과정에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 여름방학(7 ~ 8월), 겨울방학(1 ~ 2월) 대상 초등1 ~ 4학년 교육장소 과학관내 교육실(1층 어린이 교실, 2층 창작교실1 ~ 4) 교육비 단회성 교육 : 5,000~20,000원 2회차(화~수/목~금, 4일간) 교육 : 25,000원 공지 개강 3주 전 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,17,방학과정,"기간 | 여름방학(7 ~ 8월), 겨울방학(1 ~ 2월)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,15,수학교실,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,16,특별교육 과정,"방학과정 차별화된 전시연계·진로탐구 어린이 맞춤과정 자세히보기 방학과정 방학과정에 대한 대상, 교육장소, 교육비, 공지, 예약접수, 문의 정보 기간 여름방학(7 ~ 8월), 겨울방학(1 ~ 2월) 대상 초등1 ~ 4학년 교육장소 과학관내 교육실(1층 어린이 교실, 2층 창작교실1 ~ 4) 교육비 단회성 교육 : 5,000~20,000원 2회차(화~수/목~금, 4일간) 교육 : 25,000원 공지 개강 3주 전 수요일, 과학관 홈페이지 공지 예약접수 홈페이지 온라인 접수결제(신용카드) 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,17,방학과정,"기간 | 여름방학(7 ~ 8월), 겨울방학(1 ~ 2월)
 대상 | 초등1 ~ 4학년
 교육장소 | 과학관내 교육실(1층 어린이 교실, 2층 창작교실1 ~ 4)
 교육비 | 단회성 교육 : 5,000~20,000원 2회차(화~수/목~금, 4일간) 교육 : 25,000원
 공지 | 개강 3주 전 수요일, 과학관 홈페이지 공지
 예약접수 | 홈페이지 온라인 접수결제(신용카드)
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,18,방학과정,초등1 ~ 4학년
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,19,방학과정,"과학관내 교육실(1층 어린이 교실, 2층 창작교실1 ~ 4)"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,20,방학과정,"단회성 교육 : 5,000~20,000원 2회차(화~수/목~금, 4일간) 교육 : 25,000원"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,21,방학과정,"개강 3주 전 수요일, 과학관 홈페이지 공지"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,22,방학과정,홈페이지 온라인 접수결제(신용카드)
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,23,방학과정,"02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,24,방학과정,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,25,방학과정,"나눔 과정 지역 소외계층 및 장애아동 맞춤 교육 자세히보기 나눔 과정 대상, 교육장소, 교육비, 공지, 예약접수, 문의 기간 지역아동(3 ~ 12월)/ 장애아동(7 ~ 10월) 대상 지역아동 및 시각장애아동 교육장소 과학관 및 온라인 교육비 무료 예약접수 관련 기관에 신청자 모집 공문 / 단체문의 문의 02-3668-3304, 3313, 3314, 3318 ×"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,table,26,나눔 과정,"기간 | 지역아동(3 ~ 12월)/ 장애아동(7 ~ 10월)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,18,방학과정,초등1 ~ 4학년
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,19,방학과정,"과학관내 교육실(1층 어린이 교실, 2층 창작교실1 ~ 4)"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,20,방학과정,"단회성 교육 : 5,000~20,000원 2회차(화~수/목~금, 4일간) 교육 : 25,000원"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,21,방학과정,"개강 3주 전 수요일, 과학관 홈페이지 공지"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,22,방학과정,홈페이지 온라인 접수결제(신용카드)
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,23,방학과정,"02-3668-3304, 3313, 3314, 3318"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,24,방학과정,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,25,방학과정,"나눔 과정 지역 소외계층 및 장애아동 맞춤 교육 자세히보기 나눔 과정 대상, 교육장소, 교육비, 공지, 예약접수, 문의 기간 지역아동(3 ~ 12월)/ 장애아동(7 ~ 10월) 대상 지역아동 및 시각장애아동 교육장소 과학관 및 온라인 교육비 무료 예약접수 관련 기관에 신청자 모집 공문 / 단체문의 문의 02-3668-3304, 3313, 3314, 3318 ×"
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,table,26,나눔 과정,"기간 | 지역아동(3 ~ 12월)/ 장애아동(7 ~ 10월)
 대상 | 지역아동 및 시각장애아동
 교육장소 | 과학관 및 온라인
 교육비 | 무료
 예약접수 | 관련 기관에 신청자 모집 공문 / 단체문의
 문의 | 02-3668-3304, 3313, 3314, 3318"
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,27,나눔 과정,×
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,28,예약신청,예약하기
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,29,예약신청,예약 방법 보기
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,30,예약확인 및 취소,"예약할 때 받은 문자 메시지의 URL 에 접속한 후, [신청확인] 메뉴에서 확인 및 취소 하세요. 교육예약 및 취소 마감시간은 교육프로그램마다 상이 하므로 교육프로그램별 공지사항을 별도로 확인 하시기 바랍니다."
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,31,교육생 모바일 입장권 사용방법,※ 학부모 1인 무료입장
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,32,교육생 모바일 입장권 사용방법,휴대폰 예약 페이지 우측 상단 선택 -> 신청 내역 [v] 클릭 후 클릭 -> 전시관 출입구에 스캔
-교육예약,https://www.csc.go.kr/new1/reservation/education_creation.jsp,text,33,교육생 모바일 입장권 사용방법,TOP
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,27,나눔 과정,×
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,28,예약신청,예약하기
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,29,예약신청,예약 방법 보기
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,30,예약확인 및 취소,"예약할 때 받은 문자 메시지의 URL 에 접속한 후, [신청확인] 메뉴에서 확인 및 취소 하세요. 교육예약 및 취소 마감시간은 교육프로그램마다 상이 하므로 교육프로그램별 공지사항을 별도로 확인 하시기 바랍니다."
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,31,교육생 모바일 입장권 사용방법,※ 학부모 1인 무료입장
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,32,교육생 모바일 입장권 사용방법,휴대폰 예약 페이지 우측 상단 선택 -> 신청 내역 [v] 클릭 후 클릭 -> 전시관 출입구에 스캔
+교육예약,https://www.sciencecenter.go.kr/csc/reserve/edu-reservecation_creation.jsp,text,33,교육생 모바일 입장권 사용방법,TOP

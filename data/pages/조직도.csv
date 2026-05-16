@@ -1,12 +1,12 @@
-﻿page_key,url,block_type,order,title,content
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,0,,인사말
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,1,,과학관현황
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,2,,관람안내
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,3,,정보공개
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,4,,연혁
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,5,,조직도
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,6,,시설안내
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,table,7,조직도,"구분 | 담당업무 | 전화번호
+page_key,url,block_type,order,title,content
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,0,,인사말
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,1,,과학관현황
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,2,,관람안내
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,3,,정보공개
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,4,,연혁
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,5,,조직도
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,6,,시설안내
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,table,7,조직도,"구분 | 담당업무 | 전화번호
 총괄 | 국립어린이과학관 업무 총괄 | 02-3668-3301
 경영·회계·홍보 | 사업 계획 수립 및 총괄 조정에 관한 사항 | 02-3668-3315
 예산의 지출, 조정, 결산에 관한 사항 | 02-3668-3308
@@ -28,25 +28,25 @@
 전시품 유지보수에 관한 사항 | 02-3668-3376 02-3668-3377
 방호 및 출입관리, 안전관리에 관한 사항 | 02-3668-3373
 환경미화업무에 관한 사항 | 02-3668-3374"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,8,조직도,국립어린이과학관 업무 총괄
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,9,조직도,사업 계획 수립 및 총괄 조정에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,10,조직도,"예산의 지출, 조정, 결산에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,11,조직도,홍보계획 수립 및 온·오프라인 홍보콘텐츠 제작
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,12,조직도,전시장 운영 계획 수립 및 전시운영팀에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,13,조직도,안내·매표 및 전시장 운영에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,14,조직도,과학교육 및 과학문화행사 기본계획 수립
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,15,조직도,과학교육 프로그램 개발·운영·교육 지원에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,16,조직도,"전시해설, 과학쇼 운영에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,17,조직도,전시사업 기본계획 수립 및 업무 총괄
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,18,조직도,중장기 전시개선 및 천문·우주 관련 기본 계획 수립
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,19,조직도,천문우주 프로그램 기획 및 천문행사 운영에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,20,조직도,관람객 서비스 향상 방안 수립
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,21,조직도,대내외 서무 및 시설사업 유지보수에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,22,조직도,시설물 유지관리 팀장
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,23,조직도,"공기조화설비, 가스, 승강기 등 기계설비 운영에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,24,조직도,"통신, 음향설비 및 전산시스템 운영에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,25,조직도,"수변전설비, 조명설비 등 각종 전기설비 관리 및 유지보수 운영에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,26,조직도,전시품 유지보수에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,27,조직도,"방호 및 출입관리, 안전관리에 관한 사항"
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,28,조직도,환경미화업무에 관한 사항
-조직도,https://www.csc.go.kr/new1/introduce/organization.jsp,text,29,조직도,TOP
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,8,조직도,국립어린이과학관 업무 총괄
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,9,조직도,사업 계획 수립 및 총괄 조정에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,10,조직도,"예산의 지출, 조정, 결산에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,11,조직도,홍보계획 수립 및 온·오프라인 홍보콘텐츠 제작
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,12,조직도,전시장 운영 계획 수립 및 전시운영팀에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,13,조직도,안내·매표 및 전시장 운영에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,14,조직도,과학교육 및 과학문화행사 기본계획 수립
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,15,조직도,과학교육 프로그램 개발·운영·교육 지원에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,16,조직도,"전시해설, 과학쇼 운영에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,17,조직도,전시사업 기본계획 수립 및 업무 총괄
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,18,조직도,중장기 전시개선 및 천문·우주 관련 기본 계획 수립
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,19,조직도,천문우주 프로그램 기획 및 천문행사 운영에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,20,조직도,관람객 서비스 향상 방안 수립
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,21,조직도,대내외 서무 및 시설사업 유지보수에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,22,조직도,시설물 유지관리 팀장
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,23,조직도,"공기조화설비, 가스, 승강기 등 기계설비 운영에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,24,조직도,"통신, 음향설비 및 전산시스템 운영에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,25,조직도,"수변전설비, 조명설비 등 각종 전기설비 관리 및 유지보수 운영에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,26,조직도,전시품 유지보수에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,27,조직도,"방호 및 출입관리, 안전관리에 관한 사항"
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,28,조직도,환경미화업무에 관한 사항
+조직도,https://www.sciencecenter.go.kr/csc/intro/organization,text,29,조직도,TOP

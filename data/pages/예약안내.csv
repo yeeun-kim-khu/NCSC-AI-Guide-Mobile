@@ -1,30 +1,30 @@
 ﻿page_key,url,block_type,order,title,content
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,0,,예약안내
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,1,,개인예약
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,2,,단체예약
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,3,,교육예약
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,4,예약안내,(Reservation information)
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,5,예약안내,"하루 입장인원은 최대 1,600명으로 제한합니다."
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,6,예약안내,※ 어린이 동반 없는 성인 입장객의 경우 방문 3일 전에 방문신청서를 담당자 메일 (proxima11@korea.kr) 로 보내주셔야 합니다. (방문 신청서 양식은 아래 링크에서 첨부파일을 확인해주세요.)
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,7,예약안내,(proxima11@korea.kr)
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,8,예약안내,성인 및 청소년 관람객 입장안내 게시글
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,9,예약안내,예약하기
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,table,10,체험별 사전예약 비율,"구분 | 예매 비율 | 개인 | 단체
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,0,,예약안내
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,1,,개인예약
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,2,,단체예약
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,3,,교육예약
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,4,예약안내,(Reservation information)
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,5,예약안내,"하루 입장인원은 최대 1,600명으로 제한합니다."
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,6,예약안내,※ 어린이 동반 없는 성인 입장객의 경우 방문 3일 전에 방문신청서를 담당자 메일 (proxima11@korea.kr) 로 보내주셔야 합니다. (방문 신청서 양식은 아래 링크에서 첨부파일을 확인해주세요.)
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,7,예약안내,(proxima11@korea.kr)
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,8,예약안내,성인 및 청소년 관람객 입장안내 게시글
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,9,예약안내,예약하기
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,table,10,체험별 사전예약 비율,"구분 | 예매 비율 | 개인 | 단체
 3~6월, 9~12월 | 7~8월, 1~2월
 평일 | 주말 | 평일 | 주말
 상설전시관 | 인터넷예매 | 50% | 75% | 75% | 75% | 사전예약 필수 * 단체 관람 이용안내 참조
 현장판매 | 50% | 25% | 25% | 25%
 천체투영관 | 인터넷예매 | 100% | 100% | 100% | 100%"
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,table,11,예약가능 기간,"개인 | 단체
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,table,11,예약가능 기간,"개인 | 단체
 상설전시관, 천체투영관 | 상설전시관, 천체투영관
 예약 판매를 우선으로 하며, 잔여석에 한해 현장판매 중 인터넷예매는 관람일 2주(14일) 전부터 가능합니다. 예1) 오늘이 5월 8일 이면, 5월 22일(14일 후)까지 예약 가능하며 하루 씩 자동 연장 예2) 5월 22일 날짜 예약은 5월 8일 00:00부터 예약 가능 예약기간은 과학관 운영 사정에 따라 변경될 수 있습니다.(변동 시 별도 공지 예정) | 평일에 예약가능하며, 주말 및 공휴일에는 예약을 받지 않습니다."
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,12,예약가능 기간,"상설전시관, 천체투영관"
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,14,예약가능 기간,"인터넷예매는 관람일 2주(14일) 전부터 가능합니다. 예1) 오늘이 5월 8일 이면, 5월 22일(14일 후)까지 예약 가능하며 하루 씩 자동 연장 예2) 5월 22일 날짜 예약은 5월 8일 00:00부터 예약 가능"
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,15,예약가능 기간,예약기간은 과학관 운영 사정에 따라 변경될 수 있습니다.(변동 시 별도 공지 예정)
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,16,예약가능 기간,"평일에 예약가능하며, 주말 및 공휴일에는 예약을 받지 않습니다."
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,17,예약 시 유의사항,"상설전시관, 천체투영관을 예약하시려는 경우 개인예약 선택 후 예약 가능합니다. ※예약 신청 시, 받은 문자 메시지를 보관하세요. 문자 메시지 내 URL에 접속하여 신청 확인과 취소를 할 수 있습니다."
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,18,예약 시 유의사항,5명 이상의 어린이 기관의 경우 단체예약 페이지에서 예약하여 주시기 바랍니다.
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,19,예약 시 유의사항,예약하신 입장시간은 반드시 지켜주시기 바랍니다.
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,20,예약 시 유의사항,예약고객은 예약 완료 후 발권되는 ‘모바일 QR입장권’으로 입장할 수 있습니다. ※예약 시 결제까지 완료해주셔야 최종 예약이 완료됩니다.
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,21,예약방법 및 확인,예약하기
-예약안내,https://www.csc.go.kr/new1/reservation/guide.jsp,text,23,예약방법 및 확인,TOP
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,12,예약가능 기간,"상설전시관, 천체투영관"
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,14,예약가능 기간,"인터넷예매는 관람일 2주(14일) 전부터 가능합니다. 예1) 오늘이 5월 8일 이면, 5월 22일(14일 후)까지 예약 가능하며 하루 씩 자동 연장 예2) 5월 22일 날짜 예약은 5월 8일 00:00부터 예약 가능"
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,15,예약가능 기간,예약기간은 과학관 운영 사정에 따라 변경될 수 있습니다.(변동 시 별도 공지 예정)
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,16,예약가능 기간,"평일에 예약가능하며, 주말 및 공휴일에는 예약을 받지 않습니다."
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,17,예약 시 유의사항,"상설전시관, 천체투영관을 예약하시려는 경우 개인예약 선택 후 예약 가능합니다. ※예약 신청 시, 받은 문자 메시지를 보관하세요. 문자 메시지 내 URL에 접속하여 신청 확인과 취소를 할 수 있습니다."
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,18,예약 시 유의사항,5명 이상의 어린이 기관의 경우 단체예약 페이지에서 예약하여 주시기 바랍니다.
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,19,예약 시 유의사항,예약하신 입장시간은 반드시 지켜주시기 바랍니다.
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,20,예약 시 유의사항,예약고객은 예약 완료 후 발권되는 ‘모바일 QR입장권’으로 입장할 수 있습니다. ※예약 시 결제까지 완료해주셔야 최종 예약이 완료됩니다.
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,21,예약방법 및 확인,예약하기
+예약안내,https://www.sciencecenter.go.kr/csc/reserve/reserve-guide,text,23,예약방법 및 확인,TOP
