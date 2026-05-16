@@ -700,7 +700,7 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = ""):
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None):
     """과학원리 기반 4지선다 퀴즈 생성.
 
     LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
@@ -712,15 +712,31 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
     import json as _json
 
     rng = random.Random(variation_seed if variation_seed else random.randint(1, 10**9))
+
+    # 질문 접근 각도: 콘텐츠 관점
     angles = [
-        "일상 생활의 구체적 상황(놀이, 음식, 날씨, 동물)으로 직관적으로 묻기",
-        "원인을 묻는 형태",
-        "결과/예측을 묻는 형태",
-        "유사한 현상을 비교/대조",
-        "관찰·실험 상황을 상상하게 하는 형태",
-        "전시물 체험과 직접 연결된 시나리오",
+        "일상생활 상황(요리, 스포츠, 날씨, 게임)에 연결해 직관적으로 묻기",
+        "자연 현상(동물, 식물, 우주)에서 이 원리를 발견하게 묻기",
+        "실제 실험 장면을 짧게 묘사하고 결과를 예측하게 묻기",
+        "이 원리가 없다면 어떤 일이 벌어질지 상상하게 묻기",
+        "원인을 찾는 형태 — 왜 이런 일이 일어날까?",
+        "결과/예측 형태 — 이렇게 하면 어떻게 될까?",
+        "두 가지 현상을 비교해 차이점을 묻기",
+        "이 원리가 실제로 쓰이는 예시를 고르는 형태",
+        "전시물 체험 장면을 시나리오로 만들어 직접 연결하기",
+        "역할 전환 — 주인공이 직접 실험하는 장면에서 묻기",
+        "숨겨진 관계 찾기 — 겉보기엔 달라 보이지만 같은 원리를 공유하는 것 고르기",
+        "오개념 교정 — 흔히 잘못 알고 있는 것을 찾아내게 묻기",
+    ]
+    # 질문 형식: 답 구조 관점
+    q_formats = [
+        "정답형: 가장 옳은 것을 하나 고르는 형식",
+        "부정형: 보기 중 틀린 것을 하나 고르는 형식('다음 중 틀린 것은?')",
+        "빈칸형: 문장의 (  ) 안에 들어갈 말을 고르는 형식",
+        "시나리오형: 짧은 상황 설명(2~3문장) 뒤에 질문하는 형식",
     ]
     angle = rng.choice(angles)
+    q_format = rng.choice(q_formats)
 
     glossary_rules = _get_ui_glossary_rules(language)
 
@@ -758,27 +774,33 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
     if exhibit_detail and str(exhibit_detail).strip() and str(exhibit_detail).strip().lower() != "nan":
         detail_section = f"\n[전시물 상세 설명]\n{exhibit_detail}\n"
 
+    # 이전 문제 회피 섹션
+    prev_section_ko = ""
+    prev_section_en = ""
+    if prev_questions:
+        prev_list = "\n".join(f"- {q}" for q in prev_questions[-3:])
+        prev_section_ko = f"\n[이전에 생성된 문제 — 반드시 피할 것]\n{prev_list}\n위 문제들과 유사하거나 같은 질문·선택지를 만들지 마세요.\n"
+        prev_section_en = f"\n[Previously generated questions — MUST avoid]\n{prev_list}\nDo NOT create questions or options similar to the above.\n"
+
     language_prompts = {
         "한국어": f"""{output_lang_instruction}
 
 '{zone_name}'의 '{principle}' 주제로 4지선다 퀴즈를 만들어주세요.
 {detail_section}
-이번 스타일: {angle}
-랜덤 시드: {variation_seed} (매번 다른 질문!)
-
-[중요: 전시물 정보 활용]
-- 제공된 전시물 정보의 모든 내용을 활용하세요.
-- 하나의 전시물에 여러 내용이 포함된 경우, 각 내용을 개별적으로 다루어 다양한 질문을 만드세요.
-- 같은 전시물이라도 다른 측면(원인, 결과, 비교, 예시 등)에서 질문하세요.
-- 매번 완전히 다른 질문과 선택지를 만드세요.
-- CSV 정보만 사용하세요. 외부 지식을 추가하지 마세요.
+▶ 이번 질문 각도: {angle}
+▶ 이번 질문 형식: {q_format}
+{prev_section_ko}
+[전시물 정보 활용 규칙]
+- 제공된 전시물 정보를 최대한 활용하세요.
+- 같은 전시물이라도 매번 다른 측면(원인, 결과, 비교, 예시, 응용 등)에서 질문하세요.
+- 위에 지정된 각도와 형식을 반드시 따르세요. CSV 정보만 사용하세요.
 
 {quality_rules_ko}
 
 [출력 형식 — JSON만, 다른 텍스트 금지]
 다음 스키마의 JSON 객체 한 개를 출력하세요. 코드블록(```)도 붙이지 마세요.
 {{
-  "question": "어린이가 이해할 수 있는 질문 (1문장)",
+  "question": "초등 4~6학년이 이해할 수 있는 질문 (1문장)",
   "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
   "correct_index": 0,
   "explanation": "왜 이 답이 맞는지 쉬운 말로 2~3문장. 오답이 왜 틀렸는지도 한 줄 언급."
@@ -789,44 +811,45 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 
         "English": f"""{output_lang_instruction}
 
-Create a 4-choice quiz for children about '{principle}' from '{zone_name}'.{glossary_rules}
+Create a 4-choice quiz about '{principle}' from '{zone_name}'.{glossary_rules}
 {detail_section}
-Style this time: {angle}
-Random seed: {variation_seed}
-
-[IMPORTANT: Use all exhibit information]
-- Utilize ALL content from the provided exhibit information.
-- If an exhibit contains multiple pieces of content, address each individually to create diverse questions.
-- Ask about different aspects (cause, result, comparison, example) of the same exhibit.
-- Create completely different questions and options each time.
-- Use ONLY CSV information. Do not add external knowledge.
+▶ Question angle this time: {angle}
+▶ Question format this time: {q_format}
+{prev_section_en}
+[Exhibit usage rules]
+- Use ALL provided exhibit information.
+- Ask from a different aspect each time (cause, result, comparison, example, application).
+- Follow the angle and format above strictly. Use ONLY CSV information.
 
 {quality_rules_en}
 
 [Output format — JSON only, no other text]
 Output a single JSON object with this schema. No code fences.
 {{
-  "question": "Single, clear question kids can understand",
+  "question": "Single, clear question for ages 10-12",
   "options": ["option 1", "option 2", "option 3", "option 4"],
   "correct_index": 0,
-  "explanation": "2-3 short sentences explaining why the answer is correct, plus one note on why a tempting distractor is wrong."
+  "explanation": "2-3 short sentences explaining why the answer is correct, plus one note on a common wrong choice."
 }}
 - correct_index is an integer 0-3 indexing the options array.
 - Exactly 4 options.
 - Strict JSON syntax."""
     }
 
-    # 日本語 / 中文 prompts (간단하게 영어 베이스에서 파생)
+    # 日本語 / 中文 prompts
     if language == "日本語":
-        language_prompts[language] = f"""'{zone_name}'の'{principle}'をテーマに、子ども向け4択クイズを作ってください。
+        language_prompts[language] = f"""{output_lang_instruction}
 
-スタイル: {angle}
-ランダムシード: {variation_seed}
+'{zone_name}'の'{principle}'をテーマに、子ども向け4択クイズを作ってください。
+{detail_section}
+▶ 今回の質問の角度: {angle}
+▶ 今回の質問の形式: {q_format}
+{prev_section_en}
 {quality_rules_en}
 
 [出力形式 — JSONのみ、他のテキスト禁止]
 {{
-  "question": "子どもが分かる1文の質問",
+  "question": "10〜12歳の子どもが分かる1文の質問",
   "options": ["選択肢1", "選択肢2", "選択肢3", "選択肢4"],
   "correct_index": 0,
   "explanation": "正解の理由を2-3文で。間違いやすい選択肢の理由も一言。"
@@ -835,15 +858,16 @@ Output a single JSON object with this schema. No code fences.
     elif language == "中文":
         language_prompts[language] = f"""{output_lang_instruction}
 
-请围绕'{zone_name}'中的'{principle}'，为儿童设计一道四选一测验。
-
-风格: {angle}
-随机种子: {variation_seed}
+请围绕'{zone_name}'中的'{principle}'，为10-12岁儿童设计一道四选一测验。
+{detail_section}
+▶ 本次提问角度: {angle}
+▶ 本次题型: {q_format}
+{prev_section_en}
 {quality_rules_en}
 
 [输出格式 — 只输出JSON，不要任何其他文本]
 {{
-  "question": "孩子能理解的一句话提问",
+  "question": "10-12岁儿童能理解的一句话提问",
   "options": ["选项1", "选项2", "选项3", "选项4"],
   "correct_index": 0,
   "explanation": "用2-3句话解释为什么正确，并简单点出一个常见错误选项为何不对。"
@@ -2002,6 +2026,11 @@ def render_post_visit_learning(
                                 quiz_detail = r.get("detail", "")
                                 break
 
+                        # 이전 문제 이력 키 (최대 3개 보관)
+                        prev_q_key = f"quiz_prev_qs_{zone}_{selected_kw}"
+                        if prev_q_key not in st.session_state:
+                            st.session_state[prev_q_key] = []
+
                         if quiz_cache_key not in st.session_state:
                             if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                                 _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
@@ -2010,8 +2039,13 @@ def render_post_visit_learning(
                                         zone, selected_kw, llm, language_mode,
                                         variation_seed=st.session_state[seed_key],
                                         exhibit_detail=quiz_detail,
+                                        prev_questions=st.session_state[prev_q_key],
                                     )
                                     st.session_state[quiz_cache_key] = quiz or {}
+                                    if quiz and quiz.get("question"):
+                                        prev = st.session_state[prev_q_key]
+                                        prev.append(quiz["question"])
+                                        st.session_state[prev_q_key] = prev[-3:]
                                 st.rerun()
 
                         if quiz_cache_key in st.session_state:
@@ -2040,8 +2074,13 @@ def render_post_visit_learning(
                                             zone, selected_kw, llm, language_mode,
                                             variation_seed=st.session_state[seed_key],
                                             exhibit_detail=quiz_detail,
+                                            prev_questions=st.session_state.get(prev_q_key, []),
                                         )
                                         st.session_state[quiz_cache_key] = quiz or {}
+                                        if quiz and quiz.get("question"):
+                                            prev = st.session_state.get(prev_q_key, [])
+                                            prev.append(quiz["question"])
+                                            st.session_state[prev_q_key] = prev[-3:]
                                     st.rerun()
                             else:
                                 quiz_fail_msg = {
