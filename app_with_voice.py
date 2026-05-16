@@ -874,20 +874,15 @@ def main():
     ]
     tab_cols = st.columns(2)
     with tab_cols[0]:
-        if st.button(tab_labels[0], key="tab_btn_guide", use_container_width=True, type="secondary"):
+        tab0_type = "primary" if st.session_state.active_tab == "guide" else "secondary"
+        if st.button(tab_labels[0], key="tab_btn_guide", use_container_width=True, type=tab0_type):
             st.session_state.active_tab = "guide"
             st.rerun()
     with tab_cols[1]:
-        if st.button(tab_labels[1], key="tab_btn_learning", use_container_width=True, type="secondary"):
+        tab1_type = "primary" if st.session_state.active_tab == "learning" else "secondary"
+        if st.button(tab_labels[1], key="tab_btn_learning", use_container_width=True, type=tab1_type):
             st.session_state.active_tab = "learning"
             st.rerun()
-
-    _active_label = tab_labels[0] if st.session_state.active_tab == "guide" else tab_labels[1]
-    st.markdown(
-        f"<div style='background:#f0f2f6;border-radius:6px;padding:6px 12px;font-size:0.85rem;color:#444;margin-bottom:4px;'>"
-        f"📍 {_active_label}</div>",
-        unsafe_allow_html=True,
-    )
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
