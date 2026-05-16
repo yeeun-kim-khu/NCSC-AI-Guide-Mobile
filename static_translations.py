@@ -5,7 +5,7 @@
 # 구조: STATIC_FAQ_ANSWERS[category][language][mode] = str
 #   - category: classify_basic_category 가 반환하는 키 (floor_guide, parking, ...)
 #   - language: "한국어" | "English" | "日本語" | "中文"
-#   - mode: "어린이" | "청소년/성인"  (없으면 fallback "default" 사용)
+#   - mode: "어린이" | "성인"  (없으면 fallback "default" 사용)
 #
 # 누락된 (category, language, mode) 조합은 None 반환 → 호출측에서 LLM 번역 fallback.
 

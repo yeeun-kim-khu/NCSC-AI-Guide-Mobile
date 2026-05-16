@@ -361,7 +361,7 @@ def main():
             "sidebar_title": "⚙️ 안내 모드",
             "user_mode_label": "사용자 모드 선택:",
             "user_mode_child": "어린이",
-            "user_mode_adult": "청소년/성인",
+            "user_mode_adult": "성인",
             "language_label": "언어/Language",
             "voice_section": "🎤 음성 기능",
             "voice_in": "음성 입력 활성화",
@@ -408,7 +408,7 @@ def main():
             "sidebar_title": "⚙️ Guide Mode",
             "user_mode_label": "Visitor type:",
             "user_mode_child": "Child",
-            "user_mode_adult": "Teen/Adult",
+            "user_mode_adult": "Adult",
             "language_label": "Language",
             "voice_section": "🎤 Voice",
             "voice_in": "Enable voice input",
@@ -455,7 +455,7 @@ def main():
             "sidebar_title": "⚙️ 案内モード",
             "user_mode_label": "利用者:",
             "user_mode_child": "こども",
-            "user_mode_adult": "中高生/大人",
+            "user_mode_adult": "大人",
             "language_label": "言語/Language",
             "voice_section": "🎤 音声",
             "voice_in": "音声入力を有効化",
@@ -502,7 +502,7 @@ def main():
             "sidebar_title": "⚙️ 导览模式",
             "user_mode_label": "访客类型:",
             "user_mode_child": "儿童",
-            "user_mode_adult": "青少年/成人",
+            "user_mode_adult": "成人",
             "language_label": "语言/Language",
             "voice_section": "🎤 语音",
             "voice_in": "启用语音输入",
@@ -586,7 +586,7 @@ def main():
             options=[t("user_mode_child"), t("user_mode_adult")],
             index=1,
         )
-        user_mode = "어린이" if user_mode_display == t("user_mode_child") else "청소년/성인"
+        user_mode = "어린이" if user_mode_display == t("user_mode_child") else "성인"
         
         # Language mode selection
         language_mode = st.selectbox(
@@ -752,12 +752,21 @@ def main():
 
     st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
 
+    # 어린이 모드 연한 노란색 배경
+    if user_mode == "어린이":
+        st.markdown("""
+        <style>
+        .stApp { background-color: #FFFDE7 !important; }
+        section[data-testid="stSidebar"] { background-color: #FFF9C4 !important; }
+        </style>
+        """, unsafe_allow_html=True)
+
     # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
     _render_mascot_animation()
 
     language_mode = st.session_state.get("language_mode", "한국어")
 
-    # 메인 화면 앱 소개 (탭 위에 표시) — 사용자 모드(어린이/청소년·성인)별로 톤 분기
+    # 메인 화면 앱 소개 (탭 위에 표시) — 사용자 모드(어린이/성인)별로 톤 분기
     intro_enhanced = {
         "한국어": {
             "어린이": (
@@ -767,7 +776,7 @@ def main():
                 "**🥰 또만나 놀이터** — 오늘 본 전시물 다시 만나러 가볼까?! 재밌는 **퀴즈**, **질문**, AI가 만들어주는 **과학동화**까지! 아래 탭을 눌러봐.\n\n"
                 "**💡 팁:** 왼쪽 위 **>>** 누르면 언어·모드 변경, 음성 질문, 설문조사 가능!"
             ),
-            "청소년/성인": (
+            "성인": (
                 "**국립어린이과학관**에 오신 걸 환영해요! 🎉<br>"
                 "실시간 AI 가이드 서비스를 시범 운영 중입니다. — **📅 시범운영 기간:** 5.22.(금) ~ 5.31.(일)\n\n"
                 "**🏙️ 과학관 안내** — 층별 안내·프로그램·관람료·예약·길찾기 등 방문 전후 궁금증을 채팅이나 🎤 음성으로 질문하세요.\n\n"
@@ -783,7 +792,7 @@ def main():
                 "**🥰 Again Zone** — Revisit today's exhibits! Take fun **quizzes**, ask **questions**, and listen to AI-made **science stories**~ Tap the tab below!\n\n"
                 "**💡 Tip:** Tap **>>** on the top left to change language, ask by voice, and take a survey!"
             ),
-            "청소년/성인": (
+            "성인": (
                 "Welcome to the **National Children's Science Center**! 🎉<br>"
                 "We are piloting a real-time AI guide service. — **📅 Pilot Period:** May 22 (Fri) ~ May 31 (Sun)\n\n"
                 "**🏙️ Museum Guide** — Ask about floors, programs, fees, reservations, or directions — type in the chat or use 🎤 voice from the sidebar.\n\n"
@@ -799,7 +808,7 @@ def main():
                 "**🥰 またねゾーン** — 今日の展示にもう一度会いに行こう！**クイズ**・**質問**・AIが作る **サイエンス童話** が楽しめるよ〜 下のタブを押してみてね！\n\n"
                 "**💡 ヒント：** 左上の **>>** を押すと、言語・モード変更、音声質問、アンケートができるよ！"
             ),
-            "청소년/성인": (
+            "성인": (
                 "**国立こども科学館**へようこそ！🎉<br>"
                 "リアルタイム案内AIガイドサービスを試験運用しています。 — **📅 試験運用期間：** 5月22日(金) 〜 5月31日(日)\n\n"
                 "**🏙️ 科学館案内** — フロア・プログラム・料金・予約・アクセスなど、来館前後の疑問にお答えします。チャットまたは 🎤 音声でどうぞ。\n\n"
@@ -815,7 +824,7 @@ def main():
                 "**🥰 再次乐园** — 再次探索今天的展品吧！做有趣的 **测验**、自由 **提问**，还能听AI创作的奇妙 **科学故事**~ 点击下方标签试试！\n\n"
                 "**💡 提示：** 点击左上角 **>>**，可切换语言、语音提问和填写问卷哦！"
             ),
-            "청소년/성인": (
+            "성인": (
                 "欢迎来到 **国立儿童科学馆**！🎉<br>"
                 "我们正在试运行实时AI导览服务。 — **📅 试运行期间：** 5月22日(周五) 〜 5月31日(周日)\n\n"
                 "**🏙️ 科学馆导览** — 楼层、节目、门票、预约、交通等问题随时解答。在下方聊天框输入，或使用侧边栏 🎤 语音提问。\n\n"
@@ -826,7 +835,7 @@ def main():
     }
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
     if isinstance(intro_dict, dict):
-        st.markdown(intro_dict.get(user_mode, intro_dict["청소년/성인"]), unsafe_allow_html=True)
+        st.markdown(intro_dict.get(user_mode, intro_dict["성인"]), unsafe_allow_html=True)
     else:
         st.markdown(intro_dict, unsafe_allow_html=True)
 

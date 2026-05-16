@@ -1661,7 +1661,7 @@ def render_post_visit_learning(
     language_mode="한국어",
     debug_show_korean: bool = False,
     debug_backtranslate: bool = False,
-    user_mode: str = "청소년/성인",
+    user_mode: str = "성인",
 ):
     """사후 학습 시스템 메인 UI"""
 
