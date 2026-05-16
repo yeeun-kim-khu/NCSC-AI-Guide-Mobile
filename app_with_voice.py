@@ -156,6 +156,7 @@ def _render_mascot_animation() -> None:
 def _render_privacy_notice_gate() -> None:
     """첫 진입 시 개인정보 처리 안내 팝업.
 
+    - 언어 선택 포함: 선택한 언어로 안내문 표시, 시작 후 앱 언어로 적용
     - 세션당 1회만 표시 (확인 누르면 다시 안 뜸)
     - 동의 전에는 본문 렌더링 차단 (st.stop)
     - st.dialog 사용 (Streamlit 1.31+); 미지원 환경에서는 본문 상단 배너로 폴백
@@ -163,41 +164,97 @@ def _render_privacy_notice_gate() -> None:
     if st.session_state.get("privacy_notice_acknowledged"):
         return
 
-    notice_md = """
-🇰🇷 **이용 안내** — 입력한 글·음성은 답변 생성에만 사용되며 저장되지 않습니다. 주소·전화번호 등 민감한 개인정보는 입력하지 마세요. 어린이는 보호자와 함께 이용해 주세요.
+    _LANG_OPTIONS = {
+        "🇰🇷 한국어":  "한국어",
+        "🇺🇸 English": "English",
+        "🇯🇵 日本語":  "日本語",
+        "🇨🇳 中文":    "中文",
+    }
 
-🇺🇸 **Notice** — Your text and voice are used only to generate responses and are not stored. Do not enter sensitive personal information. Children must use this service with a guardian.
+    _NOTICE = {
+        "한국어": {
+            "title":   "AI 가이드 이용 안내",
+            "body": (
+                "**이용 전, 아래 내용을 꼭 확인해주세요.**\n\n"
+                "✔️ 입력한 글·음성은 **답변 생성에만 사용되며 저장되지 않습니다.** 새로고침하면 대화가 지워져요.\n\n"
+                "🙅 주소·전화번호 등 **민감한 개인정보는 입력하지 마세요.**\n\n"
+                "👨‍👩‍👧 어린이는 **보호자와 함께** 이용해 주세요.\n\n"
+                "※ 서비스 개선을 위한 익명 통계(접속 시간, 클릭 수)가 수집될 수 있습니다."
+            ),
+            "checkbox": "위 내용을 확인했으며 동의합니다.",
+            "button":   "시작하기",
+        },
+        "English": {
+            "title":   "AI Guide — Notice",
+            "body": (
+                "**Please read before using this service.**\n\n"
+                "✔️ Your text and voice are used **only to generate responses and are not stored.** Refreshing clears all conversation.\n\n"
+                "🙅 Do **not** enter sensitive personal information (address, phone number, etc.).\n\n"
+                "👨‍👩‍👧 Children must use this service **with a guardian.**\n\n"
+                "※ Anonymous usage statistics (session time, clicks) may be collected for service improvement."
+            ),
+            "checkbox": "I have read and agree to the above.",
+            "button":   "Start",
+        },
+        "日本語": {
+            "title":   "AIガイド ご利用案内",
+            "body": (
+                "**ご利用前に以下をご確認ください。**\n\n"
+                "✔️ 入力したテキスト・音声は**回答生成のみに使用され、保存されません。** 再読み込みすると会話が消えます。\n\n"
+                "🙅 住所・電話番号などの**個人情報は入力しないでください。**\n\n"
+                "👨‍👩‍👧 お子様は**保護者の方と一緒に**ご利用ください。\n\n"
+                "※ サービス改善のため、匿名の利用統計（接続時間、クリック数）が収集される場合があります。"
+            ),
+            "checkbox": "上記の内容を確認し、同意します。",
+            "button":   "スタート",
+        },
+        "中文": {
+            "title":   "AI导览 使用须知",
+            "body": (
+                "**使用前请阅读以下内容。**\n\n"
+                "✔️ 您输入的文字和语音**仅用于生成回答，不会被存储。** 刷新页面后对话将被清除。\n\n"
+                "🙅 请**勿输入**地址、电话号码等敏感个人信息。\n\n"
+                "👨‍👩‍👧 儿童请在**监护人陪同下**使用。\n\n"
+                "※ 为改善服务，可能会收集匿名使用统计信息（连接时间、点击次数）。"
+            ),
+            "checkbox": "我已阅读并同意以上内容。",
+            "button":   "开始",
+        },
+    }
 
-🇯🇵 **ご案内** — 入力したテキスト・音声は回答生成のみに使用され、保存されません。個人情報を入力しないでください。お子様は保護者と一緒にご利用ください。
-
-🇨🇳 **须知** — 输入的文字和语音仅用于生成回答，不会被存储。请勿输入个人敏感信息。儿童请在监护人陪同下使用。
-
-※ Anonymous usage statistics (session time, clicks) may be collected for service improvement.
-"""
-
-    def _ack() -> None:
+    def _ack(lang: str) -> None:
         st.session_state["privacy_notice_acknowledged"] = True
-        _queue_ga_event("privacy_consent", {"language": st.session_state.get("language_mode", "한국어")})
+        st.session_state["language_mode"] = lang
+        _queue_ga_event("privacy_consent", {"language": lang})
         st.rerun()
 
-    # st.dialog (Streamlit 1.31+) 우선 사용
+    def _render_body():
+        # 언어 선택 라디오
+        lang_label = st.radio(
+            "🌐 언어 / Language / 言語 / 语言",
+            options=list(_LANG_OPTIONS.keys()),
+            horizontal=True,
+            key="popup_lang_select",
+        )
+        chosen_lang = _LANG_OPTIONS[lang_label]
+        notice = _NOTICE[chosen_lang]
+
+        st.markdown("---")
+        st.markdown(notice["body"])
+        st.markdown("---")
+        agreed = st.checkbox(notice["checkbox"], key="popup_agreed")
+        if agreed and st.button(notice["button"], type="primary", use_container_width=True):
+            _ack(chosen_lang)
+
     if hasattr(st, "dialog"):
-        @st.dialog("AI Guide 이용 안내 | Notice | ご案内 | 须知", width="large")
+        @st.dialog("🌏 AI Guide", width="large")
         def _privacy_dialog():
-            st.markdown(notice_md)
-            agreed = st.checkbox("확인했으며 동의합니다 / I agree / 同意します / 我同意")
-            if agreed and st.button("시작 / Start / スタート / 开始", type="primary", use_container_width=True):
-                _ack()
+            _render_body()
 
         _privacy_dialog()
-        # dialog가 닫히기 전엔 본문 렌더링 차단
         st.stop()
     else:
-        # 폴백: 페이지 상단 카드 형태
-        st.warning(notice_md)
-        agreed = st.checkbox("확인했으며 동의합니다 / I agree / 同意します / 我同意")
-        if agreed and st.button("시작 / Start / スタート / 开始", type="primary"):
-            _ack()
+        _render_body()
         st.stop()
 
 
