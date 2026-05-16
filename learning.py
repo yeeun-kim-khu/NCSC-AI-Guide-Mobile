@@ -526,7 +526,13 @@ def _render_quiz_card(zone_name: str, keyword: str, quiz_obj, language_mode: str
 
     btn_label = hide_label if st.session_state[reveal_key] else L["reveal"]
     if st.button(btn_label, key=f"btn_reveal_{zone_name}_{keyword}_{qid}"):
-        st.session_state[reveal_key] = not st.session_state[reveal_key]
+        new_reveal_state = not st.session_state[reveal_key]
+        st.session_state[reveal_key] = new_reveal_state
+        # 처음 정답을 확인하면 스탬프 적립
+        if new_reveal_state:
+            if "science_stamps" not in st.session_state:
+                st.session_state.science_stamps = set()
+            st.session_state.science_stamps.add(zone_name)
         st.rerun()
 
     if st.session_state[reveal_key]:
@@ -714,36 +720,6 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         "전시물 체험과 직접 연결된 시나리오",
     ]
     angle = rng.choice(angles)
-
-    def _get_ui_glossary_rules(language_mode: str) -> str:
-        glossary = {
-            "English": {
-                "놀이터": "Zone",
-                "전시물": "Exhibit",
-                "과학원리": "Science principle",
-                "오디오북": "Audiobook",
-                "AI놀이터": "AI Zone",
-                "행동놀이터": "Activity Zone",
-                "생각놀이터": "Thinking Zone",
-                "탐구놀이터": "Discovery Zone",
-                "관찰놀이터": "Discovery Zone",
-                "과학극장": "Science Theater",
-                "빛놀이터": "Interactive Theater",
-                "어린이교실": "Kids Classroom",
-                "천체투영관": "Planetarium",
-                "휴게실": "Lounge",
-            }
-        }
-        if language_mode == "한국어":
-            return ""
-        lang_terms = glossary.get(language_mode, glossary["English"])
-        rule_lines = [f"- '{ko}' -> '{lang}'" for ko, lang in lang_terms.items()]
-        return (
-            "\n\nGLOSSARY (must follow EXACTLY — these are fixed official names, never translate differently):\n"
-            + "\n".join(rule_lines)
-            + "\n- Use these terms consistently. Do not mix languages.\n"
-            + "- CRITICAL: place/zone names above are OFFICIAL and FIXED — do NOT invent or alter them.\n"
-        )
 
     glossary_rules = _get_ui_glossary_rules(language)
 
@@ -1398,7 +1374,7 @@ def parse_mood_and_bgm(llm_response: str) -> tuple[str, str, str]:
         if line.strip().startswith("MOOD_TAG:"):
             raw_mood = line.split(":", 1)[1].strip().lower()
             # 괄호나 기타 문자 제거
-            raw_mood = raw_mood.strip("[]—\-\ ")
+            raw_mood = raw_mood.strip(r"[]—\- ")
             if raw_mood in BGM_MAP:
                 mood = raw_mood
                 bgm_path = random.choice(BGM_MAP[mood])
@@ -1545,6 +1521,7 @@ def render_post_visit_learning(
     language_mode="한국어",
     debug_show_korean: bool = False,
     debug_backtranslate: bool = False,
+    user_mode: str = "청소년/성인",
 ):
     """사후 학습 시스템 메인 UI"""
 
@@ -1795,6 +1772,33 @@ def render_post_visit_learning(
         return selected_kw, selected_disp
 
     if st.session_state.learning_sub_tab == "quiz_question":
+        # 스탬프 진행 현황
+        earned = st.session_state.get("science_stamps", set())
+        all_zone_names = list(ZONE_INFO.keys())
+        if earned:
+            stamp_title = {
+                "한국어": f"🏅 과학 스탬프 모아요! {len(earned)}/{len(all_zone_names)}",
+                "English": f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}",
+                "日本語": f"🏅 スタンプ集め! {len(earned)}/{len(all_zone_names)}",
+                "中文": f"🏅 集科学印章! {len(earned)}/{len(all_zone_names)}",
+            }.get(language_mode, f"🏅 Science Stamps! {len(earned)}/{len(all_zone_names)}")
+            st.markdown(stamp_title)
+            stamp_row = " ".join(
+                f"⭐ {_display_zone_name(z)}" if z in earned else f"○ {_display_zone_name(z)}"
+                for z in all_zone_names
+            )
+            st.caption(stamp_row)
+            st.progress(len(earned) / len(all_zone_names))
+            if len(earned) >= len(all_zone_names):
+                congrats = {
+                    "한국어": "🎉 모든 놀이터 탐험 완료! 너는 진짜 과학 탐험가야! 🔬",
+                    "English": "🎉 All zones explored! You're a true Science Explorer! 🔬",
+                    "日本語": "🎉 全ゾーン制覇！きみは本物の科学探検家だ！ 🔬",
+                    "中文": "🎉 全部区域探索完成！你是真正的科学探险家！🔬",
+                }.get(language_mode, "🎉 All zones explored!")
+                st.success(congrats)
+            st.markdown("---")
+
         selected_zones = _render_zone_selector("quiz_question")
 
         if selected_zones:
@@ -1921,7 +1925,13 @@ def render_post_visit_learning(
                                         st.session_state[quiz_cache_key] = quiz or {}
                                     st.rerun()
                             else:
-                                st.warning("퀴즈 생성에 실패했습니다.")
+                                quiz_fail_msg = {
+                                    "한국어": "퀴즈 생성에 실패했습니다.",
+                                    "English": "Failed to generate quiz.",
+                                    "日本語": "クイズの生成に失敗しました。",
+                                    "中文": "测验生成失败。",
+                                }.get(language_mode, "퀴즈 생성에 실패했습니다.")
+                                st.warning(quiz_fail_msg)
                                 if st.button(f"🔄 {text['make_quiz']}", key=f"btn_retry_quiz_{zone}_{selected_kw}"):
                                     st.session_state.pop(quiz_cache_key, None)
                                     st.rerun()
@@ -1969,12 +1979,29 @@ def render_post_visit_learning(
                                 if not context.strip():
                                     st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
                                 else:
-                                    # 언어별 답변 지시
+                                    # 사용자 모드·언어별 답변 지시
+                                    is_child = (user_mode == "어린이")
                                     lang_instruction = {
-                                        "한국어": "어린이가 이해하기 쉽게 한국어로 답변해주세요.",
-                                        "English": "Please answer in English, in a way that children can easily understand.",
-                                        "日本語": "子どもにもわかりやすい日本語で答えてください。",
-                                        "中文": "请用中文回答，让孩子容易理解。",
+                                        "한국어": (
+                                            "초등 저학년 어린이가 이해할 수 있게, 쉬운 단어와 예시를 들어 한국어로 재미있게 설명해주세요. 짧게 2~3문장으로 마무리하고, 마지막에 '정말 신기하지?'처럼 어린이의 흥미를 돋우는 한마디를 추가해주세요."
+                                            if is_child else
+                                            "과학적으로 정확하고 자세하게 한국어로 설명해주세요. 전시물과 관련된 원리 및 실생활 예시를 포함해 주세요."
+                                        ),
+                                        "English": (
+                                            "Please explain in simple English for young children (ages 6-10), using easy words and fun examples. Keep it to 2-3 sentences and end with an exciting fact!"
+                                            if is_child else
+                                            "Please answer in clear, accurate English with scientific detail and real-life examples related to the exhibit."
+                                        ),
+                                        "日本語": (
+                                            "小学校低学年の子どもにもわかるように、やさしい日本語と楽しい例えで2〜3文で説明してください。最後に「すごいね！」など興味を引く一言を加えてください。"
+                                            if is_child else
+                                            "科学的に正確で詳しい日本語で、展示に関連した原理と実例を含めて説明してください。"
+                                        ),
+                                        "中文": (
+                                            "请用简单易懂的中文为小朋友（6-10岁）解释，使用有趣的比喻，用2-3句话说明，最后加一句激发好奇心的话。"
+                                            if is_child else
+                                            "请用科学准确、详细的中文说明，并结合展品相关的原理和实际例子。"
+                                        ),
                                     }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
                                     prompt = f"""다음은 {_display_zone_name(zone)}의 {selected_disp} 정보입니다:
 {context}
@@ -2004,6 +2031,12 @@ def render_post_visit_learning(
                             }.get(language_mode, "🔊 Listen to answer")
                             
                             answer_audio_key = f"answer_audio_{zone}_{selected_kw}_{hash(user_question)}"
+                            tts_fail_msg = {
+                                "한국어": "음성 생성 실패",
+                                "English": "Voice generation failed",
+                                "日本語": "音声の生成に失敗しました",
+                                "中文": "语音生成失败",
+                            }.get(language_mode, "음성 생성 실패")
                             if st.button(listen_answer_label, key=f"btn_answer_audio_{zone}_{selected_kw}_{hash(user_question)}"):
                                 try:
                                     if text_to_speech is not None:
@@ -2012,9 +2045,8 @@ def render_post_visit_learning(
                                         if audio:
                                             st.session_state[answer_audio_key] = audio
                                         else:
-                                            st.warning("음성 생성 실패")
+                                            st.warning(tts_fail_msg)
                                     else:
-                                        # 폴백: 직접 OpenAI TTS 사용
                                         audio = client.audio.speech.create(
                                             model="tts-1",
                                             voice="alloy",
@@ -2023,7 +2055,7 @@ def render_post_visit_learning(
                                         st.session_state[answer_audio_key] = audio.content
                                 except Exception as e:
                                     print(f"답변 TTS 오류: {e}")
-                                    st.warning("음성 생성 실패")
+                                    st.warning(tts_fail_msg)
                             
                             if answer_audio_key in st.session_state:
                                 st.audio(st.session_state[answer_audio_key], format="audio/mp3")
