@@ -942,7 +942,7 @@ def main():
     if st.session_state.get("_toggle_sidebar"):
         del st.session_state["_toggle_sidebar"]
         components.html("""<script>
-(function(){
+setTimeout(function(){
     var p = window.parent;
     var openBtn = p.document.querySelector('[data-testid="stSidebarCollapsedControl"] button');
     if (openBtn) { openBtn.click(); return; }
@@ -953,7 +953,7 @@ def main():
                     || sidebar.querySelector('button');
         if (closeBtn) closeBtn.click();
     }
-})();
+}, 300);
 </script>""", height=0)
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
