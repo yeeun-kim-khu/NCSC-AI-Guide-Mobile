@@ -598,7 +598,10 @@ def main():
         border: none !important;
         outline: none !important;
     }
-    /* st.pills 크기 확대 */
+    /* st.pills 가운데 정렬 + 크기 확대 */
+    [data-testid="stPills"] {
+        justify-content: center !important;
+    }
     [data-testid="stPillsButton"] {
         padding: 14px 28px !important;
         font-size: 16px !important;
