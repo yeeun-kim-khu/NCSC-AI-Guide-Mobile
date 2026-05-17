@@ -1249,11 +1249,6 @@ def main():
 <div style="text-align:center; padding:10px 0 2px; margin-top:12px;
             border-top:1px solid #e8e8e8; font-size:11px; color:#aaa; line-height:1.8;">
   🛠️ 앱 사용 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
-  <a href="mailto:kyeun1@korea.kr"
-     style="color:#999; text-decoration:none; margin:0 6px;">
-    📧 kyeun1@korea.kr
-  </a>
-  &nbsp;·&nbsp;
   <a href="https://open.kakao.com/o/gk8Bgjvi" target="_blank"
      style="color:#999; text-decoration:none; margin:0 6px;">
     💬 카카오톡 문의
