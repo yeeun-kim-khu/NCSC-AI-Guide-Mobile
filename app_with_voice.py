@@ -600,13 +600,9 @@ def main():
         border: none !important;
         outline: none !important;
     }
-    /* st.pills 너비 채우기 + 크기 확대 */
-    [data-testid="stPills"] { width: 100% !important; }
-    [data-testid="stPills"] > * { flex: 1 !important; }
+    /* st.pills 크기 확대 */
     [data-testid="stPillsButton"] {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 14px 28px !important;
+        padding: 14px 20px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
         border-radius: 12px !important;
@@ -900,11 +896,11 @@ def main():
         except Exception:
             pass
 
-    tab_labels = [
-        ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
-        ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
-    ]
-    _tab_default = tab_labels[0] if st.session_state.active_tab == "guide" else tab_labels[1]
+    _tab_guide_label = ui_text.get(language_mode, ui_text["한국어"])["tab_guide"]
+    _tab_learn_label = ui_text.get(language_mode, ui_text["한국어"])["tab_learning"]
+    _settings_label = "⚙️ 설정"
+    _tab_options = [_tab_guide_label, _tab_learn_label, _settings_label]
+    _tab_default = _tab_guide_label if st.session_state.active_tab == "guide" else _tab_learn_label
 
     _tab_hint = {
         "한국어": "👇 원하는 기능을 선택해주세요!",
@@ -915,59 +911,45 @@ def main():
 
     st.divider()
     st.markdown(f"<div style='text-align:center; font-size:15px; font-weight:600; margin-bottom:6px;'>{_tab_hint}</div>", unsafe_allow_html=True)
-    _col_pills, _col_settings = st.columns([5, 1])
-    with _col_pills:
-        _selected_pill = st.pills(
-            "탭",
-            options=tab_labels,
-            default=_tab_default,
-            label_visibility="collapsed",
-        )
-    with _col_settings:
-        components.html("""
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: transparent; display: flex; align-items: center; height: 100%; }
-button {
-    background: transparent;
-    border: 1.5px solid #FF4B4B;
-    border-radius: 20px;
-    padding: 0 8px;
-    height: 36px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    color: #FF4B4B;
-    white-space: nowrap;
-    font-family: sans-serif;
-    width: 100%;
-}
-button:active { background: rgba(255,75,75,0.12); }
-</style>
-<button id="sb">⚙️ 설정</button>
-<script>
-document.getElementById('sb').onclick = function() {
-    var p = window.parent.document;
-    // 사이드바 닫힌 상태 → 열기
-    var openBtn = p.querySelector('[data-testid="stSidebarCollapsedControl"] button');
+    _selected_pill = st.pills(
+        "탭",
+        options=_tab_options,
+        default=_tab_default,
+        key="tab_pills_widget",
+        label_visibility="collapsed",
+    )
+    st.divider()
+
+    if _selected_pill == _settings_label:
+        # 설정 선택 시: pills를 현재 탭으로 되돌리고 사이드바 토글
+        _active_label = _tab_guide_label if st.session_state.active_tab == "guide" else _tab_learn_label
+        st.session_state["tab_pills_widget"] = _active_label
+        st.session_state["_toggle_sidebar"] = True
+        st.rerun()
+    elif _selected_pill == _tab_guide_label and st.session_state.active_tab != "guide":
+        st.session_state.active_tab = "guide"
+        st.rerun()
+    elif _selected_pill == _tab_learn_label and st.session_state.active_tab != "learning":
+        st.session_state.active_tab = "learning"
+        st.rerun()
+
+    # 사이드바 토글 JS (설정 버튼 클릭 후 rerun 시 실행)
+    if st.session_state.get("_toggle_sidebar"):
+        del st.session_state["_toggle_sidebar"]
+        components.html("""<script>
+(function(){
+    var p = window.parent;
+    var openBtn = p.document.querySelector('[data-testid="stSidebarCollapsedControl"] button');
     if (openBtn) { openBtn.click(); return; }
-    // 사이드바 열린 상태 → 닫기
-    var sidebar = p.querySelector('section[data-testid="stSidebar"]');
+    var sidebar = p.document.querySelector('section[data-testid="stSidebar"]');
     if (sidebar) {
         var closeBtn = sidebar.querySelector('button[data-testid="stBaseButton-headerNoPadding"]')
                     || sidebar.querySelector('button[kind="header"]')
                     || sidebar.querySelector('button');
         if (closeBtn) closeBtn.click();
     }
-};
-</script>
-""", height=46)
-    if _selected_pill:
-        _new_tab = "guide" if _selected_pill == tab_labels[0] else "learning"
-        if _new_tab != st.session_state.active_tab:
-            st.session_state.active_tab = _new_tab
-            st.rerun()
-    st.divider()
+})();
+</script>""", height=0)
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
