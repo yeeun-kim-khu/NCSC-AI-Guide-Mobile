@@ -285,7 +285,7 @@ def classify_basic_category(message: str) -> str:
         return "exhibit_linked_education"
     
     # 창경궁 과학 별도 처리
-    if any(k in lowered for k in ["창경궁 과학", "창경궁과학", "창경궁 나들이", "창경궁의 우리나무와 꽃"]):
+    if any(k in lowered for k in ["창경궁 과학", "창경궁과학", "창경궁 나들이", "창경궁의 우리나무와 꽃", "과학나들이", "과학 나들이"]):
         return "changgyeonggung_science"
     
     # 어린이 맞춤 과학 별도 처리
