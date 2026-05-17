@@ -582,15 +582,21 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 채팅 입력창 — 강렬한 주황색 테두리 */
+    /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
         border-radius: 16px !important;
+        overflow: hidden !important;
+        box-shadow: 0 0 0 3px rgba(255,107,53,0.18) !important;
         transition: border-color 0.2s, box-shadow 0.2s !important;
     }
     [data-testid="stChatInput"]:focus-within {
-        border: 2px solid #e85520 !important;
-        box-shadow: 0 0 0 3px rgba(255,107,53,0.2) !important;
+        border-color: #e85520 !important;
+        box-shadow: 0 0 0 4px rgba(255,107,53,0.32) !important;
+    }
+    [data-testid="stChatInput"] textarea {
+        border: none !important;
+        outline: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -863,7 +869,7 @@ def main():
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
     _intro_text = intro_dict.get(user_mode, intro_dict["성인"]) if isinstance(intro_dict, dict) else intro_dict
     st.markdown(
-        f'<div style="font-size:15px; line-height:1.8;">{_intro_text}</div>',
+        f'<div style="font-size:17px; line-height:1.8;">{_intro_text}</div>',
         unsafe_allow_html=True,
     )
 
