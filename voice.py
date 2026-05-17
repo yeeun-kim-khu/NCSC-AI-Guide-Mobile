@@ -236,6 +236,12 @@ def preprocess_tts_text(text: str, language: str = "ko") -> str:
         return _sino.get(n, str(n)) + '. '
     text = re.sub(r'(?m)^(\d+)\.\s+', _list_num, text)
 
+    # N번 → 일번/이번/... (edge-tts가 "한번/두번"으로 읽는 것 방지)
+    def _beon_sino(m):
+        n = int(m.group(1))
+        return _sino.get(n, str(n)) + '번'
+    text = re.sub(r'(\d+)번', _beon_sino, text)
+
     # 층(層)은 한자어로 읽는 게 자연스러움: "1층" → "일층"
     def _floor_sino(m):
         n = int(m.group(1))

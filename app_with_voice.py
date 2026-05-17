@@ -869,7 +869,7 @@ def main():
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
     _intro_text = intro_dict.get(user_mode, intro_dict["성인"]) if isinstance(intro_dict, dict) else intro_dict
     st.markdown(
-        f'<div style="font-size:17px; line-height:1.8;">{_intro_text}</div>',
+        f'<div style="font-size:19px; line-height:1.8;">{_intro_text}</div>',
         unsafe_allow_html=True,
     )
 

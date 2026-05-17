@@ -129,6 +129,39 @@ def _select_zones_by_group(prefix_key: str, language_mode: str = "한국어") ->
             uniq.append(z)
     return uniq
 
+def _render_zone_buttons(prefix_key: str, display_fn, language_mode: str = "한국어") -> list:
+    """체크박스 대신 토글 버튼으로 존 선택 (세션 스테이트 기반)."""
+    sel_key = f"zone_sel_{prefix_key}"
+    if sel_key not in st.session_state:
+        st.session_state[sel_key] = []
+
+    all_zones = (
+        [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"] +
+        [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
+    )
+
+    cols = st.columns(3)
+    for i, zone in enumerate(all_zones):
+        is_sel = zone in st.session_state[sel_key]
+        zone_disp = display_fn(zone)
+        label = f"✅ {zone_disp}" if is_sel else zone_disp
+        with cols[i % 3]:
+            if st.button(
+                label,
+                key=f"zonebtn_{prefix_key}_{zone}",
+                type="primary" if is_sel else "secondary",
+                use_container_width=True,
+            ):
+                sel = list(st.session_state[sel_key])
+                if is_sel:
+                    sel.remove(zone)
+                else:
+                    sel.append(zone)
+                st.session_state[sel_key] = sel
+                st.rerun()
+
+    return list(st.session_state[sel_key])
+
 # ============================================================================
 # CSV 데이터 로딩
 # ============================================================================
@@ -700,7 +733,7 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None):
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None, difficulty: str = "초등"):
     """과학원리 기반 4지선다 퀴즈 생성.
 
     LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
@@ -748,11 +781,23 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         "中文": "[输出语言: 简体中文] question, options, explanation 必须全部使用简体中文。禁止使用韩文。即使主题是韩文，也必须翻译成中文。",
     }.get(language, "")
 
-    quality_rules_ko = """
-[문제 품질 규칙 — 반드시 지킬 것]
+    if difficulty == "유아":
+        quality_rules_ko = """
+[문제 품질 규칙 — 유치~초등 저학년 (5~8세)]
+1) 어휘: 5~8세가 일상에서 쓰는 아주 쉬운 단어만. 한자어·학술어 금지.
+2) 문장 길이: 질문 10단어 이내, 선택지 5단어 이내.
+3) 보기 형태: 단어 또는 2~3단어 짧은 구. 의성어·의태어 환영.
+4) 소재: 동물, 색깔, 음식, 놀이 등 직관적인 일상 소재 활용.
+5) 이야기형 질문: "토끼가 언덕에서 굴러 내려와요. 왜 빠르게 굴러갈까요?" 같은 짧은 장면으로 시작.
+6) 정답 1개, 오답 3개. 어린이가 쉽게 구별할 수 있을 정도로 명확하게 틀려야 함.
+7) 재미 요소: 끝에 "왜 그럴까요? 실험해봐요!" 같은 호기심 자극 한마디 포함.
+"""
+    else:
+        quality_rules_ko = """
+[문제 품질 규칙 — 초등 중·고학년 (3~6학년, 9~12세)]
 1) 사실 검증: 과학적으로 명백히 참인 정답 1개, 명백히 거짓인 오답 3개. 애매하거나 둘 다 맞을 수 있는 표현 금지.
 2) 구체성: "맞다/아니다"처럼 추상적인 선택지 금지. 각 선택지는 명사구 또는 짧은 문장으로 의미가 분명해야 함.
-3) 어휘 수준: 초등 4~6학년(10~12세)이 이해할 수 있는 단어. 학술 용어는 풀어서 설명.
+3) 어휘 수준: 초등 3~6학년(9~12세)이 이해할 수 있는 단어. 학술 용어는 풀어서 설명.
 4) 일관성: 4개 선택지의 문법 형태/길이를 비슷하게 맞추기 (정답만 길거나 짧으면 안 됨).
 5) 함정 주의: 오답은 흔한 오개념이나 비슷한 다른 현상에서 가져오기 (무관한 단어 나열 금지).
 6) 질문은 한 가지만 묻기. 이중 부정, 복수 조건 금지.
@@ -1834,10 +1879,9 @@ def render_post_visit_learning(
     }
     
     text = texts.get(language_mode, texts["한국어"])
-    
-    st.subheader(text["title"])
+
     st.markdown(text["subtitle"])
-    
+
     # Load CSV data once with session state persistence
     if "all_zone_rows" not in st.session_state:
         st.session_state.all_zone_rows = _preload_all_zone_csv_rows()
@@ -1845,7 +1889,25 @@ def render_post_visit_learning(
 
     if "learning_sub_tab" not in st.session_state:
         st.session_state.learning_sub_tab = "quiz_question"
-    
+
+    # ── Step 1: 존 선택 (버튼) ──────────────────────────────────────────────
+    _step1_label = {
+        "한국어": "**Step 1** · 체험한 놀이터를 선택하세요",
+        "English": "**Step 1** · Select the zones you visited",
+        "日本語": "**Step 1** · 体験したゾーンを選んでください",
+        "中文": "**Step 1** · 选择您体验过的区域",
+    }.get(language_mode, "**Step 1** · 체험한 놀이터를 선택하세요")
+    st.markdown(_step1_label)
+    _render_zone_buttons("oreum", _display_zone_name, language_mode)
+
+    # ── Step 2: 활동 선택 ───────────────────────────────────────────────────
+    _step2_label = {
+        "한국어": "**Step 2** · 활동을 선택하세요",
+        "English": "**Step 2** · Choose an activity",
+        "日本語": "**Step 2** · 活動を選んでください",
+        "中文": "**Step 2** · 选择活动",
+    }.get(language_mode, "**Step 2** · 활동을 선택하세요")
+    st.markdown(_step2_label)
     sub_cols = st.columns(2)
     with sub_cols[0]:
         tq_type = "primary" if st.session_state.learning_sub_tab == "quiz_question" else "secondary"
@@ -1942,7 +2004,7 @@ def render_post_visit_learning(
         except Exception as _stamp_err:
             print(f"[STAMP] render error: {_stamp_err}")
 
-        selected_zones = _render_zone_selector("quiz_question")
+        selected_zones = st.session_state.get("zone_sel_oreum", [])
 
         if selected_zones:
             st.markdown("---")
@@ -2032,6 +2094,21 @@ def render_post_visit_learning(
                             st.session_state[prev_q_key] = []
 
                         if quiz_cache_key not in st.session_state:
+                            _diff_labels = {
+                                "한국어": {"유아": "유치~초등 저학년", "초등": "초등 중·고학년 (3~6학년)"},
+                                "English": {"유아": "Preschool ~ Lower Elem.", "초등": "Upper Elem. (Gr.3-6)"},
+                                "日本語": {"유아": "幼児〜小低学年", "초등": "小中〜高学年（3〜6年）"},
+                                "中文": {"유아": "幼儿~小学低年级", "초등": "小学中高年级（3-6年级）"},
+                            }.get(language_mode, {"유아": "유치~초등 저학년", "초등": "초등 중·고학년"})
+                            _diff_title = {"한국어": "난이도", "English": "Difficulty",
+                                           "日本語": "レベル", "中文": "难度"}.get(language_mode, "난이도")
+                            quiz_difficulty = st.radio(
+                                _diff_title,
+                                options=["유아", "초등"],
+                                format_func=lambda x: _diff_labels[x],
+                                horizontal=True,
+                                key=f"diff_{zone}_{selected_kw}",
+                            )
                             if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                                 _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                 with st.spinner(text["quiz_generating"]):
@@ -2040,6 +2117,7 @@ def render_post_visit_learning(
                                         variation_seed=st.session_state[seed_key],
                                         exhibit_detail=quiz_detail,
                                         prev_questions=st.session_state[prev_q_key],
+                                        difficulty=quiz_difficulty,
                                     )
                                     st.session_state[quiz_cache_key] = quiz or {}
                                     if quiz and quiz.get("question"):
@@ -2235,36 +2313,7 @@ def render_post_visit_learning(
         story_zones_key = "post_learning_story_zones"
         audio_state_key = "post_learning_story_audio"
         
-        selected_zones_story = []
-        
-        st.markdown(text["story_select_heading"])
-
-        if language_mode != "한국어" and debug_show_korean:
-            st.caption(f"KO: {texts['한국어']['story_select_heading']}")
-        if language_mode != "한국어" and debug_backtranslate:
-            bt = _backtranslate_to_korean_cached(text["story_select_heading"], language_mode)
-            if bt:
-                st.caption(f"BT: {bt}")
-        selected_zones_story = _select_zones_by_group("story", language_mode=language_mode)
-
-        # 선택된 존 표시 (다국어)
-        selected_disp_names = [_display_zone_name(z) for z in selected_zones_story]
-        selected_label_text = {
-            "한국어": "선택된 놀이터",
-            "English": "Selected zones",
-            "日本語": "選んだゾーン",
-            "中文": "已选区域",
-        }.get(language_mode, "Selected zones")
-        please_select_text = {
-            "한국어": "놀이터를 선택해주세요",
-            "English": "Please select at least one zone.",
-            "日本語": "ゾーンを選んでください。",
-            "中文": "请选择区域。",
-        }.get(language_mode, "Please select at least one zone.")
-        if selected_zones_story:
-            st.info(f"{selected_label_text}: {', '.join(selected_disp_names)}")
-        else:
-            st.warning(please_select_text)
+        selected_zones_story = st.session_state.get("zone_sel_oreum", [])
 
         if selected_zones_story and st.button(text["generate_story"]):
             _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
