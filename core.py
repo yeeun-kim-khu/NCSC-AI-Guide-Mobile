@@ -246,6 +246,16 @@ def classify_basic_category(message: str) -> str:
     if any(k in lowered for k in ["야간관측", "야간 관측", "야간 프로그램", "천체관측소", "별 관찰", "별 보기", "별 관측"]):
         return "night_observation"
 
+    # 프로그램 위치 찾기 (바닥 색깔 선 안내) — 교육/프로그램 상세 안내보다 우선
+    _wayfind_words = ["어디", "가야", "찾아", "찾고", "어느", "가려", "가고", "가면", "위치", "어디서", "어디로", "가는 곳", "어디 있", "어디있"]
+    _wayfind_programs = ["사이언스랩", "사이언스 랩", "과학극장", "과학쇼", "과학 쇼", "로봇쇼", "로봇 쇼",
+                         "천체투영관", "창경궁 과학 나들이", "창경궁과학나들이", "창경궁 과학나들이",
+                         "창경궁 나들이", "과학나들이", "과학 나들이"]
+    _has_wayfind = any(w in lowered for w in _wayfind_words)
+    _has_program = any(p in lowered for p in _wayfind_programs)
+    if _has_program and (_has_wayfind or len(lowered.strip()) <= 15):
+        return "program_wayfinding"
+
     # 교육 키워드: reservation_guide보다 먼저 잡아야 교육예약이 아닌 교육안내로 분기
     if any(k in lowered for k in ["교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
         return "education_guide"
@@ -390,6 +400,28 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
     if intent == "basic":
         category = classify_basic_category(message)
+        if category == "program_wayfinding":
+            lowered_msg = message.lower()
+            if any(p in lowered_msg for p in ["사이언스랩", "사이언스 랩", "과학쇼", "과학 쇼", "과학극장", "로봇쇼", "로봇 쇼"]):
+                return """과학쇼(사이언스랩/로봇쇼) 참여하러 오셨군요! 🎉
+
+**1층 연두색 선**을 따라오시면 **과학극장**에 도착해요! 🟢
+
+📍 **위치**: 1층 과학극장
+⏰ **운영**: 11:40, 13:40 (하루 2회) · 약 15분 · 무료 · 선착순"""
+            elif "천체투영관" in lowered_msg:
+                return """천체투영관 프로그램 참여하러 오셨군요! 🌟
+
+**1층 주황색 선**을 따라오시면 **천체투영관**에 도착해요! 🟠
+
+📍 **위치**: 1층 천체투영관"""
+            elif any(p in lowered_msg for p in ["창경궁 과학 나들이", "창경궁과학나들이", "창경궁 과학나들이", "창경궁 나들이", "과학나들이", "과학 나들이"]):
+                return """창경궁 과학 나들이 참여하러 오셨군요! 🌿
+
+- **유아·1학년**: **1층 연두색 선**을 따라오세요! 🟢
+- **2·3·4학년**: **2층 창작교실**로 오세요 (별도 바닥선 없음)"""
+            else:
+                return "찾으시는 프로그램 장소를 안내해 드릴게요! 프로그램명을 말씀해 주시면 바닥 선 색깔로 안내해 드릴게요. 😊"
         if category == "k_science":
             return """**K-사이언스** 프로그램 안내입니다! 😊
 
