@@ -575,22 +575,22 @@ def main():
     footer { visibility: hidden !important; display: none !important; height: 0 !important; }
     [data-testid="stFooter"] { display: none !important; }
     #MainMenu { visibility: hidden !important; display: none !important; }
-    .main .block-container { padding-bottom: 0.5rem !important; }
-    .block-container { padding-bottom: 0.5rem !important; }
-    section.main > div.block-container { padding-bottom: 0.5rem !important; }
+    .main .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+    .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+    section.main > div.block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
     .stApp > footer { display: none !important; }
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 채팅 입력창 — 배경색은 내부 구조 제약으로 테두리만 강조 */
+    /* 채팅 입력창 — 강렬한 주황색 테두리 */
     [data-testid="stChatInput"] {
-        border: 2px solid #52b78870 !important;
+        border: 2px solid #ff6b35 !important;
         border-radius: 16px !important;
         transition: border-color 0.2s, box-shadow 0.2s !important;
     }
     [data-testid="stChatInput"]:focus-within {
-        border: 2px solid #3a9e72 !important;
-        box-shadow: 0 0 0 3px rgba(58,158,114,0.15) !important;
+        border: 2px solid #e85520 !important;
+        box-shadow: 0 0 0 3px rgba(255,107,53,0.2) !important;
     }
     </style>
     """, unsafe_allow_html=True)
