@@ -582,16 +582,6 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 탭 버튼 컬럼 — 모바일에서도 항상 가로 배치 */
-    [data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
-        gap: 8px !important;
-    }
-    [data-testid="stHorizontalBlock"] > [data-testid="column"] {
-        flex: 1 1 0% !important;
-        min-width: 0 !important;
-        width: auto !important;
-    }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
@@ -902,17 +892,16 @@ def main():
         ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
     ]
 
-    _tab_col1, _tab_col2 = st.columns(2)
-    with _tab_col1:
-        _t1 = "primary" if st.session_state.active_tab == "guide" else "secondary"
-        if st.button(tab_labels[0], key="tab_btn_guide", type=_t1, use_container_width=True):
-            st.session_state.active_tab = "guide"
-            st.rerun()
-    with _tab_col2:
-        _t2 = "primary" if st.session_state.active_tab == "learning" else "secondary"
-        if st.button(tab_labels[1], key="tab_btn_learning", type=_t2, use_container_width=True):
-            st.session_state.active_tab = "learning"
-            st.rerun()
+    _active = st.segmented_control(
+        label="탭",
+        options=["guide", "learning"],
+        format_func=lambda x: tab_labels[0] if x == "guide" else tab_labels[1],
+        default=st.session_state.active_tab,
+        label_visibility="collapsed",
+    )
+    if _active and _active != st.session_state.active_tab:
+        st.session_state.active_tab = _active
+        st.rerun()
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
