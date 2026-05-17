@@ -598,6 +598,13 @@ def main():
         border: none !important;
         outline: none !important;
     }
+    /* st.pills 크기 확대 */
+    [data-testid="stPillsButton"] {
+        padding: 14px 28px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
