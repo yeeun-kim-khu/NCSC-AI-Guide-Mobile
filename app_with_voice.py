@@ -583,6 +583,27 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
+    # JavaScript로 Streamlit footer 직접 숨김 (CSS 선택자가 버전마다 달라서 JS가 더 안정적)
+    components.html("""<script>
+    (function hideStreamlitFooter() {
+        const p = window.parent;
+        if (!p) return;
+        function hide() {
+            // footer 태그 전체 숨김
+            p.document.querySelectorAll('footer').forEach(function(el) {
+                el.style.setProperty('display', 'none', 'important');
+            });
+            // block-container 하단 패딩 제거
+            p.document.querySelectorAll('.block-container').forEach(function(el) {
+                el.style.setProperty('padding-bottom', '0.5rem', 'important');
+            });
+        }
+        hide();
+        setTimeout(hide, 300);
+        setTimeout(hide, 1000);
+    })();
+    </script>""", height=0)
+
     if "OPENAI_API_KEY" not in os.environ:
         os.environ["OPENAI_API_KEY"] = st.secrets.get("OPENAI_API_KEY", "")
 
