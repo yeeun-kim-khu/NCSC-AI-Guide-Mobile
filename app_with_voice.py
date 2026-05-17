@@ -598,42 +598,6 @@ def main():
         border: none !important;
         outline: none !important;
     }
-    /* ── 탭 선택 버튼 ── */
-    .tab-btn-row {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        gap: 16px !important;
-        width: 100% !important;
-    }
-    .tab-btn-row [data-testid="column"] {
-        flex: 0 0 45% !important;
-        max-width: 45% !important;
-        min-width: 0 !important;
-        padding: 0 !important;
-    }
-    .tab-btn-row button {
-        width: 100% !important;
-        padding: 22px 12px !important;
-        font-size: 16px !important;
-        font-weight: 700 !important;
-        border-radius: 14px !important;
-        letter-spacing: -0.3px !important;
-        transition: all 0.18s ease !important;
-        cursor: pointer !important;
-    }
-    .tab-btn-row button.tab-active {
-        background: #FF4B4B !important;
-        color: #ffffff !important;
-        border: 2.5px solid #FF4B4B !important;
-        box-shadow: 0 4px 16px rgba(255,75,75,0.38) !important;
-    }
-    .tab-btn-row button.tab-inactive {
-        background: transparent !important;
-        color: #FF4B4B !important;
-        border: 2.5px solid #FF4B4B !important;
-        box-shadow: none !important;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -930,114 +894,18 @@ def main():
     _tab_default = tab_labels[0] if st.session_state.active_tab == "guide" else tab_labels[1]
 
     st.divider()
-    # active 탭 상태를 DOM에 주입 → JS가 active/inactive 클래스 결정에 사용
-    _active_tab_now = st.session_state.get("active_tab", "guide")
-    st.markdown(
-        f'<div id="tab-active-state" data-tab="{_active_tab_now}" style="display:none"></div>',
-        unsafe_allow_html=True,
+    _selected_pill = st.pills(
+        "탭",
+        options=tab_labels,
+        default=_tab_default,
+        label_visibility="collapsed",
     )
-    _tab_c1, _tab_c2 = st.columns(2)
-    with _tab_c1:
-        _guide_btn = st.button(tab_labels[0], key="tab_btn_guide", type="primary", use_container_width=True)
-    with _tab_c2:
-        _learn_btn = st.button(tab_labels[1], key="tab_btn_learning", type="primary", use_container_width=True)
-    if _guide_btn and st.session_state.active_tab != "guide":
-        st.session_state.active_tab = "guide"
-        st.rerun()
-    if _learn_btn and st.session_state.active_tab != "learning":
-        st.session_state.active_tab = "learning"
-        st.rerun()
+    if _selected_pill:
+        _new_tab = "guide" if _selected_pill == tab_labels[0] else "learning"
+        if _new_tab != st.session_state.active_tab:
+            st.session_state.active_tab = _new_tab
+            st.rerun()
     st.divider()
-
-    # 탭 버튼 CSS 스타일 적용 + 모바일 플로팅 (통합 JS)
-    components.html("""<script>
-(function() {
-    var p = window.parent;
-    if (!p || !p.document) return;
-    var _timer = null;
-    var GUIDE_KW = ['과학관 안내', 'Guide', '科学館案内', '参观导览'];
-    var LEARN_KW = ['또만나 놀이터', 'Again Zone', 'またねゾーン', '再次乐园'];
-
-    function findTabButtons() {
-        var allBtns = Array.from(p.document.querySelectorAll('button'));
-        var gBtn = null, lBtn = null;
-        allBtns.forEach(function(b) {
-            var txt = b.textContent || '';
-            if (!gBtn && GUIDE_KW.some(function(k) { return txt.indexOf(k) >= 0; })) gBtn = b;
-            if (!lBtn && LEARN_KW.some(function(k) { return txt.indexOf(k) >= 0; })) lBtn = b;
-        });
-        return { guide: gBtn, learn: lBtn };
-    }
-
-    function findHBlock(btn) {
-        var el = btn;
-        while (el && el !== p.document.body) {
-            if (el.getAttribute && el.getAttribute('data-testid') === 'stHorizontalBlock') return el;
-            el = el.parentElement;
-        }
-        return null;
-    }
-
-    function applyAll() {
-        try {
-            var btns = findTabButtons();
-            var btn = btns.guide || btns.learn;
-            if (!btn) return;
-
-            var hBlock = findHBlock(btn);
-            if (!hBlock) return;
-
-            // 1) CSS 클래스 적용
-            hBlock.classList.add('tab-btn-row');
-
-            // 2) active 상태 읽어서 클래스 부여
-            var stateEl = p.document.getElementById('tab-active-state');
-            var activeTab = stateEl ? stateEl.getAttribute('data-tab') : 'guide';
-            if (btns.guide) {
-                btns.guide.classList.toggle('tab-active',   activeTab === 'guide');
-                btns.guide.classList.toggle('tab-inactive', activeTab !== 'guide');
-            }
-            if (btns.learn) {
-                btns.learn.classList.toggle('tab-active',   activeTab === 'learning');
-                btns.learn.classList.toggle('tab-inactive', activeTab !== 'learning');
-            }
-
-            // 3) 모바일 플로팅
-            var bc = p.document.querySelector('[data-testid="stMainBlockContainer"]') ||
-                     p.document.querySelector('.block-container');
-            if (p.innerWidth <= 768) {
-                hBlock.style.setProperty('position', 'fixed', 'important');
-                hBlock.style.bottom = '72px';
-                hBlock.style.left = '8px';
-                hBlock.style.right = '8px';
-                hBlock.style.zIndex = '9998';
-                hBlock.style.background = 'rgba(255,255,255,0.97)';
-                hBlock.style.padding = '8px';
-                hBlock.style.borderRadius = '16px';
-                hBlock.style.boxShadow = '0 -2px 16px rgba(0,0,0,0.12)';
-                if (bc) bc.style.paddingBottom = '150px';
-            } else {
-                hBlock.style.removeProperty('position');
-                ['bottom','left','right','zIndex','background','padding','borderRadius','boxShadow'].forEach(function(k) {
-                    hBlock.style[k] = '';
-                });
-                if (bc) bc.style.paddingBottom = '';
-            }
-        } catch(e) {}
-    }
-
-    function debounced() { clearTimeout(_timer); _timer = setTimeout(applyAll, 100); }
-    applyAll();
-    setTimeout(applyAll, 300);
-    setTimeout(applyAll, 800);
-    setTimeout(applyAll, 2000);
-    try {
-        var obs = new MutationObserver(debounced);
-        obs.observe(p.document.body, { childList: true, subtree: true });
-    } catch(e) {}
-    p.addEventListener('resize', debounced);
-})();
-</script>""", height=0)
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
