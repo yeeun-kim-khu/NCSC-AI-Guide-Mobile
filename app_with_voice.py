@@ -782,7 +782,7 @@ def main():
         # 설문조사를 사이드바 맨 하단으로 이동
         render_feedback(language_mode, user_mode)
 
-    st.title(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
+    st.header(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
 
     # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
     _render_mascot_animation()
@@ -794,14 +794,14 @@ def main():
         "한국어": {
             "어린이": (
                 "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br>"
-                "📅 시범운영: 5.22.(금) ~ 5.31.(일)\n\n"
+                "📅 시범적용: 5.22.(금) ~ 5.31.(일)\n\n"
                 "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
                 "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
             ),
             "성인": (
                 "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br>"
-                "📅 시범운영: 5.22.(금) ~ 5.31.(일)\n\n"
+                "📅 시범적용: 5.22.(금) ~ 5.31.(일)\n\n"
                 "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
                 "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
