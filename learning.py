@@ -1880,6 +1880,7 @@ def render_post_visit_learning(
     
     text = texts.get(language_mode, texts["한국어"])
 
+    st.subheader(text["title"])
     st.markdown(text["subtitle"])
 
     # Load CSV data once with session state persistence
@@ -1890,24 +1891,6 @@ def render_post_visit_learning(
     if "learning_sub_tab" not in st.session_state:
         st.session_state.learning_sub_tab = "quiz_question"
 
-    # ── Step 1: 존 선택 (버튼) ──────────────────────────────────────────────
-    _step1_label = {
-        "한국어": "**Step 1** · 체험한 놀이터를 선택하세요",
-        "English": "**Step 1** · Select the zones you visited",
-        "日本語": "**Step 1** · 体験したゾーンを選んでください",
-        "中文": "**Step 1** · 选择您体验过的区域",
-    }.get(language_mode, "**Step 1** · 체험한 놀이터를 선택하세요")
-    st.markdown(_step1_label)
-    _render_zone_buttons("oreum", _display_zone_name, language_mode)
-
-    # ── Step 2: 활동 선택 ───────────────────────────────────────────────────
-    _step2_label = {
-        "한국어": "**Step 2** · 활동을 선택하세요",
-        "English": "**Step 2** · Choose an activity",
-        "日本語": "**Step 2** · 活動を選んでください",
-        "中文": "**Step 2** · 选择活动",
-    }.get(language_mode, "**Step 2** · 활동을 선택하세요")
-    st.markdown(_step2_label)
     sub_cols = st.columns(2)
     with sub_cols[0]:
         tq_type = "primary" if st.session_state.learning_sub_tab == "quiz_question" else "secondary"
@@ -2004,7 +1987,7 @@ def render_post_visit_learning(
         except Exception as _stamp_err:
             print(f"[STAMP] render error: {_stamp_err}")
 
-        selected_zones = st.session_state.get("zone_sel_oreum", [])
+        selected_zones = _render_zone_selector("quiz_question")
 
         if selected_zones:
             st.markdown("---")
@@ -2313,7 +2296,7 @@ def render_post_visit_learning(
         story_zones_key = "post_learning_story_zones"
         audio_state_key = "post_learning_story_audio"
         
-        selected_zones_story = st.session_state.get("zone_sel_oreum", [])
+        selected_zones_story = _render_zone_selector("story")
 
         if selected_zones_story and st.button(text["generate_story"]):
             _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
