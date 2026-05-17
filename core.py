@@ -2441,7 +2441,9 @@ def load_csv_data():
             has_pages = len(pages_cols.intersection(set(df.columns))) >= 4
             has_unnamed = any(str(c).startswith("Unnamed") for c in df.columns)
 
-            if (not has_expected) and (not has_pages) and (has_unnamed or df.shape[1] >= 2):
+            # 진짜 헤더가 없는 경우(Unnamed 컬럼)에만 첫 행을 헤더로 올림
+            # 한국어 컬럼명 CSV는 has_unnamed=False → 이 블록 건너뜀 (버그 수정)
+            if (not has_expected) and (not has_pages) and has_unnamed:
                 try:
                     df.columns = [str(v).strip() for v in df.iloc[0].tolist()]
                     df = df.iloc[1:].reset_index(drop=True)
@@ -2453,8 +2455,8 @@ def load_csv_data():
             synonyms = {
                 "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
                 "content": ["content", "내용", "설명", "전시내용", "본문"],
-                "detail": ["detail", "세부설명", "상세", "상세설명"],
-                "category": ["category", "분류", "카테고리", "구분"],
+                "detail": ["detail", "세부설명", "상세", "상세설명", "세부 설명", "영문 세부 설명"],
+                "category": ["category", "분류", "카테고리", "구분", "전시형태"],
             }
 
             cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
