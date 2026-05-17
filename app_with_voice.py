@@ -582,10 +582,6 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* segmented_control 전체 너비 */
-    [data-testid="stSegmentedControl"] { width: 100% !important; }
-    [data-testid="stSegmentedControl"] > div { width: 100% !important; display: flex !important; }
-    [data-testid="stSegmentedControl"] > div > label { flex: 1 !important; text-align: center !important; }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
@@ -895,17 +891,21 @@ def main():
         ui_text.get(language_mode, ui_text["한국어"])["tab_guide"],
         ui_text.get(language_mode, ui_text["한국어"])["tab_learning"],
     ]
+    _tab_default = tab_labels[0] if st.session_state.active_tab == "guide" else tab_labels[1]
 
-    _active = st.segmented_control(
-        label="탭",
-        options=["guide", "learning"],
-        format_func=lambda x: tab_labels[0] if x == "guide" else tab_labels[1],
-        default=st.session_state.active_tab,
+    st.divider()
+    _selected_pill = st.pills(
+        "탭",
+        options=tab_labels,
+        default=_tab_default,
         label_visibility="collapsed",
     )
-    if _active and _active != st.session_state.active_tab:
-        st.session_state.active_tab = _active
-        st.rerun()
+    if _selected_pill:
+        _new_tab = "guide" if _selected_pill == tab_labels[0] else "learning"
+        if _new_tab != st.session_state.active_tab:
+            st.session_state.active_tab = _new_tab
+            st.rerun()
+    st.divider()
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
     if st.session_state.get("active_tab") != "guide" and st.session_state.get("pending_user_input"):
