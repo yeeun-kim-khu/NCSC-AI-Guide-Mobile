@@ -360,7 +360,7 @@ def main():
     ui_text = {
         "한국어": {
             "page_title": "국립어린이과학관 AI 가이드",
-            "app_title": "국립어린이과학관 AI 가이드",
+            "app_title": "국립어린이과학관 AI 가이드 (5.22.~5.31.)",
             "sidebar_title": "⚙️ 안내 모드",
             "user_mode_label": "사용자 모드 선택:",
             "user_mode_child": "어린이",
@@ -407,7 +407,7 @@ def main():
         },
         "English": {
             "page_title": "NCSC AI Guide",
-            "app_title": "NCSC AI Guide",
+            "app_title": "NCSC AI Guide (5.22.~5.31.)",
             "sidebar_title": "⚙️ Guide Mode",
             "user_mode_label": "Visitor type:",
             "user_mode_child": "Child",
@@ -454,7 +454,7 @@ def main():
         },
         "日本語": {
             "page_title": "国立子ども科学館 AIガイド",
-            "app_title": "国立子ども科学館 AIガイド",
+            "app_title": "国立子ども科学館 AIガイド (5.22.~5.31.)",
             "sidebar_title": "⚙️ 案内モード",
             "user_mode_label": "利用者:",
             "user_mode_child": "こども",
@@ -501,7 +501,7 @@ def main():
         },
         "中文": {
             "page_title": "国立儿童科学馆 AI 导览",
-            "app_title": "国立儿童科学馆 AI 导览",
+            "app_title": "国立儿童科学馆 AI 导览 (5.22.~5.31.)",
             "sidebar_title": "⚙️ 导览模式",
             "user_mode_label": "访客类型:",
             "user_mode_child": "儿童",
@@ -592,9 +592,6 @@ def main():
         border: 2px solid #3a9e72 !important;
         box-shadow: 0 0 0 3px rgba(58,158,114,0.15) !important;
     }
-    /* 메인 소개·채팅 메시지 글씨 크기 */
-    [data-testid="stMarkdownContainer"] p,
-    [data-testid="stMarkdownContainer"] li { font-size: 15px !important; line-height: 1.75 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -798,22 +795,6 @@ def main():
         render_feedback(language_mode, user_mode)
 
     language_mode = st.session_state.get("language_mode", "한국어")
-
-    # 시범적용 기간 배지 — 제목 위, 가운데 정렬
-    _pilot_badge = {
-        "한국어": "📅 시범적용: 5.22.(금) ~ 5.31.(일)",
-        "English": "📅 Pilot Period: May 22 ~ May 31",
-        "日本語": "📅 試験運用：5月22日 〜 5月31日",
-        "中文": "📅 试运行：5月22日 〜 5月31日",
-    }
-    st.markdown(
-        f'<div style="text-align:center; margin-bottom:2px;">'
-        f'<span style="display:inline-block; background:#e8f5e9; color:#2e7d32; '
-        f'padding:3px 14px; border-radius:20px; font-size:12px; font-weight:600; '
-        f'border:1px solid #c8e6c9;">'
-        f'{_pilot_badge.get(language_mode, _pilot_badge["한국어"])}</span></div>',
-        unsafe_allow_html=True,
-    )
 
     st.header(ui_text.get(language_mode, ui_text["한국어"])["app_title"])
 
