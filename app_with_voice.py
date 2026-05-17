@@ -582,6 +582,10 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
+    /* segmented_control 전체 너비 */
+    [data-testid="stSegmentedControl"] { width: 100% !important; }
+    [data-testid="stSegmentedControl"] > div { width: 100% !important; display: flex !important; }
+    [data-testid="stSegmentedControl"] > div > label { flex: 1 !important; text-align: center !important; }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
@@ -898,7 +902,6 @@ def main():
         format_func=lambda x: tab_labels[0] if x == "guide" else tab_labels[1],
         default=st.session_state.active_tab,
         label_visibility="collapsed",
-        use_container_width=True,
     )
     if _active and _active != st.session_state.active_tab:
         st.session_state.active_tab = _active
