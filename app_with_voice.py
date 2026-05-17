@@ -898,6 +898,7 @@ def main():
         format_func=lambda x: tab_labels[0] if x == "guide" else tab_labels[1],
         default=st.session_state.active_tab,
         label_visibility="collapsed",
+        use_container_width=True,
     )
     if _active and _active != st.session_state.active_tab:
         st.session_state.active_tab = _active
