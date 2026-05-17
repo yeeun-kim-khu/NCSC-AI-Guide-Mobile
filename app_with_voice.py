@@ -811,57 +811,57 @@ def main():
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br><br>"
+                "<strong>과학관 관람 정보와 전시 체험을 AI가 안내해드립니다.</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
-                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br><br>"
+                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
                 "💡 <strong>왼쪽 위 》</strong> 언어·사용자 모드·음성 질문·설문조사"
             ),
             "성인": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br><br>"
+                "<strong>과학관 관람 정보와 전시 체험을 AI가 안내해드립니다.</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
-                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br><br>"
+                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
                 "💡 <strong>왼쪽 위 》</strong> 언어·사용자 모드·음성 질문·설문조사"
             ),
         },
         "English": {
             "어린이": (
-                "Welcome to the NCSC AI Guide! 🎉<br><br>"
+                "<strong>Your AI guide for museum info and interactive exhibits.</strong><br><br>"
                 "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
-                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br><br>"
+                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
                 "💡 <strong>Tap 》 top-left</strong> Language · User mode · Voice · Survey"
             ),
             "성인": (
-                "Welcome to the NCSC AI Guide! 🎉<br><br>"
+                "<strong>Your AI guide for museum info and interactive exhibits.</strong><br><br>"
                 "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
-                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br><br>"
+                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
                 "💡 <strong>Tap 》 top-left</strong> Language · User mode · Voice · Survey"
             ),
         },
         "日本語": {
             "어린이": (
-                "国立こども科学館AIガイドへようこそ！🎉<br><br>"
+                "<strong>科学館の観覧情報と展示体験をAIがご案内します。</strong><br><br>"
                 "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
-                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br><br>"
+                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br>"
                 "💡 <strong>左上 》</strong> 言語・ユーザーモード・音声・アンケート"
             ),
             "성인": (
-                "国立こども科学館AIガイドへようこそ！🎉<br><br>"
+                "<strong>科学館の観覧情報と展示体験をAIがご案内します。</strong><br><br>"
                 "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
-                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br><br>"
+                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br>"
                 "💡 <strong>左上 》</strong> 言語・ユーザーモード・音声・アンケート"
             ),
         },
         "中文": {
             "어린이": (
-                "欢迎使用国立儿童科学馆AI导览！🎉<br><br>"
+                "<strong>AI为您介绍科学馆参观信息与展览体验。</strong><br><br>"
                 "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
-                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br><br>"
+                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br>"
                 "💡 <strong>点击左上角 》</strong> 语言·用户模式·语音提问·问卷调查"
             ),
             "성인": (
-                "欢迎使用国立儿童科学馆AI导览！🎉<br><br>"
+                "<strong>AI为您介绍科学馆参观信息与展览体验。</strong><br><br>"
                 "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
-                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br><br>"
+                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br>"
                 "💡 <strong>点击左上角 》</strong> 语言·用户模式·语音提问·问卷调查"
             ),
         },
