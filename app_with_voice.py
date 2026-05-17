@@ -385,7 +385,7 @@ def main():
             "quick_exhibits": "🧩 전시관",
             "tab_guide": "🏙️ 과학관 안내",
             "tab_learning": "🥰 또만나 놀이터",
-            "chat_placeholder": "예) 공룡 화석은 몇 층인가요?",
+            "chat_placeholder": "예) 오늘의 프로그램은 무엇인가요?",
             "mode_lang_changed": "사용자 모드/언어 설정이 변경되었어요. 다음 답변부터 새 설정으로 안내할게요.",
             "program_explain": "전시해설",
             "program_show": "과학쇼",
@@ -592,10 +592,9 @@ def main():
         border: 2px solid #3a9e72 !important;
         box-shadow: 0 0 0 3px rgba(58,158,114,0.15) !important;
     }
-    /* 채팅 메시지 글씨 크기 */
-    [data-testid="stChatMessage"] p,
-    [data-testid="stChatMessage"] li,
-    [data-testid="stChatMessage"] span.stMarkdown { font-size: 15px !important; line-height: 1.75 !important; }
+    /* 메인 소개·채팅 메시지 글씨 크기 */
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li { font-size: 15px !important; line-height: 1.75 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -798,14 +797,9 @@ def main():
         # 설문조사를 사이드바 맨 하단으로 이동
         render_feedback(language_mode, user_mode)
 
-    st.header(ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["app_title"])
-
-    # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
-    _render_mascot_animation()
-
     language_mode = st.session_state.get("language_mode", "한국어")
 
-    # 시범적용 기간 배지
+    # 시범적용 기간 배지 — 제목 위, 가운데 정렬
     _pilot_badge = {
         "한국어": "📅 시범적용: 5.22.(금) ~ 5.31.(일)",
         "English": "📅 Pilot Period: May 22 ~ May 31",
@@ -813,12 +807,18 @@ def main():
         "中文": "📅 试运行：5月22日 〜 5月31日",
     }
     st.markdown(
-        f'<div style="display:inline-block; background:#e8f5e9; color:#2e7d32; '
-        f'padding:3px 12px; border-radius:20px; font-size:12px; font-weight:600; '
-        f'margin-bottom:4px; border:1px solid #c8e6c9;">'
-        f'{_pilot_badge.get(language_mode, _pilot_badge["한국어"])}</div>',
+        f'<div style="text-align:center; margin-bottom:2px;">'
+        f'<span style="display:inline-block; background:#e8f5e9; color:#2e7d32; '
+        f'padding:3px 14px; border-radius:20px; font-size:12px; font-weight:600; '
+        f'border:1px solid #c8e6c9;">'
+        f'{_pilot_badge.get(language_mode, _pilot_badge["한국어"])}</span></div>',
         unsafe_allow_html=True,
     )
+
+    st.header(ui_text.get(language_mode, ui_text["한국어"])["app_title"])
+
+    # 🎨 마스코트 워터마크 배경 (모든 모드에서 표시)
+    _render_mascot_animation()
 
     # 메인 화면 앱 소개 (탭 위에 표시) — 사용자 모드(어린이/성인)별로 톤 분기
     intro_enhanced = {
@@ -890,30 +890,6 @@ def main():
         st.info(ui_text.get(language_mode, ui_text["한국어"])["mode_lang_changed"])
         del st.session_state["mode_language_changed"]
 
-    with st.expander(ui_text.get(language_mode, ui_text["한국어"])["quick_menu"], expanded=False):
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_floor"], key="quick_floor"):
-                _queue_ga_event("quick_menu_click", {"category": "floor", "language": language_mode})
-                st.session_state["pending_user_input"] = faq_inputs["floor"]
-                st.rerun()
-        with c2:
-            if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_route"], key="quick_route"):
-                _queue_ga_event("quick_menu_click", {"category": "route", "language": language_mode})
-                st.session_state["pending_user_input"] = faq_inputs["route"]
-                st.rerun()
-        with c3:
-            if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_programs"], key="quick_programs"):
-                _queue_ga_event("quick_menu_click", {"category": "programs", "language": language_mode})
-                st.session_state["pending_user_input"] = faq_inputs["programs"]
-                st.session_state["pending_ui_program_buttons"] = True
-                st.rerun()
-        with c4:
-            if st.button(ui_text.get(language_mode, ui_text["한국어"])["quick_exhibits"], key="quick_exhibits"):
-                _queue_ga_event("quick_menu_click", {"category": "exhibits", "language": language_mode})
-                st.session_state["pending_user_input"] = faq_inputs["exhibits"]
-                st.rerun()
-    
     # Tab navigation
     if "active_tab" not in st.session_state:
         st.session_state.active_tab = "guide"
