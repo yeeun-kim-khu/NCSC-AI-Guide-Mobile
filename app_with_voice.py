@@ -582,21 +582,20 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 채팅 입력창 강조 */
+    /* 채팅 입력창 — 배경색은 내부 구조 제약으로 테두리만 강조 */
     [data-testid="stChatInput"] {
-        border: 2px solid #52b78880 !important;
+        border: 2px solid #52b78870 !important;
         border-radius: 16px !important;
-        background: #f4fbf7 !important;
         transition: border-color 0.2s, box-shadow 0.2s !important;
     }
     [data-testid="stChatInput"]:focus-within {
         border: 2px solid #3a9e72 !important;
-        box-shadow: 0 0 0 3px rgba(76,175,130,0.18) !important;
+        box-shadow: 0 0 0 3px rgba(58,158,114,0.15) !important;
     }
-    [data-testid="stChatInput"] textarea,
-    [data-testid="stChatInputTextArea"] {
-        background-color: #f4fbf7 !important;
-    }
+    /* 채팅 메시지 글씨 크기 */
+    [data-testid="stChatMessage"] p,
+    [data-testid="stChatMessage"] li,
+    [data-testid="stChatMessage"] span.stMarkdown { font-size: 15px !important; line-height: 1.75 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -825,66 +824,67 @@ def main():
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉\n\n"
-                "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
-                "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
-                "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
+                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br><br>"
+                "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
+                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br><br>"
+                "💡 <strong>왼쪽 위 》</strong> 언어·사용자 모드·음성 질문·설문조사"
             ),
             "성인": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉\n\n"
-                "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
-                "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
-                "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
+                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br><br>"
+                "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
+                "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br><br>"
+                "💡 <strong>왼쪽 위 》</strong> 언어·사용자 모드·음성 질문·설문조사"
             ),
         },
         "English": {
             "어린이": (
-                "Welcome to the NCSC AI Guide! 🎉\n\n"
-                "🏙️ Museum Guide - Floors · Programs · Fees · Reservations · Directions<br>"
-                "🥰 Again Zone - Exhibit quizzes, Q&A, AI science stories\n\n"
-                "💡 Tap 》top-left - Language · User mode · Voice · Survey"
+                "Welcome to the NCSC AI Guide! 🎉<br><br>"
+                "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
+                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br><br>"
+                "💡 <strong>Tap 》 top-left</strong> Language · User mode · Voice · Survey"
             ),
             "성인": (
-                "Welcome to the NCSC AI Guide! 🎉\n\n"
-                "🏙️ Museum Guide - Floors · Programs · Fees · Reservations · Directions<br>"
-                "🥰 Again Zone - Exhibit quizzes, Q&A, AI science stories\n\n"
-                "💡 Tap 》top-left - Language · User mode · Voice · Survey"
+                "Welcome to the NCSC AI Guide! 🎉<br><br>"
+                "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
+                "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br><br>"
+                "💡 <strong>Tap 》 top-left</strong> Language · User mode · Voice · Survey"
             ),
         },
         "日本語": {
             "어린이": (
-                "国立こども科学館AIガイドへようこそ！🎉\n\n"
-                "🏙️ 科学館案内 - フロア・プログラム・料金・予約・アクセス<br>"
-                "🥰 またねゾーン - 展示クイズ、質問、AIサイエンス童話\n\n"
-                "💡 左上 》- 言語・ユーザーモード・音声・アンケート"
+                "国立こども科学館AIガイドへようこそ！🎉<br><br>"
+                "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
+                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br><br>"
+                "💡 <strong>左上 》</strong> 言語・ユーザーモード・音声・アンケート"
             ),
             "성인": (
-                "国立こども科学館AIガイドへようこそ！🎉\n\n"
-                "🏙️ 科学館案内 - フロア・プログラム・料金・予約・アクセス<br>"
-                "🥰 またねゾーン - 展示クイズ、質問、AIサイエンス童話\n\n"
-                "💡 左上 》- 言語・ユーザーモード・音声・アンケート"
+                "国立こども科学館AIガイドへようこそ！🎉<br><br>"
+                "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
+                "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br><br>"
+                "💡 <strong>左上 》</strong> 言語・ユーザーモード・音声・アンケート"
             ),
         },
         "中文": {
             "어린이": (
-                "欢迎使用国立儿童科学馆AI导览！🎉\n\n"
-                "🏙️ 科学馆导览 - 楼层·节目·门票·预约·交通<br>"
-                "🥰 再次乐园 - 展品测验、提问、AI科学故事\n\n"
-                "💡 点击左上角 》- 语言·用户模式·语音提问·问卷调查"
+                "欢迎使用国立儿童科学馆AI导览！🎉<br><br>"
+                "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
+                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br><br>"
+                "💡 <strong>点击左上角 》</strong> 语言·用户模式·语音提问·问卷调查"
             ),
             "성인": (
-                "欢迎使用国立儿童科学馆AI导览！🎉\n\n"
-                "🏙️ 科学馆导览 - 楼层·节目·门票·预约·交통<br>"
-                "🥰 再次乐园 - 展品测验、提问、AI科学故事\n\n"
-                "💡 点击左上角 》- 语言·用户模式·语音提问·问卷调查"
+                "欢迎使用国立儿童科学馆AI导览！🎉<br><br>"
+                "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
+                "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br><br>"
+                "💡 <strong>点击左上角 》</strong> 语言·用户模式·语音提问·问卷调查"
             ),
         },
     }
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
-    if isinstance(intro_dict, dict):
-        st.markdown(intro_dict.get(user_mode, intro_dict["성인"]), unsafe_allow_html=True)
-    else:
-        st.markdown(intro_dict, unsafe_allow_html=True)
+    _intro_text = intro_dict.get(user_mode, intro_dict["성인"]) if isinstance(intro_dict, dict) else intro_dict
+    st.markdown(
+        f'<div style="font-size:15px; line-height:1.8;">{_intro_text}</div>',
+        unsafe_allow_html=True,
+    )
 
     if st.session_state.get("mode_language_changed"):
         st.info(ui_text.get(language_mode, ui_text["한국어"])["mode_lang_changed"])
