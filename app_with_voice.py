@@ -598,10 +598,7 @@ def main():
         border: none !important;
         outline: none !important;
     }
-    /* st.pills 가운데 정렬 + 크기 확대 */
-    [data-testid="stPills"] {
-        justify-content: center !important;
-    }
+    /* st.pills 크기 확대 */
     [data-testid="stPillsButton"] {
         padding: 14px 28px !important;
         font-size: 16px !important;
@@ -1233,7 +1230,7 @@ def main():
     # Footer — 시범운영 기간 문의처 (작고 눈에 띄지 않게)
     st.markdown("""
 <div style="text-align:center; padding:10px 0 12px; margin-top:12px;
-            border-top:1px solid #e8e8e8; font-size:11px; color:#aaa; line-height:1.8;">
+            font-size:11px; color:#aaa; line-height:1.8;">
   🛠️ 앱 사용 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
   <a href="https://open.kakao.com/o/gk8Bgjvi" target="_blank"
      style="color:#999; text-decoration:none; margin:0 6px;">
