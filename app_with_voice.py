@@ -572,8 +572,14 @@ def main():
     }
     [data-testid="stChatMessage"] { padding-top: 4px !important; padding-bottom: 4px !important; }
     .stChatMessage { margin-top: 4px !important; margin-bottom: 4px !important; }
-    footer { visibility: hidden; height: 0 !important; min-height: 0 !important; }
-    .main .block-container { padding-bottom: 1rem !important; }
+    footer { visibility: hidden !important; display: none !important; height: 0 !important; }
+    [data-testid="stFooter"] { display: none !important; }
+    #MainMenu { visibility: hidden !important; display: none !important; }
+    .main .block-container { padding-bottom: 0.5rem !important; }
+    .block-container { padding-bottom: 0.5rem !important; }
+    section.main > div.block-container { padding-bottom: 0.5rem !important; }
+    .stApp > footer { display: none !important; }
+    .appview-container > footer { display: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
