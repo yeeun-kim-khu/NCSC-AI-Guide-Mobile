@@ -216,6 +216,7 @@ def route_intent(text: str) -> str:
         "어디", "위치", "장소", "찾아", "가야", "가려", "가는",
         "얼마", "요금", "무료", "비용",
         "방법", "어떻게", "알려",
+        "체험", "어떤", "뭐가", "뭐야", "구성", "뭐 있", "있어", "있나", "소개", "설명",
     ]
     program_keywords = [
         "사이언스랩", "로봇쇼", "과학쇼", "전시해설", "천체투영관", "빛놀이터",
@@ -290,6 +291,10 @@ def classify_basic_category(message: str) -> str:
     _has_program = any(p in lowered for p in _wayfind_programs)
     if _has_program and (_has_wayfind or len(lowered.strip()) <= 15):
         return "program_wayfinding"
+
+    # 빛놀이터 체험 상세 안내 (교육 키워드보다 먼저 처리)
+    if "빛놀이터" in lowered and any(k in lowered for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐 있", "있어", "있나", "소개", "설명", "알려"]):
+        return "light_zone_detail"
 
     # 교육 키워드: reservation_guide보다 먼저 잡아야 교육예약이 아닌 교육안내로 분기
     if any(k in lowered for k in ["교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
@@ -439,6 +444,41 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
     if intent == "basic":
         category = classify_basic_category(message)
+        if category == "light_zone_detail":
+            return """✨ **빛놀이터** 체험 안내예요!
+
+**빛놀이터**는 '인터랙션으로 만나는 온대림'을 주제로 한 몰입형 실감 미디어 체험관이에요. 에코크리에이터(Eco Creator)가 되어 씨앗을 심고 숲을 키우는 스토리를 따라가요! 🌿
+
+---
+
+#### 🌱 체험 구성 (순서대로)
+
+**① 씨앗 전략** — 터치 인터랙션
+- 화면 속 씨앗을 터치해 바람·물·동물 등 다양한 이동 방식 체험
+- 민들레(바람), 연꽃(물), 제비꽃(자체 폭발), 도꼬마리(동물) 4가지 씨앗
+
+**② 씨앗 날리기** — 바람 센서·바닥 센서
+- 바람 센서에 불어서 민들레 씨앗 날리기 🌬️
+- 바닥의 식물 밟기 → 씨앗이 터져나오는 체험
+
+**③ 광합성 이야기** — 미디어 전시
+- 햇빛으로 에너지를 만드는 광합성 원리 탐구
+- 잎맥의 피보나치 수열, 프랙탈 구조 등 과학 원리 시각화
+
+**④ 숲 동물 찾기** — Catch & Collect 앱
+- 화면 속 동식물 19종을 카메라로 포착해 도감 완성
+- 반달곰과 함께 춤추며 씨앗 털기 🐻 (키넥트 체험)
+
+---
+
+#### ℹ️ 이용 안내
+- 📍 **위치**: 2층 빛놀이터
+- ⏰ **운영**: 09:30~16:30 (1시간 간격, 하루 8회차)
+- ⌛ **소요시간**: 약 15분
+- 👥 **정원**: 회차당 20명
+- 🎫 **예약**: 시간예약 필수 (현장 잔여석 현장 결제 가능)
+- 👶 **입장**: 36개월 미만 영아는 보호자 동반 필수"""
+
         if category == "program_wayfinding":
             lowered_msg = message.lower()
             if any(p in lowered_msg for p in ["사이언스랩", "사이언스 랩", "과학쇼", "과학 쇼", "과학극장", "로봇쇼", "로봇 쇼"]):
