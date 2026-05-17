@@ -920,18 +920,46 @@ def main():
             label_visibility="collapsed",
         )
     with _col_settings:
-        st.markdown("""
-<button onclick="(function(){
-    var b=document.querySelector('[data-testid=stSidebarCollapsedControl] button')
-      ||document.querySelector('button[data-testid=collapsedControl]')
-      ||document.querySelector('[data-testid=stSidebar] button');
-    if(b) b.click();
-})()" style="
-    background:transparent;border:1.5px solid #FF4B4B;border-radius:10px;
-    padding:10px 6px;font-size:13px;font-weight:700;cursor:pointer;
-    width:100%;color:#FF4B4B;white-space:nowrap;margin-top:2px;
-">⚙️ 설정</button>
-""", unsafe_allow_html=True)
+        components.html("""
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: transparent; display: flex; align-items: center; height: 100%; }
+button {
+    background: transparent;
+    border: 1.5px solid #FF4B4B;
+    border-radius: 20px;
+    padding: 0 8px;
+    height: 36px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #FF4B4B;
+    white-space: nowrap;
+    font-family: sans-serif;
+    width: 100%;
+}
+button:active { background: rgba(255,75,75,0.12); }
+</style>
+<button id="sb">⚙️ 설정</button>
+<script>
+document.getElementById('sb').onclick = function() {
+    var p = window.parent.document;
+    var btn = p.querySelector('[data-testid="stSidebarCollapsedControl"] button')
+           || p.querySelector('button[data-testid="collapsedControl"]')
+           || p.querySelector('[data-testid="stSidebarCollapsedControl"]');
+    if (!btn) {
+        Array.from(p.querySelectorAll('button')).some(function(b) {
+            var t = b.getAttribute('data-testid') || '';
+            var a = b.getAttribute('aria-label') || '';
+            if (t.toLowerCase().includes('sidebar') || a.toLowerCase().includes('sidebar') || a.toLowerCase().includes('open')) {
+                btn = b; return true;
+            }
+        });
+    }
+    if (btn) btn.click();
+};
+</script>
+""", height=46)
     if _selected_pill:
         _new_tab = "guide" if _selected_pill == tab_labels[0] else "learning"
         if _new_tab != st.session_state.active_tab:
