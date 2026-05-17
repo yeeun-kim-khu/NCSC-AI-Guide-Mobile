@@ -900,6 +900,11 @@ def main():
     _tab_learn_label = ui_text.get(language_mode, ui_text["한국어"])["tab_learning"]
     _settings_label = "⚙️ 설정"
     _tab_options = [_tab_guide_label, _tab_learn_label, _settings_label]
+
+    # Apply pending pills reset BEFORE widget renders (Streamlit forbids setting widget key after render)
+    if st.session_state.get("_reset_pills_to"):
+        st.session_state["tab_pills_widget"] = st.session_state.pop("_reset_pills_to")
+
     _tab_default = _tab_guide_label if st.session_state.active_tab == "guide" else _tab_learn_label
 
     _tab_hint = {
@@ -921,9 +926,9 @@ def main():
     st.divider()
 
     if _selected_pill == _settings_label:
-        # 설정 선택 시: pills를 현재 탭으로 되돌리고 사이드바 토글
+        # 설정 선택 시: 다음 run에서 pills를 현재 탭으로 되돌리고 사이드바 토글
         _active_label = _tab_guide_label if st.session_state.active_tab == "guide" else _tab_learn_label
-        st.session_state["tab_pills_widget"] = _active_label
+        st.session_state["_reset_pills_to"] = _active_label
         st.session_state["_toggle_sidebar"] = True
         st.rerun()
     elif _selected_pill == _tab_guide_label and st.session_state.active_tab != "guide":
