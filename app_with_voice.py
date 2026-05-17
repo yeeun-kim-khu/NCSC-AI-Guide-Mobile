@@ -385,7 +385,7 @@ def main():
             "quick_exhibits": "🧩 전시관",
             "tab_guide": "🏙️ 과학관 안내",
             "tab_learning": "🥰 또만나 놀이터",
-            "chat_placeholder": "질문을 입력해주세요!",
+            "chat_placeholder": "예) 공룡 화석은 몇 층인가요?",
             "mode_lang_changed": "사용자 모드/언어 설정이 변경되었어요. 다음 답변부터 새 설정으로 안내할게요.",
             "program_explain": "전시해설",
             "program_show": "과학쇼",
@@ -432,7 +432,7 @@ def main():
             "quick_exhibits": "🧩 Exhibits",
             "tab_guide": "🏙️ Guide",
             "tab_learning": "🥰 Again Zone",
-            "chat_placeholder": "Type your question",
+            "chat_placeholder": "e.g. What floor is the dinosaur exhibit?",
             "mode_lang_changed": "Your mode/language has changed. I will answer with the new settings from now on.",
             "program_explain": "Exhibit tour",
             "program_show": "Science show",
@@ -479,7 +479,7 @@ def main():
             "quick_exhibits": "🧩 展示",
             "tab_guide": "🏙️ 科学館案内",
             "tab_learning": "🥰 またねゾーン",
-            "chat_placeholder": "質問を入力してください",
+            "chat_placeholder": "例）恐竜の化石は何階ですか？",
             "mode_lang_changed": "モード/言語が変更されました。次の回答から新しい設定で案内します。",
             "program_explain": "展示解説",
             "program_show": "サイエンスショー",
@@ -526,7 +526,7 @@ def main():
             "quick_exhibits": "🧩 展馆",
             "tab_guide": "🏙️ 参观导览",
             "tab_learning": "🥰 再次乐园",
-            "chat_placeholder": "请输入你的问题",
+            "chat_placeholder": "例）恐龙化石在几楼？",
             "mode_lang_changed": "模式/语言已更改。从下一次回答开始将使用新设置。",
             "program_explain": "展览讲解",
             "program_show": "科学秀",
@@ -580,6 +580,23 @@ def main():
     section.main > div.block-container { padding-bottom: 0.5rem !important; }
     .stApp > footer { display: none !important; }
     .appview-container > footer { display: none !important; }
+    /* 메인 제목 굵게 */
+    h2 { font-weight: 900 !important; }
+    /* 채팅 입력창 강조 */
+    [data-testid="stChatInput"] {
+        border: 2px solid #52b78880 !important;
+        border-radius: 16px !important;
+        background: #f4fbf7 !important;
+        transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    [data-testid="stChatInput"]:focus-within {
+        border: 2px solid #3a9e72 !important;
+        box-shadow: 0 0 0 3px rgba(76,175,130,0.18) !important;
+    }
+    [data-testid="stChatInput"] textarea,
+    [data-testid="stChatInputTextArea"] {
+        background-color: #f4fbf7 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -789,19 +806,32 @@ def main():
 
     language_mode = st.session_state.get("language_mode", "한국어")
 
+    # 시범적용 기간 배지
+    _pilot_badge = {
+        "한국어": "📅 시범적용: 5.22.(금) ~ 5.31.(일)",
+        "English": "📅 Pilot Period: May 22 ~ May 31",
+        "日本語": "📅 試験運用：5月22日 〜 5月31日",
+        "中文": "📅 试运行：5月22日 〜 5月31日",
+    }
+    st.markdown(
+        f'<div style="display:inline-block; background:#e8f5e9; color:#2e7d32; '
+        f'padding:3px 12px; border-radius:20px; font-size:12px; font-weight:600; '
+        f'margin-bottom:4px; border:1px solid #c8e6c9;">'
+        f'{_pilot_badge.get(language_mode, _pilot_badge["한국어"])}</div>',
+        unsafe_allow_html=True,
+    )
+
     # 메인 화면 앱 소개 (탭 위에 표시) — 사용자 모드(어린이/성인)별로 톤 분기
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br>"
-                "📅 시범적용: 5.22.(금) ~ 5.31.(일)\n\n"
+                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉\n\n"
                 "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
                 "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
             ),
             "성인": (
-                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉<br>"
-                "📅 시범적용: 5.22.(금) ~ 5.31.(일)\n\n"
+                "국립어린이과학관 AI 가이드에 오신 걸 환영합니다! 🎉\n\n"
                 "🏙️ 과학관 안내 - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 또만나 놀이터 - 전시물 퀴즈, 질문, AI 과학동화\n\n"
                 "💡 왼쪽 위 》- 언어·사용자 모드·음성 질문·설문조사"
@@ -809,15 +839,13 @@ def main():
         },
         "English": {
             "어린이": (
-                "Welcome to the NCSC AI Guide! 🎉<br>"
-                "📅 Pilot Period: May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "Welcome to the NCSC AI Guide! 🎉\n\n"
                 "🏙️ Museum Guide - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 Again Zone - Exhibit quizzes, Q&A, AI science stories\n\n"
                 "💡 Tap 》top-left - Language · User mode · Voice · Survey"
             ),
             "성인": (
-                "Welcome to the NCSC AI Guide! 🎉<br>"
-                "📅 Pilot Period: May 22 (Fri) ~ May 31 (Sun)\n\n"
+                "Welcome to the NCSC AI Guide! 🎉\n\n"
                 "🏙️ Museum Guide - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 Again Zone - Exhibit quizzes, Q&A, AI science stories\n\n"
                 "💡 Tap 》top-left - Language · User mode · Voice · Survey"
@@ -825,15 +853,13 @@ def main():
         },
         "日本語": {
             "어린이": (
-                "国立こども科学館AIガイドへようこそ！🎉<br>"
-                "📅 試験運用：5月22日(金) 〜 5月31日(日)\n\n"
+                "国立こども科学館AIガイドへようこそ！🎉\n\n"
                 "🏙️ 科学館案内 - フロア・プログラム・料金・予約・アクセス<br>"
                 "🥰 またねゾーン - 展示クイズ、質問、AIサイエンス童話\n\n"
                 "💡 左上 》- 言語・ユーザーモード・音声・アンケート"
             ),
             "성인": (
-                "国立こども科学館AIガイドへようこそ！🎉<br>"
-                "📅 試験運用：5月22日(金) 〜 5月31日(日)\n\n"
+                "国立こども科学館AIガイドへようこそ！🎉\n\n"
                 "🏙️ 科学館案内 - フロア・プログラム・料金・予約・アクセス<br>"
                 "🥰 またねゾーン - 展示クイズ、質問、AIサイエンス童話\n\n"
                 "💡 左上 》- 言語・ユーザーモード・音声・アンケート"
@@ -841,16 +867,14 @@ def main():
         },
         "中文": {
             "어린이": (
-                "欢迎使用国立儿童科学馆AI导览！🎉<br>"
-                "📅 试运行：5月22日(周五) 〜 5月31日(周日)\n\n"
+                "欢迎使用国立儿童科学馆AI导览！🎉\n\n"
                 "🏙️ 科学馆导览 - 楼层·节目·门票·预约·交通<br>"
                 "🥰 再次乐园 - 展品测验、提问、AI科学故事\n\n"
                 "💡 点击左上角 》- 语言·用户模式·语音提问·问卷调查"
             ),
             "성인": (
-                "欢迎使用国立儿童科学馆AI导览！🎉<br>"
-                "📅 试运行：5月22日(周五) 〜 5月31日(周日)\n\n"
-                "🏙️ 科学馆导览 - 楼层·节目·门票·预约·交通<br>"
+                "欢迎使用国立儿童科学馆AI导览！🎉\n\n"
+                "🏙️ 科学馆导览 - 楼层·节目·门票·预约·交통<br>"
                 "🥰 再次乐园 - 展品测验、提问、AI科学故事\n\n"
                 "💡 点击左上角 》- 语言·用户模式·语音提问·问卷调查"
             ),
