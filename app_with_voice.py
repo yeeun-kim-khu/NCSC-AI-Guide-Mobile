@@ -902,7 +902,15 @@ def main():
     ]
     _tab_default = tab_labels[0] if st.session_state.active_tab == "guide" else tab_labels[1]
 
+    _tab_hint = {
+        "한국어": "👇 원하는 기능을 선택해주세요!",
+        "English": "👇 Select a feature to get started!",
+        "日本語": "👇 ご利用になる機能を選んでください！",
+        "中文": "👇 请选择您需要的功能！",
+    }.get(language_mode, "👇 원하는 기능을 선택해주세요!")
+
     st.divider()
+    st.markdown(f"<div style='text-align:center; font-size:15px; font-weight:600; margin-bottom:6px;'>{_tab_hint}</div>", unsafe_allow_html=True)
     _selected_pill = st.pills(
         "탭",
         options=tab_labels,
