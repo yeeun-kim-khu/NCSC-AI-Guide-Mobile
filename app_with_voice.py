@@ -572,6 +572,8 @@ def main():
     }
     [data-testid="stChatMessage"] { padding-top: 4px !important; padding-bottom: 4px !important; }
     .stChatMessage { margin-top: 4px !important; margin-bottom: 4px !important; }
+    footer { visibility: hidden; height: 0 !important; min-height: 0 !important; }
+    .main .block-container { padding-bottom: 1rem !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1219,7 +1221,7 @@ def main():
     st.markdown("""
 <div style="text-align:center; padding:10px 0 2px; margin-top:12px;
             border-top:1px solid #e8e8e8; font-size:11px; color:#aaa; line-height:1.8;">
-  🛠️ 시범운영(5.22~5.31) 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
+  🛠️ 앱 사용 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
   <a href="mailto:kyeun1@korea.kr"
      style="color:#999; text-decoration:none; margin:0 6px;">
     📧 kyeun1@korea.kr
