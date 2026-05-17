@@ -582,6 +582,8 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
+    /* 구분선 두껍게 */
+    hr { border-width: 3px !important; }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
