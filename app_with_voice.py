@@ -1229,7 +1229,7 @@ def main():
     
     # Footer — 시범운영 기간 문의처 (작고 눈에 띄지 않게)
     st.markdown("""
-<div style="text-align:center; padding:10px 0 2px; margin-top:12px;
+<div style="text-align:center; padding:10px 0 12px; margin-top:12px;
             border-top:1px solid #e8e8e8; font-size:11px; color:#aaa; line-height:1.8;">
   🛠️ 앱 사용 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
   <a href="https://open.kakao.com/o/gk8Bgjvi" target="_blank"
