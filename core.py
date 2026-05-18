@@ -229,6 +229,12 @@ def route_intent(text: str) -> str:
     if any(p in lowered for p in program_keywords) and any(s in lowered for s in faq_intent_signals):
         return "basic"
 
+    # 특정 요일/날짜 프로그램 조회 → basic (today_programs 핸들러)
+    if re.search(r"(이번\s*주|다음\s*주|[월화수목금토일]요일|내일|모레)", text) and any(
+        t in lowered for t in ["프로그램", "시간표", "일정", "행사", "뭐 해", "뭐해"]
+    ):
+        return "basic"
+
     # ── 4단계: 애매한 케이스 → LLM 의도 분류기 (0.3~0.5초) ──────────────────
     return classify_intent_with_llm(lowered)
 
@@ -363,7 +369,7 @@ def classify_basic_category(message: str) -> str:
         # 가장 구체적인 카테고리 먼저
         ("science_show", ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]),
         ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "천체투영관 시간", "투영관 시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노소어"]),
-        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "북적북적 과학관", "북적북적과학관"]),
+        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "북적북적 과학관", "북적북적과학관", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]),
         ("exhibit_guide",   ["전시관", "전시관 안내", "놀이터 안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터", "빛놀이터"]),
         ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
         # parking 은 admission_fee 앞에 위치 (주차비/주차료의 '비/료' 를 admission 이 먹지 않도록)
@@ -381,17 +387,66 @@ def classify_basic_category(message: str) -> str:
     return "operating_hours"
 
 def check_closed_date(target_date: datetime) -> tuple[bool, str]:
-    """특정 날짜의 휴관 여부 확인"""
+    """특정 날짜의 휴관 여부 확인 (2026년 기준)"""
     month_day = target_date.strftime("%m-%d")
     weekday = target_date.weekday()
     weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][weekday]
+    date_str = target_date.strftime("%m월 %d일")
 
-    if month_day == "01-01":
-        return (True, f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)은 휴관일(1월 1일)입니다.")
-    if weekday == 0:
-        return (True, f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)은 정기휴관일(월요일)입니다.")
+    monday_exceptions = {"02-16", "03-02", "05-25", "08-17", "10-05"}  # 공휴일 월요일 → 개관
+    holiday_closed = {"01-01", "02-17", "09-25"}  # 1월 1일, 설날 당일, 추석 당일
+    substitute_closed = {"02-19", "03-03", "05-26", "08-18", "10-06"}  # 대체 휴관일
 
-    return (False, f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)은 정상 운영일입니다.")
+    if month_day in holiday_closed:
+        label = "1월 1일" if month_day == "01-01" else "명절 당일"
+        return (True, f"{date_str}({weekday_kr}요일)은 휴관일({label})입니다.")
+    if month_day in substitute_closed:
+        return (True, f"{date_str}({weekday_kr}요일)은 대체 휴관일입니다.")
+    if weekday == 0 and month_day not in monday_exceptions:
+        return (True, f"{date_str}({weekday_kr}요일)은 정기휴관일(월요일)입니다.")
+
+    return (False, f"{date_str}({weekday_kr}요일)은 정상 운영일입니다.")
+
+def get_next_open_day(from_date: datetime) -> datetime:
+    """from_date 이후 첫 번째 개관일 반환"""
+    candidate = from_date + timedelta(days=1)
+    for _ in range(14):
+        is_closed, _ = check_closed_date(candidate)
+        if not is_closed:
+            return candidate
+        candidate += timedelta(days=1)
+    return candidate
+
+def parse_program_target_date(message: str, now_kst: datetime) -> tuple[datetime, bool]:
+    """메시지에서 프로그램 조회 대상 날짜 추출. (target_date, is_specific_day) 반환"""
+    lowered = message.lower()
+    weekday_map = [("월", 0), ("화", 1), ("수", 2), ("목", 3), ("금", 4), ("토", 5), ("일", 6)]
+
+    if "내일" in lowered:
+        return now_kst + timedelta(days=1), True
+    if "모레" in lowered:
+        return now_kst + timedelta(days=2), True
+
+    next_week = "다음주" in lowered or "다음 주" in lowered
+    this_week = "이번주" in lowered or "이번 주" in lowered
+
+    for name, day_num in weekday_map:
+        if (name + "요일") in lowered:
+            current_wd = now_kst.weekday()
+            days_ahead = day_num - current_wd
+            if next_week:
+                if days_ahead <= 0:
+                    days_ahead += 7
+                days_ahead += 7
+            elif this_week:
+                if days_ahead < 0:
+                    days_ahead += 7
+            else:
+                if days_ahead <= 0:
+                    days_ahead += 7
+            return now_kst + timedelta(days=days_ahead), True
+
+    return now_kst, False
 
 def get_today_status() -> str:
     """오늘 과학관 운영 상태 확인"""
@@ -1247,14 +1302,25 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
         if category == "today_programs":
             now_utc = datetime.now(timezone.utc)
             now_kst = now_utc + timedelta(hours=9)
-            month = now_kst.month
+            target_date, is_specific = parse_program_target_date(message, now_kst)
+            month = target_date.month
             month_label = f"{month}월"
-            weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][now_kst.weekday()]
-            is_weekend = now_kst.weekday() >= 5
+            weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][target_date.weekday()]
+            is_weekend = target_date.weekday() >= 5
+            date_label = "오늘" if not is_specific else f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)"
 
-            is_closed, closed_reason = check_closed_date(now_kst)
+            is_closed, closed_reason = check_closed_date(target_date)
             if is_closed:
-                return f"**{now_kst.strftime('%Y년 %m월 %d일')} {weekday_kr}요일이에요.**\n\n오늘은 휴관일이라 프로그램이 운영되지 않아요. 😢\n({closed_reason})\n\n다음에 방문하실 때 이용해주세요! 평일(화~금) 및 주말(토~일)에는 다양한 프로그램이 운영됩니다."
+                next_open = get_next_open_day(target_date)
+                next_open_wd = ["월", "화", "수", "목", "금", "토", "일"][next_open.weekday()]
+                return (
+                    f"**{target_date.strftime('%Y년 %m월 %d일')} {weekday_kr}요일이에요.**\n\n"
+                    f"{date_label}은 휴관일이라 프로그램이 운영되지 않아요. 😢\n"
+                    f"({closed_reason})\n\n"
+                    f"**다음 개관일은 {next_open.strftime('%m월 %d일')}({next_open_wd}요일)이에요! 🎉**\n"
+                    f"그날 방문하시면 과학쇼, 전시해설, 천체투영관 등 다양한 프로그램을 즐기실 수 있어요.\n"
+                    f"관람시간은 **09:30~17:30** (입장 마감 16:30)이에요."
+                )
 
             science_show_type = "사이언스랩" if month in [1, 3, 5, 7, 9, 11] else "로봇쇼"
             explanation_type = "헬로 다이노!" if month in [1, 3, 5, 7, 9, 11] else "짹짹 새 탐험대"
@@ -1402,9 +1468,9 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 시간: {", ".join(robot_tour_times)}
 - 참여: 자유 관람"""
 
-            return f"""**{now_kst.strftime('%Y년 %m월 %d일')} {weekday_kr}요일이에요!**
+            return f"""**{target_date.strftime('%Y년 %m월 %d일')} {weekday_kr}요일이에요!**
 
-오늘(요약) 프로그램 시간표를 안내해드릴게요. *(운영 상황에 따라 변동될 수 있어요.)*
+{date_label}(요약) 프로그램 시간표를 안내해드릴게요. *(운영 상황에 따라 변동될 수 있어요.)*
 
 #### 과학쇼 (1층 과학극장)
 - 오늘 프로그램: **{science_show_type}** {f"({science_lab_theme})" if science_lab_theme else ""} ({month_label} 기준)
