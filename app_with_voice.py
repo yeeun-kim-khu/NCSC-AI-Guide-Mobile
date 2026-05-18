@@ -39,17 +39,19 @@ def load_rag_db():
 
 
 # ---- Google Analytics 4 (Measurement Protocol, 서버사이드) ----
-GA_MEASUREMENT_ID = st.secrets.get("GA4_MEASUREMENT_ID", "G-7VS14G0T7P")
-_GA_API_SECRET = st.secrets.get("GA4_API_SECRET", "")
-_GA_MP_ENDPOINT = (
-    f"https://www.google-analytics.com/mp/collect"
-    f"?measurement_id={GA_MEASUREMENT_ID}&api_secret={_GA_API_SECRET}"
-)
+GA_MEASUREMENT_ID = "G-7VS14G0T7P"
 
 
 def _track_ga_event(event_name: str, params: dict | None = None) -> None:
     """GA4 Measurement Protocol로 이벤트 전송 (서버사이드, 브라우저 무관)."""
-    if not _GA_API_SECRET:
+    try:
+        api_secret = st.secrets["GA4_API_SECRET"]
+        measurement_id = st.secrets.get("GA4_MEASUREMENT_ID", GA_MEASUREMENT_ID)
+    except Exception as e:
+        print(f"[GA4] secrets 읽기 실패: {e}")
+        return
+    if not api_secret:
+        print("[GA4] API secret이 비어 있음")
         return
     safe_params = dict(params or {})
     for key in list(safe_params.keys()):
@@ -57,14 +59,22 @@ def _track_ga_event(event_name: str, params: dict | None = None) -> None:
             del safe_params[key]
     if "ga_client_id" not in st.session_state:
         st.session_state["ga_client_id"] = str(uuid.uuid4())
+    endpoint = (
+        f"https://www.google-analytics.com/mp/collect"
+        f"?measurement_id={measurement_id}&api_secret={api_secret}"
+    )
     payload = {
         "client_id": st.session_state["ga_client_id"],
         "events": [{"name": event_name, "params": safe_params}],
     }
     try:
-        _requests.post(_GA_MP_ENDPOINT, json=payload, timeout=2)
-    except Exception:
-        pass
+        resp = _requests.post(endpoint, json=payload, timeout=3)
+        if resp.status_code != 204:
+            print(f"[GA4] 응답 오류 {resp.status_code}: {resp.text[:200]}")
+        else:
+            print(f"[GA4] 이벤트 전송 성공: {event_name}")
+    except Exception as e:
+        print(f"[GA4] 요청 실패: {e}")
 
 
 def _queue_ga_event(event_name: str, params: dict | None = None) -> None:
