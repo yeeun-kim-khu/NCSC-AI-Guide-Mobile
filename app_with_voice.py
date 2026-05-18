@@ -941,16 +941,19 @@ def main():
     # 사이드바 토글 JS (설정 버튼 클릭 후 rerun 시 실행)
     if st.session_state.get("_toggle_sidebar"):
         del st.session_state["_toggle_sidebar"]
-        components.html("""<script>
-setTimeout(function(){
+        import random as _random
+        _nonce = _random.randint(0, 999999)
+        components.html(f"""<script>
+/* {_nonce} */
+setTimeout(function(){{
     var p = window.parent;
     var openBtn = p.document.querySelector('[data-testid="stSidebarCollapsedControl"] button');
-    if (openBtn) { openBtn.click(); return; }
+    if (openBtn) {{ openBtn.click(); return; }}
     var closeBtn = p.document.querySelector('[data-testid="stSidebarHeader"] button')
                 || p.document.querySelector('section[data-testid="stSidebar"] button[data-testid="stBaseButton-headerNoPadding"]')
                 || p.document.querySelector('section[data-testid="stSidebar"] > div > div > button');
     if (closeBtn) closeBtn.click();
-}, 300);
+}}, 300);
 </script>""", height=0)
 
     # Notify users to switch to guide tab when sidebar FAQ buttons are clicked
