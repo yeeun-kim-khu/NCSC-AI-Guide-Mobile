@@ -582,8 +582,8 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 구분선 두껍게 */
-    hr { border-width: 3px !important; }
+    /* 구분선 두껍게, 위아래 여백 최소화 */
+    hr { border-width: 3px !important; margin: 4px 0 !important; }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
@@ -820,13 +820,13 @@ def main():
     intro_enhanced = {
         "한국어": {
             "어린이": (
-                "<strong>과학관 관람 및 체험을 AI가 안내해드립니다.</strong><br><br>"
+                "<strong>과학관 안내부터 퀴즈·과학동화 생성까지, AI가 함께합니다!</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
                 "⚙️ <strong>설정</strong> - 언어·사용자 모드·음성·설문조사"
             ),
             "성인": (
-                "<strong>과학관 관람 및 체험을 AI가 안내해드립니다.</strong><br><br>"
+                "<strong>과학관 안내부터 퀴즈·과학동화 생성까지, AI가 함께합니다!</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
                 "⚙️ <strong>설정</strong> - 언어·사용자 모드·음성·설문조사"

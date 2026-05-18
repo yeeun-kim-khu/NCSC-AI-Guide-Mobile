@@ -1880,7 +1880,8 @@ def render_post_visit_learning(
     
     text = texts.get(language_mode, texts["한국어"])
 
-    st.markdown("**귀가 후에도 계속되는 전시 체험! 과학퀴즈 · 질문 · AI 과학동화**")
+    st.subheader(text["title"])
+    st.markdown(text["subtitle"])
 
     # Load CSV data once with session state persistence
     if "all_zone_rows" not in st.session_state:
