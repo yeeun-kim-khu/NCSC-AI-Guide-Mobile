@@ -12,6 +12,7 @@ from audio_recorder_streamlit import audio_recorder
 import base64
 import json
 import time
+import requests as _requests
 from datetime import datetime, timezone, timedelta
 
 from core import get_tools, route_intent, answer_rule_based, answer_rule_based_localized, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
@@ -37,49 +38,33 @@ def load_rag_db():
     return vector_db
 
 
-# ---- Google Analytics 4 ----
-GA_MEASUREMENT_ID = "G-7VS14G0T7P"
-
-# Google Analytics 코드 삽입 (스트림릿 iframe 우회 적용)
-ga_code = f"""
-<script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){{dataLayer.push(arguments);}}
-  gtag('js', new Date());
-
-  // 구글에게 진짜 앱 주소와 이름을 강제로 인식시킵니다
-  gtag('config', '{GA_MEASUREMENT_ID}', {{
-    page_location: 'https://ncsc-ai-guide-mobile.streamlit.app/',
-    page_title: '국립어린이과학관 AI 가이드'
-  }});
-</script>
-"""
-components.html(ga_code, width=1, height=1)
+# ---- Google Analytics 4 (Measurement Protocol, 서버사이드) ----
+GA_MEASUREMENT_ID = st.secrets.get("GA4_MEASUREMENT_ID", "G-7VS14G0T7P")
+_GA_API_SECRET = st.secrets.get("GA4_API_SECRET", "")
+_GA_MP_ENDPOINT = (
+    f"https://www.google-analytics.com/mp/collect"
+    f"?measurement_id={GA_MEASUREMENT_ID}&api_secret={_GA_API_SECRET}"
+)
 
 
 def _track_ga_event(event_name: str, params: dict | None = None) -> None:
-    """Send a custom event to GA4."""
+    """GA4 Measurement Protocol로 이벤트 전송 (서버사이드, 브라우저 무관)."""
+    if not _GA_API_SECRET:
+        return
     safe_params = dict(params or {})
     for key in list(safe_params.keys()):
         if key.lower() in ("user_id", "email", "name", "content", "message", "query"):
             del safe_params[key]
-    params_json = json.dumps(safe_params, ensure_ascii=False)
-    script = f"""
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){{dataLayer.push(arguments);}}
-      gtag('js', new Date());
-      gtag('config', '{GA_MEASUREMENT_ID}', {{
-        page_location: 'https://ncsc-ai-guide-mobile.streamlit.app/',
-        page_title: '국립어린이과학관 AI 가이드',
-        send_page_view: false
-      }});
-      gtag('event', '{event_name}', {params_json});
-    </script>
-    """
-    components.html(script, width=0, height=0)
+    if "ga_client_id" not in st.session_state:
+        st.session_state["ga_client_id"] = str(uuid.uuid4())
+    payload = {
+        "client_id": st.session_state["ga_client_id"],
+        "events": [{"name": event_name, "params": safe_params}],
+    }
+    try:
+        _requests.post(_GA_MP_ENDPOINT, json=payload, timeout=2)
+    except Exception:
+        pass
 
 
 def _queue_ga_event(event_name: str, params: dict | None = None) -> None:
