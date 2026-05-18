@@ -946,13 +946,10 @@ setTimeout(function(){
     var p = window.parent;
     var openBtn = p.document.querySelector('[data-testid="stSidebarCollapsedControl"] button');
     if (openBtn) { openBtn.click(); return; }
-    var sidebar = p.document.querySelector('section[data-testid="stSidebar"]');
-    if (sidebar) {
-        var closeBtn = sidebar.querySelector('button[data-testid="stBaseButton-headerNoPadding"]')
-                    || sidebar.querySelector('button[kind="header"]')
-                    || sidebar.querySelector('button');
-        if (closeBtn) closeBtn.click();
-    }
+    var closeBtn = p.document.querySelector('[data-testid="stSidebarHeader"] button')
+                || p.document.querySelector('section[data-testid="stSidebar"] button[data-testid="stBaseButton-headerNoPadding"]')
+                || p.document.querySelector('section[data-testid="stSidebar"] > div > div > button');
+    if (closeBtn) closeBtn.click();
 }, 300);
 </script>""", height=0)
 
