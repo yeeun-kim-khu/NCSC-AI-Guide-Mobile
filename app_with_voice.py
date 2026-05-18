@@ -823,13 +823,13 @@ def main():
                 "<strong>과학관 관람 및 체험을 AI가 안내해드립니다.</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
-                "<strong>⚙️ 설정</strong> 버튼에서 언어·사용자 모드·음성·설문조사"
+                "⚙️ <strong>설정</strong> - 언어·사용자 모드·음성·설문조사"
             ),
             "성인": (
                 "<strong>과학관 관람 및 체험을 AI가 안내해드립니다.</strong><br><br>"
                 "🏙️ <strong>과학관 안내</strong> - 층별·프로그램·관람료·예약·길찾기<br>"
                 "🥰 <strong>또만나 놀이터</strong> - 전시물 퀴즈, 질문, AI 과학동화<br>"
-                "<strong>⚙️ 설정</strong> 버튼에서 언어·사용자 모드·음성·설문조사"
+                "⚙️ <strong>설정</strong> - 언어·사용자 모드·음성·설문조사"
             ),
         },
         "English": {
@@ -837,13 +837,13 @@ def main():
                 "<strong>Your AI guide for museum visits and exhibit experiences.</strong><br><br>"
                 "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
-                "<strong>⚙️ Settings</strong> button: Language · User mode · Voice · Survey"
+                "⚙️ <strong>Settings</strong> - Language · User mode · Voice · Survey"
             ),
             "성인": (
                 "<strong>Your AI guide for museum visits and exhibit experiences.</strong><br><br>"
                 "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
-                "<strong>⚙️ Settings</strong> button: Language · User mode · Voice · Survey"
+                "⚙️ <strong>Settings</strong> - Language · User mode · Voice · Survey"
             ),
         },
         "日本語": {
@@ -851,13 +851,13 @@ def main():
                 "<strong>科学館の観覧と体験をAIがご案内します。</strong><br><br>"
                 "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
                 "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br>"
-                "<strong>⚙️ 設定</strong>ボタンから 言語・ユーザーモード・音声・アンケート"
+                "⚙️ <strong>設定</strong> - 言語・ユーザーモード・音声・アンケート"
             ),
             "성인": (
                 "<strong>科学館の観覧と体験をAIがご案内します。</strong><br><br>"
                 "🏙️ <strong>科学館案内</strong> - フロア・プログラム・料金・予約・アクセス<br>"
                 "🥰 <strong>またねゾーン</strong> - 展示クイズ、質問、AIサイエンス童話<br>"
-                "<strong>⚙️ 設定</strong>ボタンから 言語・ユーザーモード・音声・アンケート"
+                "⚙️ <strong>設定</strong> - 言語・ユーザーモード・音声・アンケート"
             ),
         },
         "中文": {
@@ -865,13 +865,13 @@ def main():
                 "<strong>AI为您提供科学馆参观及体验导览。</strong><br><br>"
                 "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
                 "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br>"
-                "<strong>⚙️ 设置</strong>按钮: 语言·用户模式·语音提问·问卷调查"
+                "⚙️ <strong>设置</strong> - 语言·用户模式·语音提问·问卷调查"
             ),
             "성인": (
                 "<strong>AI为您提供科学馆参观及体验导览。</strong><br><br>"
                 "🏙️ <strong>科学馆导览</strong> - 楼层·节目·门票·预约·交通<br>"
                 "🥰 <strong>再次乐园</strong> - 展品测验、提问、AI科学故事<br>"
-                "<strong>⚙️ 设置</strong>按钮: 语言·用户模式·语音提问·问卷调查"
+                "⚙️ <strong>设置</strong> - 语言·用户模式·语音提问·问卷调查"
             ),
         },
     }
