@@ -234,12 +234,12 @@ def _render_privacy_notice_gate() -> None:
         chosen_lang = _LANG_OPTIONS[lang_label]
         notice = _NOTICE[chosen_lang]
 
-        st.markdown("<div style='margin-top: -10px; text-align: center;'>--------------------</div>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin-top: -10px; border: 1px solid #ccc;'>", unsafe_allow_html=True)
         st.markdown(
             f"<div style='line-height:2.0;'>{notice['body']}</div>",
             unsafe_allow_html=True,
         )
-        st.markdown("<div style='text-align: center;'>--------------------</div>", unsafe_allow_html=True)
+        st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
         agreed = st.checkbox(notice["checkbox"], key="popup_agreed")
         if agreed and st.button(notice["button"], type="primary", use_container_width=True):
             _ack(chosen_lang)
