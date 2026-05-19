@@ -382,6 +382,7 @@ def main():
             "tab_learning": "🥰 또만나 놀이터",
             "chat_placeholder": "예) 오늘의 프로그램은 무엇인가요?",
             "mode_lang_changed": "사용자 모드/언어 설정이 변경되었어요. 다음 답변부터 새 설정으로 안내할게요.",
+            "settings_label": "⚙️ 설정",
             "program_explain": "전시해설",
             "program_show": "과학쇼",
             "program_planet": "천체투영관",
@@ -427,8 +428,9 @@ def main():
             "quick_exhibits": "🧩 Exhibits",
             "tab_guide": "🏙️ Guide",
             "tab_learning": "🥰 Again Zone",
-            "chat_placeholder": "e.g. What programs are available today?",
-            "mode_lang_changed": "Your mode/language has changed. I will answer with the new settings from now on.",
+            "chat_placeholder": "e.g., What programs are available today?",
+            "mode_lang_changed": "User mode/language settings changed. Responses will use the new settings from now on.",
+            "settings_label": "⚙️ Settings",
             "program_explain": "Exhibit tour",
             "program_show": "Science show",
             "program_planet": "Planetarium",
@@ -476,6 +478,7 @@ def main():
             "tab_learning": "🥰 またねゾーン",
             "chat_placeholder": "例）今日のプログラムは何ですか？",
             "mode_lang_changed": "モード/言語が変更されました。次の回答から新しい設定で案内します。",
+            "settings_label": "⚙️ 設定",
             "program_explain": "展示解説",
             "program_show": "サイエンスショー",
             "program_planet": "プラネタリウム",
@@ -521,8 +524,9 @@ def main():
             "quick_exhibits": "🧩 展馆",
             "tab_guide": "🏙️ 参观导览",
             "tab_learning": "🥰 再次乐园",
-            "chat_placeholder": "例）今天有哪些活动项目？",
-            "mode_lang_changed": "模式/语言已更改。从下一次回答开始将使用新设置。",
+            "chat_placeholder": "例) 今天有什么节目?",
+            "mode_lang_changed": "用户模式/语言设置已更改。从下一个回答开始，将使用新设置进行引导。",
+            "settings_label": "⚙️ 设置",
             "program_explain": "展览讲解",
             "program_show": "科学秀",
             "program_planet": "天象馆",
@@ -873,7 +877,7 @@ def main():
     intro_dict = intro_enhanced.get(language_mode, intro_enhanced["한국어"])
     _intro_text = intro_dict.get(user_mode, intro_dict["성인"]) if isinstance(intro_dict, dict) else intro_dict
     st.markdown(
-        f'<div style="font-size:19px; line-height:1.8;">{_intro_text}</div>',
+        f'<div style="font-size:17px; line-height:1.8;">{_intro_text}</div>',
         unsafe_allow_html=True,
     )
 
@@ -893,7 +897,7 @@ def main():
 
     _tab_guide_label = ui_text.get(language_mode, ui_text["한국어"])["tab_guide"]
     _tab_learn_label = ui_text.get(language_mode, ui_text["한국어"])["tab_learning"]
-    _settings_label = "⚙️ 설정"
+    _settings_label = ui_text.get(language_mode, ui_text["한국어"])["settings_label"]
     _tab_options = [_tab_guide_label, _tab_learn_label, _settings_label]
 
     # Apply pending pills reset BEFORE widget renders (Streamlit forbids setting widget key after render)
