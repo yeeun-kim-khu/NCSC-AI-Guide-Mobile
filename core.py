@@ -3202,13 +3202,119 @@ def fetch_latest_notices(limit: int = 5) -> str:
     return f"Observation: {get_latest_notices_text(limit=limit)}"
 
 
+@tool
+def get_education_programs_by_date(query_date: str = "오늘") -> str:
+    """
+    특정 날짜 또는 이번 주의 교육 프로그램 일정을 반환합니다.
+
+    [언제 사용하는가]
+    - "오늘 교육프로그램 뭐야?", "이번 주 수업 있어?", "토요일 교육 알려줘" 같은 질문
+
+    [입력]
+    - query_date: "오늘", "이번 주", "토요일", "5월 23일" 등
+    """
+    now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
+    today = now_kst.date()
+    weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][today.weekday()]
+
+    csv_path = os.path.join(os.path.dirname(__file__), "data", "교육프로그램.csv")
+    if not os.path.exists(csv_path):
+        return "교육프로그램 데이터를 찾을 수 없습니다."
+
+    try:
+        df = None
+        for enc in ("utf-8-sig", "utf-8", "cp949"):
+            try:
+                df = pd.read_csv(csv_path, encoding=enc)
+                break
+            except Exception:
+                continue
+        if df is None or df.empty:
+            return "교육프로그램 데이터를 읽을 수 없습니다."
+        df.columns = [str(c).strip() for c in df.columns]
+
+        # 이번 주 토요일/일요일 날짜 계산
+        days_to_sat = (5 - today.weekday()) % 7
+        days_to_sun = (6 - today.weekday()) % 7
+        this_sat = today + timedelta(days=days_to_sat)
+        this_sun = today + timedelta(days=days_to_sun)
+
+        results = []
+        results.append(f"[오늘: {today.month}월 {today.day}일 ({weekday_kr}요일)]")
+        results.append(f"[이번 주 토요일: {this_sat.month}월 {this_sat.day}일 / 일요일: {this_sun.month}월 {this_sun.day}일]")
+        results.append("")
+
+        today_programs = []
+        this_week_programs = []
+
+        for _, row in df.iterrows():
+            program = str(row.get("프로그램명", "")).strip()
+            if not program or program == "nan":
+                continue
+            sub = str(row.get("세부프로그램명", "")).strip()
+            dates_str = str(row.get("교육일", "")).strip()
+            weekday_str = str(row.get("수업요일", "")).strip()
+            time_slot = str(row.get("수업시간", "")).strip().replace("~", "-")
+            target = str(row.get("교육대상", "")).strip()
+            fee = str(row.get("교육비", "")).strip()
+            apply_period = str(row.get("신청기간", "")).strip().replace("~", "-")
+
+            title = program + (f" - {sub}" if sub and sub != "nan" else "")
+
+            def _date_in_schedule(date_obj, schedule_str):
+                """CSV 교육일 문자열에 특정 날짜가 포함되어 있는지 확인.
+                형식 예: '5월 9일/16일/23일/30일' 또는 '6월 6일/13일/20일/27일'"""
+                import re as _re
+                # "N월" 으로 월 확인
+                month_match = _re.search(r'(\d+)월', schedule_str)
+                if not month_match:
+                    return False
+                sched_month = int(month_match.group(1))
+                if sched_month != date_obj.month:
+                    return False
+                # 일자 목록 추출 (숫자+일 패턴)
+                days = [int(d) for d in _re.findall(r'(\d+)일', schedule_str)]
+                return date_obj.day in days
+
+            is_today = _date_in_schedule(today, dates_str)
+            is_this_sat = _date_in_schedule(this_sat, dates_str)
+            is_this_sun = _date_in_schedule(this_sun, dates_str)
+
+            entry = f"- **{title}** | 대상: {target} | 시간: {time_slot} | 교육비: {fee} | 신청: {apply_period}"
+
+            if is_today:
+                today_programs.append(entry)
+            if is_this_sat:
+                this_week_programs.append(f"[토요일 {this_sat.month}월 {this_sat.day}일] {entry}")
+            if is_this_sun:
+                this_week_programs.append(f"[일요일 {this_sun.month}월 {this_sun.day}일] {entry}")
+
+        if today_programs:
+            results.append(f"✅ **오늘({weekday_kr}요일) 교육 프로그램:**")
+            results.extend(today_programs)
+        else:
+            results.append(f"오늘({weekday_kr}요일)은 정기 교육 프로그램이 없습니다.")
+
+        results.append("")
+        if this_week_programs:
+            results.append("📅 **이번 주 예정 프로그램:**")
+            results.extend(this_week_programs)
+        else:
+            results.append("이번 주 예정된 프로그램 정보가 없습니다.")
+
+        return "\n".join(results)
+
+    except Exception as e:
+        return f"교육프로그램 조회 오류: {e}"
+
+
 def get_tools():
     """LangChain agent에서 사용할 도구 목록 반환"""
     return [
         check_museum_closed_date,
-        # search_directions,  # 제거: LLM이 직접 출발지를 듣고 경로를 안내하도록 변경
         search_csc_live_info,
         fetch_latest_notices,
+        get_education_programs_by_date,
     ]
 
 # ============================================================================
@@ -3313,6 +3419,8 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 5. **주차 안내**: 국립어린이과학관은 **전용 주차장이 없습니다**. "주차 가능", "주차장 마련" 같은 말은 절대 하지 말 것. 자가용 이용 권장 금지. 대중교통 이용 안내 필수.
 
 6. **버스 노선·소요시간** → 반드시 search_directions 도구 사용. 도구 없이 노선번호·시간 추측 금지.
+
+7. **오늘/이번 주 교육프로그램** → 반드시 `get_education_programs_by_date` 도구를 호출하세요. 도구 결과를 바탕으로 오늘 날짜와 비교하여 정확히 안내하세요.
 
 === 국립어린이과학관 위치 정보 (고정값) ===
 **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
