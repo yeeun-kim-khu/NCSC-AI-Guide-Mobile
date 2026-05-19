@@ -1138,6 +1138,7 @@ setTimeout(function(){{
                 rag_context = ""
                 result = None
                 answer = ""
+                _stream_messages = None
 
                 with st.chat_message("assistant"):
                     if intent in ["notice", "basic"]:
@@ -1172,6 +1173,8 @@ setTimeout(function(){{
                         rule_sources = [s for s in dict.fromkeys([s for s in rule_sources if s])]
                     else:
                         # LLM + RAG + Crawling 엔진 동작
+                        _stream_messages = None
+                        _stream_config = None
                         with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
                             if st.session_state.get("directions_origin"):
                                 origin = st.session_state.get("directions_origin")
@@ -1230,9 +1233,7 @@ setTimeout(function(){{
                                 _asked_clarification = True
 
                             if not _asked_clarification:
-                                # 시스템 프롬프트와 RAG 컨텍스트를 시스템 메시지로 추가
                                 config = {"configurable": {"thread_id": st.session_state.thread_id}}
-                                # 외국어 모드에서 FAQ 트리거가 한국어일 경우에도 LLM이 반드시 대상 언어로 답하도록 강제 프리픽스 추가
                                 llm_user_input = user_input
                                 if language_mode != "한국어":
                                     _lang_override = {
@@ -1243,13 +1244,13 @@ setTimeout(function(){{
                                     if _lang_override:
                                         llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
                                 messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
-                                # 이전 대화 내용 포함 (최근 10개 메시지, user/assistant만)
                                 for hist_msg in st.session_state.messages[-10:]:
                                     if hist_msg["role"] in ("user", "assistant"):
                                         messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
                                 messages.append({"role": "user", "content": llm_user_input})
-                                result = agent.invoke({"messages": messages}, config=config)
-                                answer = result["messages"][-1].content
+                                _stream_messages = messages
+                                _stream_config = config
+
                         log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
                         _track_ga_event("answer_delivered", {
                             "intent": intent,
@@ -1258,7 +1259,24 @@ setTimeout(function(){{
                             "user_mode": user_mode
                         })
 
-                    st.markdown(answer)
+                        # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
+                        if _stream_messages is not None:
+                            def _llm_stream():
+                                for msg, metadata in agent.stream(
+                                    {"messages": _stream_messages},
+                                    config=_stream_config,
+                                    stream_mode="messages"
+                                ):
+                                    if (
+                                        hasattr(msg, "content") and msg.content
+                                        and metadata.get("langgraph_node") == "agent"
+                                        and not getattr(msg, "tool_calls", None)
+                                    ):
+                                        yield msg.content
+                            answer = st.write_stream(_llm_stream())
+
+                    if _stream_messages is None:
+                        st.markdown(answer)
                     if language_mode != "한국어" and debug_show_ko and ko_original:
                         st.caption(f"KO: {ko_original}")
                     if language_mode != "한국어" and debug_backtranslate:
