@@ -166,6 +166,12 @@ def route_intent(text: str) -> str:
     ):
         return "llm_agent"
 
+    # 오늘/이번 주/특정 날짜 교육프로그램 조회 → LLM 필요 (날짜 계산)
+    if re.search(r"(오늘|이번\s*주|이번주|\d+월\s*\d+일|\d+일)", text) and any(
+        t in lowered for t in ["교육", "프로그램", "수업", "교실"]
+    ):
+        return "llm_agent"
+
     # 천체투영관 줄거리/내용 → RAG 필요
     if "천체투영관" in lowered and any(t in lowered for t in ["뭐", "내용", "줄거리", "어떤", "코코몽", "키츠", "다이노소어", "바니"]):
         return "llm_agent"
@@ -3080,13 +3086,13 @@ def _load_education_programs_text() -> str:
                     day_str = f" ({p['weekday']})" if p["weekday"] and p["weekday"] != "nan" else ""
                     lines.append(f"- 교육일: {p['dates']}{day_str}")
                 if p["time_slot"] and p["time_slot"] != "nan":
-                    lines.append(f"- 시간: {p['time_slot']}")
+                    lines.append(f"- 시간: {p['time_slot'].replace('~', '-')}")
                 if p["location"] and p["location"] != "nan":
                     lines.append(f"- 장소: {p['location']}")
                 if p["fee"] and p["fee"] != "nan":
                     lines.append(f"- 교육비: {p['fee']}")
                 if p["apply_period"] and p["apply_period"] != "nan":
-                    lines.append(f"- 신청기간: {p['apply_period']}")
+                    lines.append(f"- 신청기간: {p['apply_period'].replace('~', '-')}")
                 if p["main_content"] and p["main_content"] != "nan":
                     for part in p["main_content"].split(" / "):
                         part = part.strip()
