@@ -1262,17 +1262,28 @@ setTimeout(function(){{
                         # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
                         if _stream_messages is not None:
                             def _llm_stream():
-                                for msg, metadata in agent.stream(
-                                    {"messages": _stream_messages},
-                                    config=_stream_config,
-                                    stream_mode="messages"
-                                ):
-                                    if (
-                                        hasattr(msg, "content") and msg.content
-                                        and metadata.get("langgraph_node") == "agent"
-                                        and not getattr(msg, "tool_calls", None)
+                                try:
+                                    for msg, metadata in agent.stream(
+                                        {"messages": _stream_messages},
+                                        config=_stream_config,
+                                        stream_mode="messages"
                                     ):
-                                        yield msg.content
+                                        if (
+                                            hasattr(msg, "content")
+                                            and isinstance(msg.content, str)
+                                            and msg.content
+                                            and metadata.get("langgraph_node") == "agent"
+                                            and not getattr(msg, "tool_calls", None)
+                                        ):
+                                            yield msg.content
+                                except Exception as _e:
+                                    print(f"Streaming error, fallback to invoke: {_e}")
+                                    try:
+                                        _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
+                                        yield _fb["messages"][-1].content
+                                    except Exception as _e2:
+                                        print(f"Invoke fallback failed: {_e2}")
+                                        yield "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔"
                             answer = st.write_stream(_llm_stream())
 
                     if _stream_messages is None:
