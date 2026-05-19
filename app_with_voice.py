@@ -1203,6 +1203,7 @@ setTimeout(function(){{
                                 and len(user_input.strip().split()) <= 2
                                 and retrieved_docs
                                 and retrieved_docs[0].metadata.get("title", "").strip() not in ("", "nan")
+                                and not any(t in user_input for t in ["오늘", "이번", "내일", "어제", "지금", "요즘", "최근", "언제", "today", "now"])
                             ):
                                 _top = retrieved_docs[0]
                                 _title = _top.metadata.get("title", "")
