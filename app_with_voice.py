@@ -234,7 +234,7 @@ def _render_privacy_notice_gate() -> None:
         chosen_lang = _LANG_OPTIONS[lang_label]
         notice = _NOTICE[chosen_lang]
 
-        st.markdown("<div style='margin-top: -10px;'>---</div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: -5px;'>---</div>", unsafe_allow_html=True)
         st.markdown(
             f"<div style='line-height:2.0;'>{notice['body']}</div>",
             unsafe_allow_html=True,
