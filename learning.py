@@ -1617,11 +1617,9 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
             resp = requests.post(url, headers=headers, json=payload, timeout=90)
             if resp.status_code == 200 and resp.content:
                 return resp.content
-            print(f"ElevenLabs TTS 오류: status={resp.status_code}, body={resp.text[:500]}")
-            return None
+            print(f"ElevenLabs TTS 오류 (OpenAI fallback): status={resp.status_code}, body={resp.text[:200]}")
         except Exception as e:
-            print(f"ElevenLabs TTS 호출 오류: {e}")
-            return None
+            print(f"ElevenLabs TTS 호출 오류 (OpenAI fallback): {e}")
 
     ncp_key_id = os.environ.get("X_NCP_APIGW_API_KEY_ID") or os.environ.get("X-NCP-APIGW-API-KEY-ID")
     ncp_key = os.environ.get("X_NCP_APIGW_API_KEY") or os.environ.get("X-NCP-APIGW-API-KEY")
@@ -1649,11 +1647,9 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
             resp = requests.post(url, headers=headers, data=data, timeout=60)
             if resp.status_code == 200 and resp.content:
                 return resp.content
-            print(f"네이버 TTS 오류: status={resp.status_code}, body={resp.text[:500]}")
-            return None
+            print(f"네이버 TTS 오류 (OpenAI fallback): status={resp.status_code}, body={resp.text[:200]}")
         except Exception as e:
-            print(f"네이버 TTS 호출 오류: {e}")
-            return None
+            print(f"네이버 TTS 호출 오류 (OpenAI fallback): {e}")
 
     voice_map = {
         "한국어": "alloy",
