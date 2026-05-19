@@ -1279,7 +1279,6 @@ setTimeout(function(){{
                                             and metadata.get("langgraph_node") == "agent"
                                             and not getattr(msg, "tool_calls", None)
                                         ):
-                                            nonlocal _first_token
                                             if _first_token:
                                                 _gen_placeholder.empty()
                                                 _first_token = False
