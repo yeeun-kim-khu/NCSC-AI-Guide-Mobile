@@ -1262,7 +1262,10 @@ setTimeout(function(){{
 
                         # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
                         if _stream_messages is not None:
+                            _gen_placeholder = st.empty()
+                            _gen_placeholder.markdown("_💭 답변을 생성하고 있어요..._")
                             def _llm_stream():
+                                _first_token = True
                                 try:
                                     for msg, metadata in agent.stream(
                                         {"messages": _stream_messages},
@@ -1276,9 +1279,14 @@ setTimeout(function(){{
                                             and metadata.get("langgraph_node") == "agent"
                                             and not getattr(msg, "tool_calls", None)
                                         ):
+                                            nonlocal _first_token
+                                            if _first_token:
+                                                _gen_placeholder.empty()
+                                                _first_token = False
                                             yield msg.content
                                 except Exception as _e:
                                     print(f"Streaming error, fallback to invoke: {_e}")
+                                    _gen_placeholder.empty()
                                     try:
                                         _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
                                         yield _fb["messages"][-1].content
@@ -1286,6 +1294,7 @@ setTimeout(function(){{
                                         print(f"Invoke fallback failed: {_e2}")
                                         yield "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔"
                             answer = st.write_stream(_llm_stream())
+                            _gen_placeholder.empty()
 
                     if _stream_messages is None:
                         st.markdown(answer)
@@ -1331,7 +1340,7 @@ setTimeout(function(){{
                         } else {
                             p.scrollTo({ top: p.document.body.scrollHeight, behavior: 'smooth' });
                         }
-                    }, 300);
+                    }, 700);
                 })();
                 </script>""", height=0)
 

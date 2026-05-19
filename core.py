@@ -2643,6 +2643,15 @@ def load_csv_data():
                         text_parts.append(f"수업시간: {time_slot}")
                     if location and location != "nan":
                         text_parts.append(f"장소: {location}")
+                        # 학년별 장소를 별도 줄로 분리 (예: "1층 어린이교실(유아·초1) / 2층 창작교실4(초2~4)")
+                        import re as _re
+                        for part in location.split("/"):
+                            part = part.strip()
+                            bracket = _re.search(r'\(([^)]+)\)', part)
+                            room = _re.sub(r'\([^)]*\)', '', part).strip()
+                            if bracket and room:
+                                grade_label = bracket.group(1).strip()
+                                text_parts.append(f"{grade_label} 수업 장소: {room}")
                     if fee and fee != "nan":
                         text_parts.append(f"교육비: {fee}")
                     if capacity and capacity != "nan":
