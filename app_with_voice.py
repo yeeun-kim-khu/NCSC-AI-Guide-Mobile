@@ -236,7 +236,7 @@ def _render_privacy_notice_gate() -> None:
 
         st.markdown("<hr style='margin-top: -10px; border: 1px solid #ccc;'>", unsafe_allow_html=True)
         st.markdown(
-            f"<div style='line-height:2.0;'>{notice['body']}</div>",
+            f"<div style='line-height:2.0; font-size: 16px;'>{notice['body']}</div>",
             unsafe_allow_html=True,
         )
         st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
