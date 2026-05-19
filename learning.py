@@ -1570,7 +1570,7 @@ def parse_mood_and_bgm(llm_response: str) -> tuple[str, str, str]:
 
 
 def text_to_audiobook(story_text, language="한국어", voice_override=None, speed_override=None):
-    """텍스트를 오디오북으로 변환 (ElevenLabs > Naver > OpenAI fallback)"""
+    """텍스트를 오디오북으로 변환 (ElevenLabs)"""
 
     eleven_key = os.environ.get("ELEVENLABS_API_KEY")
     if (not eleven_key) and hasattr(st, "secrets"):
@@ -1617,63 +1617,13 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
             resp = requests.post(url, headers=headers, json=payload, timeout=90)
             if resp.status_code == 200 and resp.content:
                 return resp.content
-            print(f"ElevenLabs TTS 오류 (OpenAI fallback): status={resp.status_code}, body={resp.text[:200]}")
+            print(f"ElevenLabs TTS 오류: status={resp.status_code}, body={resp.text[:200]}")
+            return None
         except Exception as e:
-            print(f"ElevenLabs TTS 호출 오류 (OpenAI fallback): {e}")
+            print(f"ElevenLabs TTS 호출 오류: {e}")
+            return None
 
-    ncp_key_id = os.environ.get("X_NCP_APIGW_API_KEY_ID") or os.environ.get("X-NCP-APIGW-API-KEY-ID")
-    ncp_key = os.environ.get("X_NCP_APIGW_API_KEY") or os.environ.get("X-NCP-APIGW-API-KEY")
-    if (not ncp_key_id) and hasattr(st, "secrets"):
-        ncp_key_id = _safe_secret_get("X_NCP_APIGW_API_KEY_ID", "") or _safe_secret_get("X-NCP-APIGW-API-KEY-ID", "")
-    if (not ncp_key) and hasattr(st, "secrets"):
-        ncp_key = _safe_secret_get("X_NCP_APIGW_API_KEY", "") or _safe_secret_get("X-NCP-APIGW-API-KEY", "")
-
-    if ncp_key_id and ncp_key and language == "한국어":
-        url = "https://naveropenapi.apigw.ntruss.com/voice/v1/tts"
-        headers = {
-            "X-NCP-APIGW-API-KEY-ID": ncp_key_id,
-            "X-NCP-APIGW-API-KEY": ncp_key,
-        }
-
-        speaker = voice_override or "nara"
-        speed = "1" if speed_override is None else str(speed_override)
-        data = {
-            "speaker": speaker,
-            "speed": speed,
-            "text": story_text,
-        }
-
-        try:
-            resp = requests.post(url, headers=headers, data=data, timeout=60)
-            if resp.status_code == 200 and resp.content:
-                return resp.content
-            print(f"네이버 TTS 오류 (OpenAI fallback): status={resp.status_code}, body={resp.text[:200]}")
-        except Exception as e:
-            print(f"네이버 TTS 호출 오류 (OpenAI fallback): {e}")
-
-    voice_map = {
-        "한국어": "alloy",
-        "English": "alloy",
-        "日本語": "shimmer",
-        "中文": "fable"
-    }
-
-    voice = voice_override or voice_map.get(language, "nova")
-    # 속도: 기본 1.0 (더 느리고 편안하게)
-    speed = 1.0 if speed_override is None else speed_override
-
-    try:
-        response = client.audio.speech.create(
-            model="tts-1-hd",
-            voice=voice,
-            input=story_text,
-            speed=speed
-        )
-
-        return response.content
-    except Exception as e:
-        print(f"오디오 생성 오류: {e}")
-        return None
+    return None
 
 # ============================================================================
 # Streamlit UI
