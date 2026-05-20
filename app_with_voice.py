@@ -888,17 +888,19 @@ def main():
     # Tab navigation
     if "active_tab" not in st.session_state:
         st.session_state.active_tab = "guide"
-    if st.session_state.get("switch_to_guide_tab"):
-        st.session_state.active_tab = "guide"
-        try:
-            del st.session_state["switch_to_guide_tab"]
-        except Exception:
-            pass
 
     _tab_guide_label = ui_text.get(language_mode, ui_text["한국어"])["tab_guide"]
     _tab_learn_label = ui_text.get(language_mode, ui_text["한국어"])["tab_learning"]
     _settings_label = ui_text.get(language_mode, ui_text["한국어"])["settings_label"]
     _tab_options = [_tab_guide_label, _tab_learn_label, _settings_label]
+
+    if st.session_state.get("switch_to_guide_tab"):
+        st.session_state.active_tab = "guide"
+        st.session_state["tab_pills_widget"] = _tab_guide_label  # force pills widget to guide tab before render
+        try:
+            del st.session_state["switch_to_guide_tab"]
+        except Exception:
+            pass
 
     # Apply pending pills reset BEFORE widget renders (Streamlit forbids setting widget key after render)
     if st.session_state.get("_reset_pills_to"):
