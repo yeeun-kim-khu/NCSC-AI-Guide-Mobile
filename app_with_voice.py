@@ -1262,38 +1262,46 @@ setTimeout(function(){{
 
                         # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
                         if _stream_messages is not None:
-                            _gen_placeholder = st.empty()
-                            _gen_placeholder.markdown("_💭 답변을 생성하고 있어요..._")
-                            def _llm_stream():
-                                _first_token = True
-                                try:
-                                    for msg, metadata in agent.stream(
-                                        {"messages": _stream_messages},
-                                        config=_stream_config,
-                                        stream_mode="messages"
+                            # 하나의 placeholder에 로딩 메시지 → 토큰 누적 → 완성 순서로 업데이트
+                            # (st.empty + st.write_stream 분리 시 렌더링 타이밍 문제로 로딩 표시 불가)
+                            _answer_area = st.empty()
+                            _answer_area.markdown("_💭 답변을 생성하고 있어요..._")
+                            _full_text = ""
+                            _first_chunk = True
+                            try:
+                                for _msg, _meta in agent.stream(
+                                    {"messages": _stream_messages},
+                                    config=_stream_config,
+                                    stream_mode="messages"
+                                ):
+                                    if (
+                                        hasattr(_msg, "content")
+                                        and isinstance(_msg.content, str)
+                                        and _msg.content
+                                        and _meta.get("langgraph_node") == "agent"
+                                        and not getattr(_msg, "tool_calls", None)
                                     ):
-                                        if (
-                                            hasattr(msg, "content")
-                                            and isinstance(msg.content, str)
-                                            and msg.content
-                                            and metadata.get("langgraph_node") == "agent"
-                                            and not getattr(msg, "tool_calls", None)
-                                        ):
-                                            if _first_token:
-                                                _gen_placeholder.empty()
-                                                _first_token = False
-                                            yield msg.content
-                                except Exception as _e:
-                                    print(f"Streaming error, fallback to invoke: {_e}")
-                                    _gen_placeholder.empty()
-                                    try:
-                                        _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
-                                        yield _fb["messages"][-1].content
-                                    except Exception as _e2:
-                                        print(f"Invoke fallback failed: {_e2}")
-                                        yield "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔"
-                            answer = st.write_stream(_llm_stream())
-                            _gen_placeholder.empty()
+                                        if _first_chunk:
+                                            _full_text = ""
+                                            _first_chunk = False
+                                        _full_text += _msg.content
+                                        _answer_area.markdown(_full_text + "▌")
+                            except Exception as _e:
+                                print(f"Streaming error, fallback to invoke: {_e}")
+                                try:
+                                    _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
+                                    _full_text = _fb["messages"][-1].content
+                                    _first_chunk = False
+                                except Exception as _e2:
+                                    print(f"Invoke fallback failed: {_e2}")
+                                    _full_text = "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔"
+                                    _first_chunk = False
+                            if _first_chunk:
+                                _answer_area.markdown("죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔")
+                                answer = "죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔"
+                            else:
+                                _answer_area.markdown(_full_text)
+                                answer = _full_text
 
                     if _stream_messages is None:
                         st.markdown(answer)
