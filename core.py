@@ -191,7 +191,9 @@ def route_intent(text: str) -> str:
         "주차", "주차장", "주차비", "주차료",
         # 예약
         "예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약",
-        "단체예약", "단체 예약", "단체관람", "단체 관람", "유치원", "어린이집", "인솔자",
+        "단체예약", "단체 예약", "단체관람", "단체 관람", "단체로", "단체 신청",
+        "단체 방문", "단체 입장", "학교 단체", "기관 단체", "워크인 단체",
+        "유치원", "어린이집", "인솔자", "인솔교사",
         "입장권", "모바일 qr",
         # 층별/위치
         "층별", "층 안내",
@@ -2840,6 +2842,10 @@ def load_csv_data():
                     docs.append(Document(page_content=text, metadata=metadata))
             else:
                 # Handle standard CSV structure (title, content, detail, category)
+                # Track parent exhibit name: in 놀이터 CSVs the exhibit name is in the
+                # 'category' (분류) column. Sub-rows (체험방법 etc.) have an empty category,
+                # so we carry the last seen parent name forward to preserve context.
+                current_parent_category = ""
                 for idx, row in df.iterrows():
                     if pd.isna(row.get('title', '')):
                         continue
@@ -2856,12 +2862,25 @@ def load_csv_data():
                     if content in ('×', 'nan', '') and detail in ('nan', '') and not category:
                         continue
 
-                    text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
+                    # Update parent tracking when category (exhibit name) is present
+                    if category and category not in ('nan', ''):
+                        current_parent_category = category
+
+                    # Sub-rows (empty category) get parent exhibit name prepended
+                    if (not category or category == 'nan') and current_parent_category:
+                        text = f"[{zone_name}] {current_parent_category} - {title}\nContent: {content}\nDetails: {detail}"
+                        eff_title = current_parent_category
+                        eff_subcategory = current_parent_category
+                    else:
+                        text = f"[{zone_name}] {title}\nCategory: {category}\nContent: {content}\nDetails: {detail}"
+                        eff_title = title
+                        eff_subcategory = category
+
                     metadata = {
                         "source": f"csv_{zone_name}", 
-                        "title": title, 
+                        "title": eff_title, 
                         "category": zone_name,
-                        "subcategory": category
+                        "subcategory": eff_subcategory
                     }
                     docs.append(Document(page_content=text, metadata=metadata))
                 
@@ -3777,12 +3796,17 @@ def load_zone_rows_from_csv(zone_name: str):
             pass
 
     rows = []
+    current_parent_category = ""
     for _, r in df.iterrows():
+        category = "" if pd.isna(r.get("category", "")) else str(r.get("category", "")).strip()
+        if category and category != "nan":
+            current_parent_category = category
+        effective_category = category if (category and category != "nan") else current_parent_category
         rows.append({
             "title": "" if pd.isna(r.get("title", "")) else str(r.get("title", "")),
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
             "detail": "" if pd.isna(r.get("detail", "")) else str(r.get("detail", "")),
-            "category": "" if pd.isna(r.get("category", "")) else str(r.get("category", "")),
+            "category": effective_category,
         })
     rows = [x for x in rows if x.get("title")]
     return rows
