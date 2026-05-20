@@ -1,4 +1,4 @@
-# app_with_voice.py - Museum guide with voice features
+# app_with_voice.py - Museum guide with voice features (clarification removed 2026-05-21)
 import os
 import uuid
 import streamlit as st
