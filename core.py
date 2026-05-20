@@ -259,6 +259,10 @@ def classify_basic_category(message: str) -> str:
     if "빛놀이터" in lowered and any(k in lowered for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐 있", "있어", "있나", "소개", "설명", "알려"]):
         return "light_zone_detail"
 
+    # 오늘/이번 주 교육프로그램 → today_programs보다 우선 처리
+    if any(k in lowered for k in ["오늘의 교육프로그램", "오늘 교육프로그램", "오늘 교육", "오늘 교육 뭐", "오늘 교육 있어", "오늘 수업", "오늘 수업 뭐", "오늘 수업 있어", "오늘 과학교실", "오늘 교실", "이번주 교육프로그램", "이번 주 교육프로그램", "이번주 교육", "이번 주 교육", "이번주 수업", "이번 주 수업"]):
+        return "education_guide"
+
     # 오늘/이번 주 프로그램 → education_guide보다 우선 처리
     if any(k in lowered for k in ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "오늘 해", "오늘의 행사", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]):
         return "today_programs"
