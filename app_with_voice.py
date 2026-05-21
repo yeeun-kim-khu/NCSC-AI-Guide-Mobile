@@ -234,12 +234,12 @@ def _render_privacy_notice_gate() -> None:
         chosen_lang = _LANG_OPTIONS[lang_label]
         notice = _NOTICE[chosen_lang]
 
-        st.markdown("<hr style='margin-top: -10px; border: 1px solid #ccc;'>", unsafe_allow_html=True)
+        st.divider()
         st.markdown(
             f"<div style='line-height:2.0; font-size: 16px;'>{notice['body']}</div>",
             unsafe_allow_html=True,
         )
-        st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
+        st.divider()
         agreed = st.checkbox(notice["checkbox"], key="popup_agreed")
         if agreed and st.button(notice["button"], type="primary", use_container_width=True):
             _ack(chosen_lang)
@@ -581,8 +581,6 @@ def main():
     .appview-container > footer { display: none !important; }
     /* 메인 제목 굵게 */
     h2 { font-weight: 900 !important; }
-    /* 구분선 두껍게, 위아래 여백 최소화 */
-    hr { border-width: 3px !important; margin: 4px 0 !important; }
     /* 채팅 입력창 — 주황 테두리, 항상 글로우, overflow:hidden으로 끊김 방지 */
     [data-testid="stChatInput"] {
         border: 2px solid #ff6b35 !important;
