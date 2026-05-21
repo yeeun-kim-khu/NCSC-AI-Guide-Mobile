@@ -208,6 +208,15 @@ def route_intent(text: str) -> str:
         "안내데스크", "매표소", "꿈트리", "영유아놀이터",
         # 음식
         "도시락", "음식 반입", "취식", "매점",
+        # 편의 FAQ
+        "충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전",
+        "우산", "우산 대여", "우산 빌려",
+        "지각", "늦게 도착", "늦었어", "늦어도", "늦게 가면", "프로그램 늦",
+        # 교육 프로그램
+        "교육 프로그램", "교육프로그램", "교육과정", "교육 과정",
+        "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실",
+        "방학과정", "나눔과정", "창경궁 프로그램", "창경궁 교육",
+        "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학",
         # 기타 명확한 FAQ
         "반려동물", "강아지", "고양이", "안내견",
         "와이파이", "wifi", "무선인터넷",
@@ -229,12 +238,13 @@ def route_intent(text: str) -> str:
         "얼마", "요금", "무료", "비용",
         "방법", "어떻게", "알려",
         "체험", "어떤", "뭐가", "뭐야", "구성", "뭐 있", "있어", "있나", "소개", "설명",
+        "뭐지", "뭔지", "있나요", "뭐예요",
     ]
     program_keywords = [
         "사이언스랩", "로봇쇼", "과학쇼", "전시해설", "천체투영관", "빛놀이터",
         "헬로 다이노", "헬로다이노", "짹짹", "북적북적",
         "코코몽", "키츠", "바니", "다이노소어",
-        "창경궁 과학", "과학나들이", "과학 나들이",
+        "창경궁 과학", "창경궁 프로그램", "창경궁 교육", "과학나들이", "과학 나들이",
         "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실",
         "빛놀이터 교육", "전시연계 교육", "방학과정", "나눔과정",
         "얼음공", "과학마블", "씨앗의 모험", "열매와 씨앗",
@@ -312,7 +322,8 @@ def classify_basic_category(message: str) -> str:
                          "세종과 장영실", "똑딱똑딱", "시간 여행"]
     _has_wayfind = any(w in lowered for w in _wayfind_words)
     _has_program = any(p in lowered for p in _wayfind_programs)
-    if _has_program and (_has_wayfind or len(lowered.strip()) <= 15):
+    _has_info = any(w in lowered for w in ["자세히", "알려줘", "알려주", "설명", "어떤", "뭐야", "뭔지", "뭐지"])
+    if _has_program and (_has_wayfind or (len(lowered.strip()) <= 15 and not _has_info)):
         return "program_wayfinding"
     # 광의 교육 카테고리는 장소 키워드가 명시될 때만 wayfinding으로 분기
     _edu_wayfind_broad = [
@@ -343,63 +354,82 @@ def classify_basic_category(message: str) -> str:
     if any(k in lowered for k in ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "오늘 해", "오늘의 행사", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]):
         return "today_programs"
 
-    # 교육 키워드: reservation_guide보다 먼저 잡아야 교육예약이 아닌 교육안내로 분기
-    if any(k in lowered for k in ["교육", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔 과정", "나눔과정", "창경궁 과학", "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학"]):
-        return "education_guide"
-    
-    # K-사이언스 별도 처리
+    # 휴대폰 충전
+    if any(k in lowered for k in ["충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전", "콘센트", "핸드폰 배터리"]):
+        return "phone_charging"
+
+    # 우산 대여
+    if any(k in lowered for k in ["우산", "우산 대여", "우산 빌려", "비 올 때"]):
+        return "umbrella_rental"
+
+    # 프로그램 지각
+    if any(k in lowered for k in ["지각", "늦게 도착", "늦었어", "늦어도", "늦게 가면", "늦게 가도", "늦게 갔", "프로그램 늦", "공연 늦", "회차 늦", "시간 늦"]):
+        return "late_arrival"
+
+    # ── 교육 프로그램: 구체적 → 포괄적 순서로 분류 ───────────────────────────
+    # K-사이언스
     if any(k in lowered for k in ["k-사이언스", "k사이언스", "케이사이언스", "k-science", "k science"]):
         return "k_science"
     
-    # 로봇쇼 별도 처리
+    # 로봇쇼
     if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇프렌즈", "로봇 프렌즈", "축구로봇", "댄스로봇", "로봇개"]):
         return "robot_show"
     
-    # 사이언스랩 별도 처리
+    # 사이언스랩
     if any(k in lowered for k in ["사이언스랩", "사이언스 랩", "드라이아이스", "비눗방울", "팡팡 공기", "보이지 않는 힘"]):
         return "science_lab"
     
-    # 전시해설 별도 처리
+    # 전시해설
     if any(k in lowered for k in ["헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "북적북적 과학관", "북적북적과학관", "전시해설 프로그램", "스폿해설", "전시톡톡해설", "단체해설"]):
         return "docent_program"
     
-    # 로봇순회 별도 처리
+    # 로봇순회
     if any(k in lowered for k in ["로봇순회", "로봇 순회"]):
         return "robot_tour"
     
-    # 교육프로그램 별도 처리
+    # 과학교실
     if any(k in lowered for k in ["과학교실", "과학 교실", "지구과학", "지구 과학", "태양계"]):
         return "science_classroom"
+    
+    # 수학교실
     if any(k in lowered for k in ["수학교실", "수학 교실", "도형 마을 드림팀"]):
         return "math_classroom"
+    
+    # SW·AI 공학교실
     if any(k in lowered for k in ["sw공학교실", "sw 공학교실", "ai공학", "ai 공학", "코딩", "헬로메이플"]):
         return "sw_ai_classroom"
+    
+    # 유아특화교실
     if any(k in lowered for k in ["유아특화교실", "유아 특화교실"]):
         return "toddler_classroom"
     
-    # 빛놀이터 교육 별도 처리
+    # 빛놀이터 교육
     if any(k in lowered for k in ["빛놀이터 교육", "빛놀이터교육"]):
         return "light_playground_education"
     
-    # 전시연계 교육 별도 처리
+    # 전시연계 교육
     if any(k in lowered for k in ["전시연계 교육", "전시연계교육", "과학마블", "얼음공"]):
         return "exhibit_linked_education"
     
-    # 창경궁 과학 별도 처리
-    if any(k in lowered for k in ["창경궁 과학", "창경궁과학", "창경궁 나들이", "창경궁의 우리나무와 꽃", "과학나들이", "과학 나들이"]):
+    # 창경궁 과학 나들이
+    if any(k in lowered for k in ["창경궁 과학", "창경궁과학", "창경궁 나들이", "창경궁의 우리나무와 꽃", "과학나들이", "과학 나들이", "창경궁 프로그램", "창경궁 교육"]):
         return "changgyeonggung_science"
     
-    # 어린이 맞춤 과학 별도 처리
+    # 어린이 맞춤 과학
     if any(k in lowered for k in ["어린이 맞춤 과학", "어린이맞춤과학", "어린이 맞춤과학"]):
         return "custom_science"
     
-    # 방학과정 별도 처리
+    # 방학과정
     if any(k in lowered for k in ["방학과정", "여름방학", "겨울방학"]):
         return "vacation_course"
     
-    # 나눔과정 별도 처리
+    # 나눔과정
     if any(k in lowered for k in ["나눔과정", "나눔 과정"]):
         return "sharing_course"
+    
+    # 교육 일반 catch-all (구체적 프로그램 미매칭 시)
+    if any(k in lowered for k in ["교육", "교육 프로그램", "교육프로그램"]):
+        return "education_guide"
     
     # 모호한 질문 처리: 다이노, 공룡 등 단독 키워드
     if any(k in lowered for k in ["다이노", "공룡"]):
@@ -580,6 +610,42 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 - 👥 **정원**: 회차당 20명
 - 🎫 **예약**: 상설전시관 예약 필수
 - 👶 **유아**: 36개월 미만 보호자 동반 필수 (어두운 환경)"""
+
+        if category == "science_show":
+            import datetime as _dt
+            _month = _dt.datetime.now().month
+            if _month % 2 == 0:
+                _show_name = "로봇쇼 「로봇 프렌즈!」"
+                _show_tip = f"🎉 **{_month}월은 로봇쇼 운영 중이에요!** 축구로봇·댄스로봇·로봇개 등 다양한 로봇을 만날 수 있어요. 보러 가실 건가요? **1층 과학극장**으로 오세요! (11:30 / 13:30)"
+            else:
+                _show_name = "사이언스랩"
+                _show_tip = f"🎉 **{_month}월은 사이언스랩 운영 중이에요!** 신기한 과학 실험을 직접 볼 수 있어요. 보러 가실 건가요? **1층 과학극장**으로 오세요! (11:30 / 13:30)"
+            return f"""🔬 과학쇼(로봇쇼·사이언스랩) 안내예요!
+
+#### 📍 장소
+**1층 과학극장**
+
+#### ⏰ 운영 시간
+- **11:30, 13:30** (하루 2회)
+- 소요시간: 약 15분 / 정원: 95명
+
+#### 📅 연간 운영 일정
+- **로봇쇼**: 짝수월 (2·4·6·8·10·12월)
+  - 축구로봇, 댄스로봇, 로봇개 등 다양한 로봇의 구조와 작동 원리를 보여줘요
+- **사이언스랩**: 홀수월 (1·3·5·7·9·11월)
+  - 월별 과학 실험 시연 프로그램 (비눗방울, 공기, 힘 등)
+
+#### 🎫 이용 안내
+- **비용**: 무료
+- **선착순** 입장 (별도 예약 없음)
+- 회차 시작 5분 전부터 입장 가능
+- 입장 마감: 회차 시작 후 29분 59초까지
+- 프로그램 진행 중 입·퇴장 불가
+
+---
+{_show_tip}
+
+🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
 
         if category == "program_wayfinding":
             lowered_msg = message.lower()
@@ -1185,6 +1251,58 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### ⚠️ 유의사항
 - 기관 공문으로만 신청 가능
 - 대상에 해당하는 기관만 신청 가능"""
+        if category == "phone_charging":
+            return """🔋 휴대폰 충전 안내
+
+국립어린이과학관에는 **별도의 공용 휴대폰 충전기가 없어요.**
+
+#### 💡 대안
+- **1층 안내데스크**에 문의하시면 가능한 범위 내에서 도움을 드려요
+- 근처 **편의점·카페**(혜화역 인근)에서 충전 가능
+- 보조배터리를 챙겨오시면 더 편리해요 😊
+
+📞 문의: **02-3668-3350**"""
+
+        if category == "umbrella_rental":
+            return """☂️ 우산 대여 안내
+
+현재 국립어린이과학관에서는 **우산 대여 서비스를 운영하지 않아요.**
+
+#### 💡 대안
+- **1층 안내데스크**에서 긴급 상황 문의 가능
+- 근처 **편의점**(혜화역 인근)에서 우산 구매 가능
+- 입구 근처의 **지붕 있는 공간**에서 비를 잠시 피할 수 있어요
+
+☔ 비 오는 날 방문 시 우산을 챙겨오시면 편리해요!
+📞 문의: **02-3668-3350**"""
+
+        if category == "late_arrival":
+            return """⏰ 프로그램 지각 시 입장 안내
+
+프로그램마다 입장 마감 규정이 달라요!
+
+#### 🎭 과학쇼 (사이언스랩·로봇쇼) · 전시해설
+- ✅ **회차 시작 25분 전부터** 입장 가능
+- 🚫 **회차 시작 후 29분 59초에 입장 마감** — 이후에는 입장 불가
+- 🚫 프로그램 진행 중에는 입·퇴장 모두 불가
+- 다음 회차(11:30 또는 13:30)를 이용해 주세요
+
+#### 🌙 천체투영관
+- ✅ **회차 정각부터 입장 가능**
+- 🚫 **정각 + 9분(09분)에 입장 마감** — 소등 후 안전상 입장 불가
+- 🚫 늦어 관람 못한 경우 **환불 불가**
+- 다음 회차는 매 정시에 출발해요 (09:30~16:30)
+
+#### 💡 빛놀이터 (2층)
+- 1시간 간격으로 회차 운영 → 다음 회차 이용 가능
+- 선착순이므로 자리가 없을 수도 있어요
+
+#### 📚 교육프로그램 (과학교실·수학교실 등)
+- 사전 예약 프로그램으로 **지각 입장 불가** 원칙
+- 부득이한 경우 1층 안내데스크에 먼저 문의해 주세요
+
+📞 문의: **02-3668-3350**"""
+
         if category == "education_guide":
             programs_text = _load_education_programs_text()
             base = """국립어린이과학관에서는 다양한 교육 프로그램을 운영하고 있어요! 😊
@@ -1350,7 +1468,35 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 ⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지({CSC_URLS['홈페이지']})에서 확인해 주세요."""
 
         if category == "route_by_age":
-            return """🧒 연령별 추천 관람 동선
+            now_utc = datetime.now(timezone.utc)
+            now_kst = now_utc + timedelta(hours=9)
+            _wd = now_kst.weekday()  # 0=월 … 6=일
+            _weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][_wd]
+            _month = now_kst.month
+            _is_vacation = _month in [1, 2, 8]  # 방학
+            _is_weekend = _wd >= 5
+            _is_weekday = 1 <= _wd <= 4  # 화~금 (월=휴관)
+            _day_notice = ""
+            if _is_weekend:
+                _day_notice = f"""> **📅 오늘은 {_weekday_kr}요일 (주말)입니다.**
+> - 주말은 방문객이 많아 **일찍 도착**을 강력 권장해요 (개관 10분 전 대기 추천!)
+> - **천체투영관·빛놀이터는 사전예약 거의 필수** — 현장 잔여석이 매우 적어요
+> - **과학쇼·전시해설** 선착순 자리도 일찍 잡으세요 (25분부터 입장)
+> - 로봇순회는 주말에 운영하지 않아요"""
+            elif _is_weekday:
+                _robot_tour_note = "**로봇순회(꿈트리동산, 14:30)**가 운영돼요 — 줄 없이 여유롭게 관람 가능!" if not _is_vacation else "방학기간이라 평일도 붐빌 수 있어요 — 일찍 도착을 권장해요!"
+                _day_notice = f"""> **📅 오늘은 {_weekday_kr}요일 (평일)입니다.**
+> - 주말보다 여유롭고 {_robot_tour_note}
+> - 천체투영관·빛놀이터 현장 잔여석 가능성이 높아요 (사전예약 우선)
+> - **과학쇼·전시해설** 선착순이지만 주말보다 경쟁이 덜해요"""
+            else:
+                _day_notice = "> **📅 오늘은 월요일(휴관일)이에요.** 내일(화요일)부터 이 동선을 활용해 보세요!"
+
+            return f"""🧒 연령별 추천 관람 동선
+
+{_day_notice}
+
+---
 
 자녀 연령에 맞춰 과학관을 효율적으로 돌아볼 수 있는 동선을 추천해드려요. **전체 관람 시간은 2~3시간** 정도가 적당합니다.
 
@@ -1368,6 +1514,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 2층 **영유아놀이터**는 미취학 전용 공간이라 보호자와 함께 쉬기 좋습니다.
 - **유모차 대여(5대)**: 1층 안내데스크 / 신분증 지참 / 36개월 이하 이용.
 - 천체투영관 관람 시 **보호자 동반 필수** (4세 이상 입장).
+{'- 🌟 **오늘(주말) 꿀팁**: 빛놀이터·천체투영관은 개관 직후 예약 마감될 수 있어요. 입장 즉시 예약 부스로!' if _is_weekend else '- 🌟 **오늘(평일) 꿀팁**: 로봇순회(14:30)가 운영되니 꿈트리동산을 들러보세요!'}
 
 #### 🎒 초등 저학년 (8~10세)
 
@@ -1382,6 +1529,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 탐구놀이터에서 **직접 만지는 체험**이 많아 호기심을 자극합니다.
 - 과학쇼는 **25분부터 입장 가능**하고 **29분 59초에 입장 마감**이니 시간 여유를 두세요.
 - '전시해설(「헬로 다이노!」/「짹짹 새 탐험대」)' 프로그램도 15분 정도로 좋아요.
+{'- 🌟 **오늘(주말) 꿀팁**: 과학쇼(11:30)를 먼저 잡고 전시 관람하세요. 대기열이 빨리 찹니다!' if _is_weekend else '- 🌟 **오늘(평일) 꿀팁**: 로봇순회(14:30, 꿈트리동산)와 과학쇼(11:30/13:30) 모두 챙길 수 있어요!'}
 
 #### 🧑‍🎓 초등 고학년 (11~13세)
 
@@ -1395,6 +1543,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - AI놀이터는 **미션 해결형**이라 집중이 필요합니다.
 - 천체투영관의 '다이노소어'(14:00 회차)는 **초등학생 이상** 권장 콘텐츠입니다.
 - 남는 시간이 있다면 1층 **행동놀이터**로 에너지를 발산해도 좋아요.
+{'- 🌟 **오늘(주말) 꿀팁**: 천체투영관 14:00 회차는 인기가 많아요. 당일 현장 잔여석을 빠르게 확인하세요!' if _is_weekend else '- 🌟 **오늘(평일) 꿀팁**: 관람객이 적어 AI놀이터 미션을 여유롭게 즐길 수 있어요. 로봇순회(14:30)도 추가하세요!'}
 
 #### 👨‍👩‍👧 형제·자매 동반 방문
 - 연령 차가 큰 형제(예: 유아+고학년)는 **2층 빛놀이터·관찰놀이터**에서 시작하세요. 모두가 즐길 수 있는 구역입니다.
@@ -1402,7 +1551,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 휴게실이 **2층**에 있으니 쉬는 시간은 2층 위주로 계획하세요.
 
 #### 🎟️ 예약·입장 핵심
-- 하루 **최대 1,600명**으로 제한 → 주말·공휴일은 예약 권장.
+- 하루 **최대 1,600명**으로 제한 → **{'주말인 오늘은 예약 강력 권장' if _is_weekend else '평일은 현장 구매 여유 있음 (예약 우선)'}**.
 - **천체투영관은 100% 사전예약**.
 - 인터넷 예매는 관람일 **14일 전 0시**부터 가능.
 
@@ -1417,6 +1566,44 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][target_date.weekday()]
             is_weekend = target_date.weekday() >= 5
             date_label = "오늘" if not is_specific else f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)"
+
+            # ── 특정 시간 기준 참여 가능 프로그램 ───────────────────────────────
+            _time_match = re.search(r"(\d{1,2})\s*시(?:\s*(\d{2})\s*분)?", message)
+            if _time_match:
+                _h = int(_time_match.group(1))
+                _m = int(_time_match.group(2)) if _time_match.group(2) else 0
+                _arrive_minutes = _h * 60 + _m  # 도착 시각(분)
+                _month = target_date.month
+                _show_name = "사이언스랩" if _month in [1,3,5,7,9,11] else "로봇쇼"
+                _available = []
+                # 과학쇼 (회차: 11:30, 13:30 / 25분 전부터 입장 → 회차 시작 전 25분까지 가능)
+                for _hh, _mm in [(11,30),(13,30)]:
+                    _show_start = _hh*60+_mm
+                    if _arrive_minutes <= _show_start + 29:  # 29분 59초 마감
+                        _available.append(f"🎭 **{_show_name}** ({_hh}:{_mm:02d} 회차) — 1층 과학극장 / 무료·선착순")
+                # 천체투영관 (매 정시 09:30~16:30 / 정각+9분 마감)
+                for _hh in range(9,17):
+                    _show_start = _hh*60+30
+                    if _arrive_minutes <= _show_start + 9:
+                        _available.append(f"🌙 **천체투영관** ({_hh}:30 회차) — 2층 / 유료·예약")
+                        break
+                # 빛놀이터 (매 정시 09:30~16:30)
+                for _hh in range(9,17):
+                    _show_start = _hh*60+30
+                    if _arrive_minutes <= _show_start + 30:
+                        _available.append(f"✨ **빛놀이터** ({_hh}:30 회차~) — 2층 / 예약 필수·선착순")
+                        break
+                if _available:
+                    _time_str = f"{_h}시{f' {_m}분' if _m else ''}"
+                    _lines = "\n".join(_available)
+                    return (
+                        f"**{_time_str}에 입장하시면 참여 가능한 프로그램이에요!** 🎉\n\n"
+                        f"{_lines}\n\n"
+                        f"> 💡 무료 프로그램(과학쇼·전시해설)은 선착순이라 일찍 자리를 잡으세요!\n"
+                        f"> 천체투영관·빛놀이터는 [신청콕](https://www.sciencecenter.go.kr/csc/reserve/individual) 사전예약을 권장해요."
+                    )
+                else:
+                    return f"**{_h}시 이후에는 참여 가능한 정기 프로그램이 마감됐어요.** 😢\n\n과학관 운영시간은 09:30~17:30(입장 마감 16:30)이에요. 전시 관람은 여전히 가능해요!"
 
             is_closed, closed_reason = check_closed_date(target_date)
             if is_closed:
@@ -3840,31 +4027,27 @@ def translate_answer_cached(text: str, target_language: str) -> str:
         return text
 
 
-def render_source_buttons(sources: list, language_mode: str = "한국어", key_suffix: str = ""):
-    """출처(참고 홈페이지) 렌더링 — 기본은 접힘, '자세히 보기' 펼침 안에서 버튼 노출."""
+def render_source_buttons(sources: list, language_mode: str = "한국어", key_suffix: str = "", fallback_url: str = None):
+    """출처 링크 버튼 렌더링 — HTTP URL만 직접 버튼으로 표시. CSV 등 비URL은 건너뜀. URL 없으면 fallback_url 사용."""
     if not isinstance(sources, (list, tuple)):
+        sources = []
+    valid = [s for s in sources if isinstance(s, str) and s.startswith("http")]
+    if not valid and fallback_url:
+        valid = [fallback_url]
+    if not valid:
         return
-    sources = [s for s in sources if s]
-    if not sources:
-        return
 
-    expander_label = {
-        "한국어": "📚 참고 홈페이지 자세히 보기",
-        "English": "📚 More info (reference websites)",
-        "日本語": "📚 参考サイトを詳しく見る",
-        "中文": "📚 查看参考网站",
-    }.get(language_mode, "📚 More info (reference websites)")
+    btn_label = {
+        "한국어": "🔗 홈페이지에서 자세히 보기",
+        "English": "🔗 Official website",
+        "日本語": "🔗 公式サイトで詳しく",
+        "中文": "🔗 官网查看详情",
+    }.get(language_mode, "🔗 Official website")
 
-    link_label = {
-        "한국어": "🔗 참고 홈페이지",
-        "English": "🔗 Reference site",
-        "日本語": "🔗 参考サイト",
-        "中文": "🔗 参考网站",
-    }.get(language_mode, "🔗 Reference site")
-
-    with st.expander(expander_label, expanded=False):
-        for i, source in enumerate(sources[:5]):
-            if isinstance(source, str) and source.startswith("http"):
-                st.markdown(f"- [{link_label} {i+1}]({source})")
-            else:
-                st.markdown(f"- `{source}`")
+    if len(valid) == 1:
+        st.link_button(btn_label, valid[0])
+    else:
+        cols = st.columns(min(len(valid), 3))
+        for i, source in enumerate(valid[:3]):
+            with cols[i]:
+                st.link_button(f"{btn_label} {i+1}", source, use_container_width=True)

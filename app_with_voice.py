@@ -392,6 +392,10 @@ def main():
             "record_start": "녹음 시작",
             "spinner_rule": "(규칙기반)확인 중입니다...",
             "spinner_llm": "(LLM)잠시만 기다려 주세요...",
+            "spinner_stream": "💭 답변을 생성하고 있어요...",
+            "error_stream_fail": "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔",
+            "error_no_response": "죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔",
+            "stt_processing": "음성을 텍스트로 변환 중...",
             "debug_tool_calls": "🔍 디버깅 정보(도구 호출 내역)",
             "debug_tool_calls_after": "🔍 디버깅 정보 (도구 호출 내역)",
             "reservation_person": "개인 예약",
@@ -440,6 +444,10 @@ def main():
             "record_start": "Start recording",
             "spinner_rule": "Checking (rule-based)...",
             "spinner_llm": "Please wait (LLM)...",
+            "spinner_stream": "💭 Generating response...",
+            "error_stream_fail": "Sorry, a temporary error occurred. Please try again. 😔",
+            "error_no_response": "Sorry, no response was received. Please try again. 😔",
+            "stt_processing": "Converting speech to text...",
             "debug_tool_calls": "🔍 Debug (tool calls)",
             "debug_tool_calls_after": "🔍 Debug (tool calls)",
             "reservation_person": "Personal",
@@ -488,6 +496,10 @@ def main():
             "record_start": "録音開始",
             "spinner_rule": "（ルール）確認中...",
             "spinner_llm": "少々お待ちください（LLM）...",
+            "spinner_stream": "💭 回答を生成中...",
+            "error_stream_fail": "申し訳ありません、一時的なエラーが発生しました。もう一度お試しください。 😔",
+            "error_no_response": "申し訳ありません、応答を受信できませんでした。もう一度お試しください。 😔",
+            "stt_processing": "音声をテキストに変換中...",
             "debug_tool_calls": "🔍 デバッグ（ツール呼び出し）",
             "debug_tool_calls_after": "🔍 デバッグ（ツール呼び出し）",
             "reservation_person": "個人予約",
@@ -536,6 +548,10 @@ def main():
             "record_start": "开始录音",
             "spinner_rule": "正在确认（规则）...",
             "spinner_llm": "请稍候（LLM）...",
+            "spinner_stream": "💭 正在生成回答...",
+            "error_stream_fail": "抱歉，发生了临时错误，请重新提问。 😔",
+            "error_no_response": "抱歉，未能获取回答，请重新提问。 😔",
+            "stt_processing": "正在将语音转换为文字...",
             "debug_tool_calls": "🔍 调试（工具调用）",
             "debug_tool_calls_after": "🔍 调试（工具调用）",
             "reservation_person": "个人预约",
@@ -557,11 +573,8 @@ def main():
         layout="centered",
     )
 
-    # 실행 중 화면 흐려짐 방지
     st.markdown("""
     <style>
-    .stApp.running { opacity: 1 !important; }
-    .stApp.running * { opacity: 1 !important; }
     [data-testid="stChatMessageAvatarAssistant"] {
         display: none !important;
         width: 0 !important;
@@ -781,7 +794,7 @@ def main():
 
                 if not already_processed:
                     st.session_state["_last_audio_sig"] = audio_sig
-                    with st.spinner("음성을 텍스트로 변환 중..."):
+                    with st.spinner(t("stt_processing")):
                         recognized = speech_to_text(audio_bytes)
                         if recognized:
                             _queue_ga_event("voice_input_used", {"language": language_mode})
@@ -831,14 +844,14 @@ def main():
         },
         "English": {
             "어린이": (
-                "<strong>Your AI guide for museum visits and exhibit experiences.</strong><br><br>"
-                "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
+                "<strong>Your AI guide for science center visits and exhibit experiences.</strong><br><br>"
+                "🏙️ <strong>Science Center Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
                 "⚙️ <strong>Settings</strong> - Language · User mode · Voice · Survey"
             ),
             "성인": (
-                "<strong>Your AI guide for museum visits and exhibit experiences.</strong><br><br>"
-                "🏙️ <strong>Museum Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
+                "<strong>Your AI guide for science center visits and exhibit experiences.</strong><br><br>"
+                "🏙️ <strong>Science Center Guide</strong> - Floors · Programs · Fees · Reservations · Directions<br>"
                 "🥰 <strong>Again Zone</strong> - Exhibit quizzes, Q&A, AI science stories<br>"
                 "⚙️ <strong>Settings</strong> - Language · User mode · Voice · Survey"
             ),
@@ -1198,7 +1211,7 @@ setTimeout(function(){{
                     # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
                     if _stream_messages is not None:
                         _answer_area = st.empty()
-                        _answer_area.markdown("_💭 답변을 생성하고 있어요..._")
+                        _answer_area.markdown(f"_{t('spinner_stream')}_")
                         _full_text = ""
                         _first_chunk = True
                         try:
@@ -1227,11 +1240,11 @@ setTimeout(function(){{
                                 _first_chunk = False
                             except Exception as _e2:
                                 print(f"Invoke fallback failed: {_e2}")
-                                _full_text = "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔"
+                                _full_text = t("error_stream_fail")
                                 _first_chunk = False
                         if _first_chunk:
-                            _answer_area.markdown("죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔")
-                            answer = "죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔"
+                            _answer_area.markdown(t("error_no_response"))
+                            answer = t("error_no_response")
                         else:
                             _answer_area.markdown(_full_text)
                             answer = _full_text
@@ -1247,7 +1260,7 @@ setTimeout(function(){{
                 if intent in ["notice", "basic"]:
                     render_source_buttons(rule_sources, language_mode=language_mode)
                 else:
-                    render_source_buttons(rag_sources, language_mode=language_mode)
+                    render_source_buttons(rag_sources, language_mode=language_mode, fallback_url=CSC_URLS.get("홈페이지"))
                     if result is not None and (debug_show_ko or debug_backtranslate):
                         debug_info = f"=== RAG 검색 결과 (k=3) ===\n{rag_context}\n\n{'='*50}\n\n"
                         for msg in result["messages"][:-1]:
