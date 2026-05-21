@@ -96,6 +96,28 @@ STATIC_EXHIBIT_INFO = {
 # RULES - 규칙 및 로직 함수
 # ============================================================================
 
+def check_moderation(text: str) -> bool:
+    """OpenAI Moderation API로 입력 텍스트 안전 검사.
+    반환: True = 안전(통과), False = 위험(차단)
+    오류 발생 시 fail-open(True) — 서비스 중단 방지.
+    """
+    if not text or not text.strip():
+        return True
+    try:
+        from openai import OpenAI
+        client = OpenAI()
+        resp = client.moderations.create(input=text)
+        flagged = resp.results[0].flagged
+        if flagged:
+            cats = resp.results[0].categories
+            triggered = [k for k, v in vars(cats).items() if v]
+            print(f"[Moderation] 차단됨: {triggered}")
+        return not flagged
+    except Exception as e:
+        print(f"[Moderation] 오류 (fail-open): {e}")
+        return True
+
+
 @st.cache_data(ttl=3600, show_spinner=False)
 def classify_intent_with_llm(text: str) -> str:
     """gpt-4o-mini로 빠르게 의도 분류. 반환: 'basic' or 'llm_agent'
@@ -105,7 +127,7 @@ def classify_intent_with_llm(text: str) -> str:
     """
     try:
         from openai import OpenAI
-        client = OpenAI()
+        client = OpenAI(max_retries=3)
         resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -200,31 +222,32 @@ def route_intent(text: str) -> str:
         # 전시관
         "전시관", "놀이터 안내",
         # 연령별 동선
-        "연령별", "동선", "추천 코스", "추천 동선",
+        "연령별", "연령", "동선", "추천 코스", "추천 동선", "추천코스", "추천동선",
+        "저학년", "고학년", "초등학생", "유아 코스", "어린이 코스",
         # 오시는길
         "오시는길", "오는길", "오시는 길", "교통편", "길찾기", "어떻게 가", "어떻게 오", "가는 방법",
         # 시설
         "유모차", "유아차", "휠체어", "수유실", "물품보관", "보관함", "락커", "의무실",
         "안내데스크", "매표소", "꿈트리", "영유아놀이터",
         # 음식
-        "도시락", "음식 반입", "취식", "매점",
+        "도시락", "음식 반입", "음식반입", "취식", "매점",
         # 편의 FAQ
         "충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전",
-        "우산", "우산 대여", "우산 빌려",
+        "우산", "우산 대여", "우산대여", "우산 빌려", "우산빌려",
         "지각", "늦게 도착", "늦었어", "늦어도", "늦게 가면", "프로그램 늦",
         # 교육 프로그램
         "교육 프로그램", "교육프로그램", "교육과정", "교육 과정",
         "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실",
-        "방학과정", "나눔과정", "창경궁 프로그램", "창경궁 교육",
-        "빛놀이터 교육", "전시연계 교육", "어린이 맞춤 과학",
+        "방학과정", "나눔과정", "창경궁 프로그램", "창경궁프로그램", "창경궁 교육", "창경궁교육",
+        "빛놀이터 교육", "빛놀이터교육", "전시연계 교육", "전시연계교육", "어린이 맞춤 과학", "어린이맞춤과학",
         # 기타 명확한 FAQ
         "반려동물", "강아지", "고양이", "안내견",
         "와이파이", "wifi", "무선인터넷",
         "분실물", "잃어버", "두고 왔", "두고왔",
-        "재입장", "다시 입장",
+        "재입장", "다시 입장", "다시입장",
         "야간관측", "야간 관측", "천체관측소",
-        "연나이", "만 나이", "몇 년생",
-        "오늘의 프로그램", "오늘 프로그램", "시간표", "회차", "상영 시간",
+        "연나이", "만 나이", "만나이", "몇 년생", "몇년생",
+        "오늘의 프로그램", "오늘 프로그램", "시간표", "회차", "상영 시간", "상영시간",
         "k-사이언스", "k사이언스",
     ]
     if any(token in lowered for token in clear_faq_keywords):
@@ -448,7 +471,7 @@ def classify_basic_category(message: str) -> str:
         ("admission_fee",   ["관람료", "입장료", "요금", "가격", "얼마", "얼만", "비용", "유료", "무료", "할인", "티켓값", "표값"]),
         ("directions",      ["오시는길", "오는길", "오시는 길", "오는 길", "교통", "길찾기", "길 찾", "주소", "위치", "어떻게 가", "어떻게 오", "어디에 있", "어디야", "가는 방법", "가는길"]),
         ("facility_amenities", ["시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관", "보관함", "락커", "대여", "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상", "화장실"]),
-        ("route_by_age",    ["동선", "연령별", "연령", "나이", "추천 코스", "추천 동선", "추천해", "4~7", "7세", "유아", "초등", "저학년", "고학년", "몇 살", "몇살"]),
+        ("route_by_age",    ["동선", "연령별", "연령", "나이", "추천 코스", "추천 동선", "추천코스", "추천동선", "추천해", "4~7", "7세", "유아", "초등", "저학년", "고학년", "몇 살", "몇살", "초등학생", "유아 코스", "어린이 코스", "관람 코스", "관람코스"]),
         ("floor_guide",     ["층별", "층 안내", "1층", "2층", "3층", "게이트", "입구", "출구", "어느 층", "무슨 층"]),
         ("operating_hours", ["운영시간", "운영 시간", "운영", "휴관", "휴무", "몇 시", "몇시", "마감", "언제 열", "언제 닫", "여는 시간", "닫는 시간", "개관", "폐관", "여나요", "여나"]),
     ]
@@ -567,7 +590,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 > 💡 **팁**: 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
+[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
     if intent == "basic":
         category = classify_basic_category(message)
         if category == "light_zone_detail":
@@ -645,7 +668,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ---
 {_show_tip}
 
-🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
+[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
 
         if category == "program_wayfinding":
             lowered_msg = message.lower()
@@ -804,7 +827,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 #### 💡 팁
 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
+[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
         if category == "science_lab":
             return """**사이언스랩** 프로그램 안내입니다! 😊
 
@@ -842,7 +865,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 #### 💡 팁
 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-🔗 **상세정보**: {CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')}"""
+[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
         if category == "docent_program":
             return """**전시해설** 프로그램 안내입니다! 😊
 
@@ -918,7 +941,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 - 프로그램 내용 및 시간표는 운영 상황에 따라 변동될 수 있어요.
 - 공휴일인 경우 주말 프로그램 일정과 동일하게 운영합니다.
 
-🔗 **상세정보**: {CSC_URLS.get('전시해설', 'https://www.sciencecenter.go.kr/csc/cultural-event/docent')}"""
+[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('전시해설', 'https://www.sciencecenter.go.kr/csc/cultural-event/docent')})"""
         if category == "robot_tour":
             return """**로봇순회** 프로그램 안내입니다! 🤖
 
@@ -1257,7 +1280,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 국립어린이과학관에는 **별도의 공용 휴대폰 충전기가 없어요.**
 
 #### 💡 대안
-- **1층 안내데스크**에 문의하시면 가능한 범위 내에서 도움을 드려요
 - 근처 **편의점·카페**(혜화역 인근)에서 충전 가능
 - 보조배터리를 챙겨오시면 더 편리해요 😊
 
@@ -1305,7 +1327,21 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
         if category == "education_guide":
             programs_text = _load_education_programs_text()
-            base = """국립어린이과학관에서는 다양한 교육 프로그램을 운영하고 있어요! 😊
+            now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
+            weekday = now_kst.weekday()  # 0=월 ~ 6=일
+            weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][weekday]
+            if weekday == 5:  # 토요일
+                day_notice = f"오늘은 **토요일**이에요! 🎉 교육 프로그램이 운영되는 날이에요.\n\n"
+            else:
+                days_to_sat = (5 - weekday) % 7 or 7
+                next_sat = now_kst + timedelta(days=days_to_sat)
+                next_sat_str = next_sat.strftime("%m월 %d일")
+                day_notice = (
+                    f"오늘은 **{weekday_kr}요일**이라 정규 교육 프로그램 운영일이 아니에요. 😊\n"
+                    f"교육 프로그램(과학교실·수학교실 등)은 **매주 토요일**에 운영돼요.\n"
+                    f"다음 토요일은 **{next_sat_str}**이에요!\n\n"
+                )
+            base = day_notice + """국립어린이과학관에서는 다양한 교육 프로그램을 운영하고 있어요! 😊
 
 #### 📚 상시 주말교육 과정 (상반기 3-6월 / 하반기 9-12월, 매주 토요일)
 
@@ -1331,7 +1367,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - **공지 일정**: 매월 두 번째 수요일 홈페이지 공지
 - **문의**: 과학교실·SW공학교실·수학교실 02-3668-3313, 3318 / 유아특화교실 02-3668-3314
 
-> ⚡ **교육 신청 꿀팁**: 공지 당일 수요일 11시에 신청이 열리는 즉시 **수분 내 마감**되는 경우가 많아요! 정각에 바로 신청하시길 강력 추천드립니다. 오늘 이 안내를 받으셨다면 **이미 예약이 마감됐을 수도 있으니**, 신청콕에서 잔여석을 꼭 확인해 보세요.
+> ⚡ **교육 신청 꿀팁**: 교육 신청 시작과 동시에 **수분 내 마감**되는 경우가 많아요! 신청 시작 시각에 바로 접속하시길 강력 추천드립니다. 이 안내를 받으셨다면 **이미 예약이 마감됐을 수도 있으니**, 신청콕에서 잔여석을 꼭 확인해 보세요.
 
 특정 프로그램이나 날짜에 대해 더 자세히 알고 싶으시면 말씀해 주세요! 😊"""
             return base
@@ -1465,7 +1501,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 💬 특정 놀이터가 궁금하면 **"AI놀이터 전시물 뭐 있어?"** 처럼 이름을 말해주세요. 더 자세한 전시물 목록을 찾아드릴게요.
 
-⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지({CSC_URLS['홈페이지']})에서 확인해 주세요."""
+⚠️ 전시관 구성·운영은 변경될 수 있으니 방문 전 공식 홈페이지에서 확인해 주세요."""
 
         if category == "route_by_age":
             now_utc = datetime.now(timezone.utc)
@@ -1794,7 +1830,9 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 수용 인원: 회차당 20명
 - 예약: 인터넷 사전예약 우선, 잔여석에 한해 현장 결제 가능
 
-원하시면 "과학쇼 자세히", "전시해설 자세히", "천체투영관 시간표", "빛놀이터 시간"처럼 말해주면 안내 규정/입장방법까지 더 자세히 설명해줄게요."""
+원하시면 "과학쇼 자세히", "전시해설 자세히", "천체투영관 시간표", "빛놀이터 시간"처럼 말해주면 안내 규정/입장방법까지 더 자세히 설명해줄게요.
+
+> 💡 **과학교실·수학교실 등 교육 수업**이 궁금하시면 "오늘 교육프로그램 알려줘"라고 물어봐주세요!"""
 
         if category == "night_observation":
             return """🌙 「서울에서 별 본다」 천체관측 프로그램 안내
@@ -2078,8 +2116,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 ⚠️ 운영 상황에 따라 회차가 변동될 수 있으니, 방문 전에 공식 홈페이지 공지사항을 꼭 확인해줘!"""
                 else:
                     return f"""🕘 빛놀이터 운영시간 안내
@@ -2094,8 +2130,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 ⚠️ 운영 상황에 따라 회차가 변동될 수 있으니, 방문 전에 공식 홈페이지 공지사항을 꼭 확인하세요."""
             
             if mode == "어린이":
@@ -2121,8 +2155,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 ⚠️ 특별 연장·임시 휴관은 바뀔 수 있으니, 출발 전에 공식 홈페이지 공지사항을 꼭 확인해줘!"""
             return f"""🕘 운영시간 안내
 
@@ -2148,8 +2180,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 ⚠️ 임시 휴관·특별 연장 운영 등은 변경될 수 있으니, 방문 전 공식 홈페이지에서 꼭 확인해 주세요."""
 
         elif category == "parking":
@@ -2184,7 +2214,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **전화**: 02-3668-3350
 
-⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지({CSC_URLS['홈페이지']})에서 한 번 더 확인해줘!"""
+⚠️ 주차/교통 안내는 바뀔 수 있으니, 출발 전에 공식 홈페이지에서 한 번 더 확인해줘!"""
 
             return """🚗 주차 안내
 
@@ -2218,8 +2248,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### 📍 주소 및 문의
 - **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 ⚠️ 주차장 및 교통편 관련 최신 안내는 방문 전 공식 홈페이지 '오시는 길' 페이지에서 꼭 확인해 주세요."""
 
         elif category == "directions":
@@ -2286,8 +2314,6 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📞 문의
 - **대표전화**: 02-3668-3350
-- **공식 홈페이지**: {CSC_URLS['홈페이지']}
-
 💬 **출발지를 알려주시면** (예: 강남역, 잠실, OO구) 가장 편한 환승 경로를 구체적으로 안내해드릴게요.
 
 ⚠️ 지하철 운행 정보·버스 노선은 변경될 수 있으니 공식 홈페이지 '오시는 길' 페이지도 참고해 주세요."""
@@ -2323,7 +2349,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 ##### 확인 자료
 신청·입장 시 연령 확인을 위해 **주민등록등본 같은 서류**를 요청할 수 있어요.
 
-⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지({CSC_URLS['홈페이지']})나 02-3668-3350에서 한 번 더 확인해 주세요!"""
+⚠️ 정확한 연령 기준은 프로그램마다 달라요. 예약 전 공식 홈페이지나 02-3668-3350에서 한 번 더 확인해 주세요!"""
             return f"""🎂 연나이 계산 안내
 
 국립어린이과학관 입장 및 프로그램 신청 시 사용하는 **연나이**는 다음과 같이 계산합니다.
@@ -2348,7 +2374,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### 증빙 자료
 연령 확인을 위해 **주민등록등본** 등 증빙 서류 요청이 있을 수 있습니다.
 
-📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
+📞 문의: 02-3668-3350"""
 
         if category == "group_reservation":
             if mode == "어린이":
@@ -2418,7 +2444,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 사전예약 후 방문 못하게 되면 **꼭 취소**해주세요!
 - 무단 미방문 시 **해당일로부터 6개월간 관람 제한**
 
-📞 단체 문의: **02-3668-3350** / 🌐 www.sciencecenter.go.kr/csc"""
+📞 단체 문의: **02-3668-3350** / [🌐 홈페이지](https://www.sciencecenter.go.kr/csc)"""
             return """👨‍👩‍👧‍👦 단체 관람·예약 안내
 
 #### 단체 기준 및 예약 가능 일정
@@ -2516,7 +2542,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - **노쇼(No Show) 페널티**: 무단 미방문 시 해당일로부터 **6개월 관람 제한**
 - 단체관람 시 인솔자의 안전 관리 필수
 
-📞 단체 문의: **02-3668-3350** / 🌐 www.sciencecenter.go.kr/csc
+📞 단체 문의: **02-3668-3350** / [🌐 홈페이지](https://www.sciencecenter.go.kr/csc)
 
 ⚠️ 단체별 세부 운영(차량, 도착 시간, 식사 등)은 예약 시 담당자와 별도 협의해 주세요."""
 
@@ -2585,7 +2611,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 장애인 전용 화장실 비치
 - **의무실(1층 로비)** — 편의점 판매 수준 일반의약품 구비, 응급 상황 시 가까운 직원에게 요청
 
-📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
+📞 문의: 02-3668-3350"""
 
         if category == "food_drink":
             if mode == "어린이":
@@ -2657,7 +2683,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 단체 도시락 식사는 예약 시 휴게실 시간대 별도 협의
 - 문의: **02-3668-3350**
 
-⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지({CSC_URLS['홈페이지']}) 또는 대표전화로 확인해 주세요."""
+⚠️ 정책은 변경될 수 있으니 방문 전 공식 홈페이지 또는 대표전화로 확인해 주세요."""
 
         if category == "pet_policy":
             if mode == "어린이":
@@ -2690,7 +2716,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 동반 입장 불가 안내를 미리 숙지하시고, 반려동물은 자택 또는 신뢰할 수 있는 위탁 시설에 맡겨주세요.
 - 차량 내 방치는 안전·동물복지 관점에서 권장되지 않습니다.
 
-📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
+📞 문의: 02-3668-3350"""
 
         if category == "wifi_info":
             if mode == "어린이":
@@ -2728,7 +2754,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### 보안 권고
 - 공공 무선 인터넷이므로 **금융거래·민감한 개인정보 입력은 자제**해 주세요.
 
-📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
+📞 문의: 02-3668-3350"""
 
         if category == "lost_found":
             if mode == "어린이":
@@ -2766,7 +2792,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 1층 로비 / 2층 휴게실에 **비밀번호 물품보관함** 비치 — 귀중품은 보관함 이용
 - 자녀의 옷·가방에 연락처 표시
 
-📞 분실물 문의: 02-3668-3350 / 🌐 www.sciencecenter.go.kr/csc"""
+📞 분실물 문의: 02-3668-3350 / [🌐 홈페이지](https://www.sciencecenter.go.kr/csc)"""
 
         if category == "reentry_policy":
             if mode == "어린이":
@@ -2801,7 +2827,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 천체투영관·과학극장은 **회차별 입장**이므로 시작 시각 이후 입장 불가
 - 단체관람은 별도 운영 (회차 시간 엄수)
 
-📞 문의: 02-3668-3350 / 🌐 {CSC_URLS['홈페이지']}"""
+📞 문의: 02-3668-3350"""
 
     return ""
 
@@ -3157,7 +3183,7 @@ def load_multilingual_brochures():
 
 def initialize_vector_db():
     """Initialize vector database with exhibit information"""
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", max_retries=3)
     
     print("=== Vector DB Initialization ===")
     print("Creating new vector store (Streamlit Cloud - no persistence)...")
@@ -3366,6 +3392,8 @@ def _load_education_programs_text() -> str:
             fee = str(row.get("교육비", "")).strip()
             apply_period = str(row.get("신청기간", "")).strip()
             main_content = str(row.get("주요내용", "")).strip()
+            learning_goals = str(row.get("학습목표", "")).strip()
+            session_details = str(row.get("차시별내용", "")).strip()
             if month not in seen_months:
                 seen_months[month] = []
                 months_order.append(month)
@@ -3374,6 +3402,7 @@ def _load_education_programs_text() -> str:
                 "target": target, "dates": dates, "weekday": weekday,
                 "time_slot": time_slot, "location": location, "fee": fee,
                 "apply_period": apply_period, "main_content": main_content,
+                "learning_goals": learning_goals, "session_details": session_details,
             })
 
         if not seen_months:
@@ -3399,11 +3428,24 @@ def _load_education_programs_text() -> str:
                     lines.append(f"- 교육비: {p['fee']}")
                 if p["apply_period"] and p["apply_period"] != "nan":
                     lines.append(f"- 신청기간: {p['apply_period'].replace('~', '-')}")
-                if p["main_content"] and p["main_content"] != "nan":
+                if p["learning_goals"] and p["learning_goals"] != "nan":
+                    lines.append(f"- 학습목표:")
+                    for goal in p["learning_goals"].split(" / "):
+                        goal = goal.strip()
+                        if goal:
+                            lines.append(f"  * {goal}")
+                elif p["main_content"] and p["main_content"] != "nan":
+                    lines.append(f"- 주요 내용:")
                     for part in p["main_content"].split(" / "):
                         part = part.strip()
                         if part:
                             lines.append(f"  * {part}")
+                if p["session_details"] and p["session_details"] != "nan":
+                    lines.append(f"- 차시별 내용:")
+                    for session in p["session_details"].split(" | "):
+                        session = session.strip()
+                        if session:
+                            lines.append(f"  * {session}")
                 lines.append("")
         return "\n".join(lines).strip()
     except Exception:
@@ -3706,11 +3748,11 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 
 1. **숫자·시간·가격·날짜·수용인원 등 구체적 수치**
    - RAG 검색 결과 또는 도구 결과에 명시된 값만 사용하세요.
-   - 결과에 없는 수치는 절대 추측하지 말고: "정확한 정보는 공식 홈페이지({CSC_URLS['홈페이지']}) 또는 02-3668-3350으로 확인해주세요."
+   - 결과에 없는 수치는 절대 추측하지 말고: "정확한 정보는 공식 홈페이지 또는 02-3668-3350으로 확인해주세요."
 
 2. **RAG/도구 결과에 없는 정보**
    - "~일 것 같습니다", "보통 ~합니다", "일반적으로 ~" 등 추측성 표현 금지.
-   - 대신: "해당 정보는 제가 확인하기 어렵습니다. 공식 홈페이지({CSC_URLS['홈페이지']})나 02-3668-3350으로 문의해주세요."
+   - 대신: "해당 정보는 제가 확인하기 어렵습니다. 공식 홈페이지나 02-3668-3350으로 문의해주세요."
 
 3. **운영시간, 휴관일, 입장료, 예약 방법** → 반드시 RAG 또는 도구 결과 기반으로만 답변
 
@@ -4012,7 +4054,7 @@ def translate_answer_cached(text: str, target_language: str) -> str:
     }.get(target_language, "natural English")
     try:
         from langchain_openai import ChatOpenAI
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_retries=3)
         prompt = (
             f"Translate the following Korean text into {lang_label}. "
             f"Strictly preserve markdown formatting (headings, bullets, tables, bold), "

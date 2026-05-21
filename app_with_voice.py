@@ -15,7 +15,7 @@ import time
 import requests as _requests
 from datetime import datetime, timezone, timedelta
 
-from core import get_tools, route_intent, answer_rule_based, answer_rule_based_localized, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached
+from core import get_tools, route_intent, answer_rule_based, answer_rule_based_localized, get_dynamic_prompt, render_source_buttons, initialize_vector_db, CSC_URLS, translate_answer_cached, check_moderation
 from voice import speech_to_text, text_to_speech, get_language_code, autoplay_audio, get_tts_cache_namespace
 from learning import render_post_visit_learning, _backtranslate_to_korean_cached
 
@@ -986,7 +986,7 @@ setTimeout(function(){{
             st.session_state.tts_cache = {}
 
         system_prompt = get_dynamic_prompt(user_mode, language_mode)
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1)
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_retries=3)
         memory = MemorySaver()
         agent = create_react_agent(
             model=llm,
@@ -1107,6 +1107,21 @@ setTimeout(function(){{
             with st.chat_message("user"):
                 st.markdown(user_input)
 
+            # ── 콘텐츠 안전 검사 (OpenAI Moderation API) ──────────────────────
+            if not check_moderation(user_input):
+                _block_msgs = {
+                    "한국어": "죄송해요, 그런 내용은 답하기 어려워요 😊 과학관에 대해 궁금한 게 있으면 언제든지 물어봐요!",
+                    "English": "Sorry, I can't help with that 😊 Feel free to ask anything about the science center!",
+                    "日本語": "申し訳ありません、その内容にはお答えできません 😊 科学館のことはいつでもお聞きください！",
+                    "中文": "抱歉，无法回答这类问题 😊 关于科学馆的任何问题，欢迎随时提问！",
+                }
+                _block_msg = _block_msgs.get(language_mode, _block_msgs["한국어"])
+                with st.chat_message("assistant"):
+                    st.markdown(_block_msg)
+                st.session_state.messages.append({"role": "assistant", "content": _block_msg})
+                st.stop()
+            # ─────────────────────────────────────────────────────────────────
+
             intent = route_intent(user_input)
             _track_ga_event("send_message", {
                 "intent": intent,
@@ -1161,46 +1176,52 @@ setTimeout(function(){{
                     # LLM + RAG + Crawling 엔진 동작
                     _stream_messages = None
                     _stream_config = None
-                    with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
-                        if st.session_state.get("directions_origin"):
-                            origin = st.session_state.get("directions_origin")
-                            del st.session_state["directions_origin"]
-                            user_input = (
-                                f"출발지: {origin}\n"
-                                "목적지: 국립어린이과학관(국립어린이과학관, 서울 종로구 창경궁로 215)\n"
-                                "요청: 대중교통(지하철/버스) 기준으로 가장 쉬운 경로를 단계별로 자세하고 친절하게 안내해줘. "
-                                "출입구/도보 이동/환승 포인트가 있으면 같이 알려줘. "
-                                "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.sciencecenter.go.kr/csc) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
-                            )
-                        # RAG 검색
-                        retrieved_docs = vector_db.similarity_search(user_input, k=3)
-                        rag_context = "\n\n".join([f"[{doc.metadata.get('source', 'N/A')}]\n{doc.page_content}" for doc in retrieved_docs])
-                        rag_sources = [doc.metadata.get("source", "N/A") for doc in retrieved_docs if getattr(doc, "metadata", None)]
-                        rag_sources = [s for s in dict.fromkeys([s for s in rag_sources if s])]
+                    _llm_prep_error = False
+                    try:
+                        with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
+                            if st.session_state.get("directions_origin"):
+                                origin = st.session_state.get("directions_origin")
+                                del st.session_state["directions_origin"]
+                                user_input = (
+                                    f"출발지: {origin}\n"
+                                    "목적지: 국립어린이과학관(국립어린이과학관, 서울 종로구 창경궁로 215)\n"
+                                    "요청: 대중교통(지하철/버스) 기준으로 가장 쉬운 경로를 단계별로 자세하고 친절하게 안내해줘. "
+                                    "출입구/도보 이동/환승 포인트가 있으면 같이 알려줘. "
+                                    "마지막에 노선/출입구는 변동될 수 있으니 공식 홈페이지(www.sciencecenter.go.kr/csc) '오시는 길' 확인과 02-3668-1500 문의를 덧붙여줘."
+                                )
+                            # RAG 검색
+                            retrieved_docs = vector_db.similarity_search(user_input, k=3)
+                            rag_context = "\n\n".join([f"[{doc.metadata.get('source', 'N/A')}]\n{doc.page_content}" for doc in retrieved_docs])
+                            rag_sources = [doc.metadata.get("source", "N/A") for doc in retrieved_docs if getattr(doc, "metadata", None)]
+                            rag_sources = [s for s in dict.fromkeys([s for s in rag_sources if s])]
 
-                        _clar_ctx = st.session_state.pop("_clarification_rag_ctx", None)
-                        if _clar_ctx:
-                            rag_context = _clar_ctx + "\n\n" + rag_context
+                            _clar_ctx = st.session_state.pop("_clarification_rag_ctx", None)
+                            if _clar_ctx:
+                                rag_context = _clar_ctx + "\n\n" + rag_context
 
-                        config = {"configurable": {"thread_id": st.session_state.thread_id}}
-                        llm_user_input = user_input
-                        if language_mode != "한국어":
-                            _lang_override = {
-                                "English": "[REQUIRED OUTPUT LANGUAGE: English] You MUST answer ENTIRELY in English, even though the question above may be in Korean. Translate place names using the official glossary in the system prompt (e.g., AI놀이터 → AI Zone). Do NOT output Korean text.",
-                                "日本語": "[出力言語指定: 日本語] 上の質問が韓国語であっても、必ず日本語だけで答えてください。場所名はシステムプロンプトのグロッサリーに従い、「日本語名称 (English Official Name)」の形式で記してください（例: 考えるゾーン (Thinking Zone)）。韓国語文字をそのまま出力しないこと。",
-                                "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以\"中文名称 (English Official Name)\"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
-                            }.get(language_mode, "")
-                            if _lang_override:
-                                llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
-                        messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
-                        for hist_msg in st.session_state.messages[-10:]:
-                            if hist_msg["role"] in ("user", "assistant"):
-                                messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
-                        messages.append({"role": "user", "content": llm_user_input})
-                        _stream_messages = messages
-                        _stream_config = config
+                            config = {"configurable": {"thread_id": st.session_state.thread_id}}
+                            llm_user_input = user_input
+                            if language_mode != "한국어":
+                                _lang_override = {
+                                    "English": "[REQUIRED OUTPUT LANGUAGE: English] You MUST answer ENTIRELY in English, even though the question above may be in Korean. Translate place names using the official glossary in the system prompt (e.g., AI놀이터 → AI Zone). Do NOT output Korean text.",
+                                    "日本語": "[出力言語指定: 日本語] 上の質問が韓国語であっても、必ず日本語だけで答えてください。場所名はシステムプロンプトのグロッサリーに従い、「日本語名称 (English Official Name)」の形式で記してください（例: 考えるゾーン (Thinking Zone)）。韓国語文字をそのまま出力しないこと。",
+                                    "中文": "[输出语言要求: 中文] 即使以上问题是韩语，你也必须完全用中文回答。地点名称请依照系统提示词中的词汇表，以\"中文名称 (English Official Name)\"的格式书写（例：思考区 (Thinking Zone)）。不要直接输出韩文。",
+                                }.get(language_mode, "")
+                                if _lang_override:
+                                    llm_user_input = f"{user_input}\n\n---\n{_lang_override}"
+                            messages = [{"role": "system", "content": f"{system_prompt}\n\n[RAG 배경지식]\n{rag_context}"}]
+                            for hist_msg in st.session_state.messages[-10:]:
+                                if hist_msg["role"] in ("user", "assistant"):
+                                    messages.append({"role": hist_msg["role"], "content": hist_msg["content"]})
+                            messages.append({"role": "user", "content": llm_user_input})
+                            _stream_messages = messages
+                            _stream_config = config
+                    except Exception as _prep_err:
+                        print(f"LLM prep error: {_prep_err}")
+                        answer = t("error_stream_fail")
+                        _llm_prep_error = True
 
-                    log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000)
+                    log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000, error=_llm_prep_error)
                     _track_ga_event("answer_delivered", {
                         "intent": intent,
                         "answer_type": "llm_rag",
@@ -1208,45 +1229,44 @@ setTimeout(function(){{
                         "user_mode": user_mode
                     })
 
-                    # 스트리밍 출력 (RAG 검색 완료 후 spinner 없이 즉시 토큰 표시)
+                    # 스트리밍 출력 (st.write_stream — Streamlit 기본 스트리밍)
                     if _stream_messages is not None:
-                        _answer_area = st.empty()
-                        _answer_area.markdown(f"_{t('spinner_stream')}_")
                         _full_text = ""
-                        _first_chunk = True
+                        _got_response = False
                         try:
-                            for _msg, _meta in agent.stream(
-                                {"messages": _stream_messages},
-                                config=_stream_config,
-                                stream_mode="messages"
-                            ):
-                                if (
-                                    hasattr(_msg, "content")
-                                    and isinstance(_msg.content, str)
-                                    and _msg.content
-                                    and _meta.get("langgraph_node") == "agent"
-                                    and not getattr(_msg, "tool_calls", None)
+                            def _token_gen():
+                                for _msg, _meta in agent.stream(
+                                    {"messages": _stream_messages},
+                                    config=_stream_config,
+                                    stream_mode="messages"
                                 ):
-                                    if _first_chunk:
-                                        _full_text = ""
-                                        _first_chunk = False
-                                    _full_text += _msg.content
-                                    _answer_area.markdown(_full_text + "▌")
+                                    if (
+                                        hasattr(_msg, "content")
+                                        and isinstance(_msg.content, str)
+                                        and _msg.content
+                                        and _meta.get("langgraph_node") == "agent"
+                                        and not getattr(_msg, "tool_calls", None)
+                                    ):
+                                        yield _msg.content
+                            _streamed = st.write_stream(_token_gen())
+                            _full_text = _streamed if isinstance(_streamed, str) else "".join(_streamed)
+                            _got_response = bool(_full_text)
                         except Exception as _e:
                             print(f"Streaming error, fallback to invoke: {_e}")
                             try:
                                 _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
                                 _full_text = _fb["messages"][-1].content
-                                _first_chunk = False
+                                st.markdown(_full_text)
+                                _got_response = True
                             except Exception as _e2:
                                 print(f"Invoke fallback failed: {_e2}")
                                 _full_text = t("error_stream_fail")
-                                _first_chunk = False
-                        if _first_chunk:
-                            _answer_area.markdown(t("error_no_response"))
-                            answer = t("error_no_response")
+                                st.markdown(_full_text)
+                        if not _got_response:
+                            _no_resp = t("error_no_response")
+                            st.markdown(_no_resp)
+                            answer = _no_resp
                         else:
-                            _answer_area.markdown(_full_text)
                             answer = _full_text
 
                 if _stream_messages is None:

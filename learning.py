@@ -839,6 +839,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
 - 제공된 전시물 정보를 최대한 활용하세요.
 - 같은 전시물이라도 매번 다른 측면(원인, 결과, 비교, 예시, 응용 등)에서 질문하세요.
 - 위에 지정된 각도와 형식을 반드시 따르세요. CSV 정보만 사용하세요.
+⛔ **절대 금지**: 위 [전시물 상세 설명]에 등장하지 않는 과학 개념, 실험, 사례를 새로 만들지 말 것. 오직 제공된 데이터 범위 안에서만 출제.
 
 {quality_rules_ko}
 
@@ -865,6 +866,7 @@ Create a 4-choice quiz about '{principle}' from '{zone_name}'.{glossary_rules}
 - Use ALL provided exhibit information.
 - Ask from a different aspect each time (cause, result, comparison, example, application).
 - Follow the angle and format above strictly. Use ONLY CSV information.
+⛔ STRICTLY FORBIDDEN: Do NOT introduce science concepts, experiments, or examples that are NOT found in the exhibit description above. Stay within the provided data only.
 
 {quality_rules_en}
 
@@ -1190,6 +1192,11 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
         elif t:
             core_lines.append(f"- {t}")
     exhibit_summary = "\n".join(core_lines)
+    # 폴백: core_lines가 비어있으면 all_titles 에서 채우기
+    if not exhibit_summary.strip() and all_titles:
+        for _t in all_titles[:2]:
+            core_lines.append(f"- {_t}")
+        exhibit_summary = "\n".join(core_lines)
 
     # 분위기 재료 (다음 5개 전시물 title) — 세계관에 자연스럽게 흩뿌릴 풍경/소품
     atmosphere_titles = []
@@ -1322,6 +1329,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - 짧은 문장 위주, 대사 비중 40% 이상.
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
 7) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
+⛔ **전시관 일탈 금지**: 위 [재료] 목록에 없는 전시물·과학 개념을 새로 지어내지 말 것. 반드시 위 재료만 사용.
 8) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
 
 [출력 형식]
@@ -2010,12 +2018,48 @@ def render_post_visit_learning(
                             except Exception as e:
                                 print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
-                        # 선택된 키워드(전시물)의 세부설명 찾기
+                        # 선택된 키워드(전시물)의 세부설명 찾기 — content + detail 모두 포함
                         quiz_detail = ""
+                        _selected_category = ""
                         for r in zone_rows:
                             if r.get("title") == selected_kw:
-                                quiz_detail = r.get("detail", "")
+                                _c = str(r.get("content", "") or "").strip()
+                                _d = str(r.get("detail", "") or "").strip()
+                                _selected_category = r.get("category", "")
+                                _parts = []
+                                if _c and _c.lower() != "nan":
+                                    _parts.append(f"[전시물 설명] {_c}")
+                                if _d and _d.lower() != "nan":
+                                    _parts.append(f"[체험 방법] {_d}")
+                                quiz_detail = "\n".join(_parts)
                                 break
+
+                        # 데이터 부실(200자 미만) 시 같은 분류(category) 이웃 전시물로 자동 보충
+                        if len(quiz_detail) < 200 and _selected_category:
+                            _extra_parts = []
+                            _extra_len = 0
+                            for r in zone_rows:
+                                if r.get("title") == selected_kw:
+                                    continue
+                                if r.get("category") != _selected_category:
+                                    continue
+                                _t = str(r.get("title", "") or "").strip()
+                                _ec = str(r.get("content", "") or "").strip()
+                                _ed = str(r.get("detail", "") or "").strip()
+                                _added = []
+                                if _ec and _ec.lower() != "nan":
+                                    _added.append(f"[관련: {_t}] {_ec}")
+                                if _ed and _ed.lower() != "nan":
+                                    _added.append(f"[관련 체험: {_t}] {_ed}")
+                                for line in _added:
+                                    if _extra_len + len(line) > 500:
+                                        break
+                                    _extra_parts.append(line)
+                                    _extra_len += len(line)
+                                if _extra_len >= 500:
+                                    break
+                            if _extra_parts:
+                                quiz_detail = (quiz_detail + "\n" if quiz_detail else "") + "\n".join(_extra_parts)
 
                         # 이전 문제 이력 키 (최대 3개 보관)
                         prev_q_key = f"quiz_prev_qs_{zone}_{selected_kw}"
