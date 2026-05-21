@@ -253,7 +253,7 @@ def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
 
 @st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
 def _extract_zone_keywords_llm(zone_name: str, language_mode: str, csv_compact_text: str):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+    llm = ChatOpenAI(model="gpt-5.5", temperature=0.2)
 
     if language_mode == "한국어":
         prompt = f"""너는 초등 4~6학년 어린이(10~12세)와 학부모를 위한 전시관 키워드 편집자야.
@@ -305,7 +305,7 @@ def _translate_keywords_cached(keywords_tuple: tuple, target_language: str) -> l
         "中文": "Simplified Chinese (中文 only)",
     }.get(target_language, "English")
     try:
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        llm = ChatOpenAI(model="gpt-5.5", temperature=0)
         joined = ", ".join(keywords_tuple)
         prompt = (
             f"Translate each Korean keyword into {lang_label}. "
@@ -1329,7 +1329,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - 짧은 문장 위주, 대사 비중 40% 이상.
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
 7) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
-⛔ **전시관 일탈 금지**: 위 [재료] 목록에 없는 전시물·과학 개념을 새로 지어내지 말 것. 반드시 위 재료만 사용.
+⛔ **전시관 일탈 금지 (매우 중요)**: 위 [재료] 목록에 없는 전시물·과학 개념·현상을 새로 지어내지 말 것. 반드시 위 재료만 사용. 위 목록에 없는 과학 원리를 절대 설명하지 말 것.
 8) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
 
 [출력 형식]
@@ -1538,7 +1538,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 只能选一个
     prompt = dna_header + language_prompts.get(language, language_prompts["한국어"])
 
     try:
-        llm = ChatOpenAI(model="gpt-4o", temperature=0.8)
+        llm = ChatOpenAI(model="gpt-5.5", temperature=0.8)
         response = llm.invoke(prompt)
         return response.content
     except Exception as e:
@@ -1584,11 +1584,31 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
     if (not eleven_key) and hasattr(st, "secrets"):
         eleven_key = _safe_secret_get("ELEVENLABS_API_KEY", "")
 
-    eleven_voice_id = voice_override or os.environ.get("ELEVENLABS_VOICE_ID")
+    # 언어별 Voice ID 매핑
+    voice_id_env_map = {
+        "한국어": ["ELEVENLABS_VOICE_ID_KO", "ELEVENLABS_VOICE_ID"],
+        "English": ["ELEVENLABS_VOICE_ID_EN", "ELEVENLABS_VOICE_ID"],
+        "日本語": ["ELEVENLABS_VOICE_ID_JA", "ELEVENLABS_VOICE_ID"],
+        "中文": ["ELEVENLABS_VOICE_ID_ZH", "ELEVENLABS_VOICE_ID"],
+    }
+    env_keys = voice_id_env_map.get(language, ["ELEVENLABS_VOICE_ID_KO", "ELEVENLABS_VOICE_ID"])
+    
+    eleven_voice_id = voice_override
+    if not eleven_voice_id:
+        for env_key in env_keys:
+            eleven_voice_id = os.environ.get(env_key)
+            if eleven_voice_id:
+                print(f"[TTS] Using voice ID from env: {env_key} = {eleven_voice_id}")
+                break
     if (not eleven_voice_id) and hasattr(st, "secrets"):
-        eleven_voice_id = _safe_secret_get("ELEVENLABS_VOICE_ID", "")
+        for env_key in env_keys:
+            eleven_voice_id = _safe_secret_get(env_key, "")
+            if eleven_voice_id:
+                print(f"[TTS] Using voice ID from secrets: {env_key} = {eleven_voice_id}")
+                break
     if not eleven_voice_id:
         eleven_voice_id = "21m00Tcm4TlvDq8ikWAM"
+        print(f"[TTS] Using default voice ID: {eleven_voice_id}")
 
     eleven_model_id = os.environ.get("ELEVENLABS_MODEL_ID")
     if (not eleven_model_id) and hasattr(st, "secrets"):
@@ -1945,7 +1965,7 @@ def render_post_visit_learning(
 
         if selected_zones:
             st.markdown("---")
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+            llm = ChatOpenAI(model="gpt-5.5", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
                 
@@ -2291,7 +2311,7 @@ def render_post_visit_learning(
         if selected_zones_story and st.button(text["generate_story"]):
             _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
             with st.spinner(text["story_generating"]):
-                llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+                llm = ChatOpenAI(model="gpt-5.5", temperature=0.7)
                 
                 all_exhibits = []
                 all_principles = []

@@ -1229,10 +1229,13 @@ setTimeout(function(){{
                         "user_mode": user_mode
                     })
 
-                    # 스트리밍 출력 (st.write_stream — Streamlit 기본 스트리밍)
+                    # 스트리밍 출력 — st.empty() 수동 스트리밍: 첫 토큰 전 대기 중에도 생성 중 문구 표시
                     if _stream_messages is not None:
                         _full_text = ""
                         _got_response = False
+                        _spinner_text = ui_text.get(language_mode, ui_text["한국어"])["spinner_stream"]
+                        _stream_placeholder = st.empty()
+                        _stream_placeholder.markdown(f"*{_spinner_text}*")
                         try:
                             def _token_gen():
                                 for _msg, _meta in agent.stream(
@@ -1248,11 +1251,17 @@ setTimeout(function(){{
                                         and not getattr(_msg, "tool_calls", None)
                                     ):
                                         yield _msg.content
-                            _streamed = st.write_stream(_token_gen())
-                            _full_text = _streamed if isinstance(_streamed, str) else "".join(_streamed)
-                            _got_response = bool(_full_text)
+                            for _tok in _token_gen():
+                                _full_text += _tok
+                                _stream_placeholder.markdown(_full_text + "▌")
+                            if _full_text:
+                                _stream_placeholder.markdown(_full_text)
+                                _got_response = True
+                            else:
+                                _stream_placeholder.empty()
                         except Exception as _e:
                             print(f"Streaming error, fallback to invoke: {_e}")
+                            _stream_placeholder.empty()
                             try:
                                 _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
                                 _full_text = _fb["messages"][-1].content

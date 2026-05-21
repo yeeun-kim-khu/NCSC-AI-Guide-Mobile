@@ -1,10 +1,10 @@
 ﻿page_key,url,block_type,order,title,content
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,0,,본문 바로가기
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,1,,주메뉴 바로가기
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,2,,1층 전시 개선 공사 안내(3.3.~)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,2,,1층 전시 개선 공사 안내(3.3.-)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,3,,새로운 전시 공간을 조성하기 위해 1층 일부 구역이 제한됩니다.
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,4,,◇ 내용: 1층 생각놀이터 조성(전시품 제작 및 설치)
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,5,,◇ 개선 작업 기간: 2026년 3월 3일 ~ 2026년 4월 30일
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,5,,◇ 개선 작업 기간: 2026년 3월 3일 - 2026년 4월 30일
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,6,,※ 소음과 냄새 등 관람 시 불편함이 있을 수 있습니다.
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,7,,현재 해당 구역에서 전시중인 ‘과학마블 탐구여행’은
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,8,,출입구 옆 공간으로 이동합니다.
@@ -27,8 +27,8 @@
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,30,,일시정지
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,31,,이전보기
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,32,,다음보기
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,33,,관람시간 09:30~17:30 (입장마감 16:30)
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,34,관람시간,09:30~17:30 (입장마감 16:30)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,33,,관람시간 09:30-17:30 (입장마감 16:30)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,34,관람시간,09:30-17:30 (입장마감 16:30)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,35,관람시간,"휴관일 매주 월요일, 1월 1일, 설날/추석 당일"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,36,휴관일,"매주 월요일, 1월 1일, 설날/추석 당일"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,37,휴관일,개인예약
@@ -41,8 +41,8 @@
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,47,공지사항,"《Science Center Information》(Eng, 汉语, 日本語)"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,48,공지사항,《주차》및《어린이 동반 없는 관람객 입장》안내 2023.10.24
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,49,공지사항,《주차》및《어린이 동반 없는 관람객 입장》안내
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,50,공지사항,2026년 과학의 달 기념 무료개관 안내(4.18~21. / 4.20.휴관) 2026.04.01
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,51,공지사항,2026년 과학의 달 기념 무료개관 안내(4.18~21. / 4.20.휴관)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,50,공지사항,2026년 과학의 달 기념 무료개관 안내(4.18-21. / 4.20.휴관) 2026.04.01
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,51,공지사항,2026년 과학의 달 기념 무료개관 안내(4.18-21. / 4.20.휴관)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,52,공지사항,몰입형 실감 미디어 체험관 '빛놀이터' 시범운영 안내 2026.03.30
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,53,공지사항,몰입형 실감 미디어 체험관 '빛놀이터' 시범운영 안내
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,54,공지사항,교육 소식
@@ -57,14 +57,14 @@
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,63,공지사항,「창경궁 과학 나들이」 4월 교육 프로그램 안내 2026.03.11
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,64,공지사항,「창경궁 과학 나들이」 4월 교육 프로그램 안내
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,65,공지사항,문화행사
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,66,공지사항,[행사] 과학의 날 「알록달록 과학마블」(4.18~19.) 2026.04.07
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,67,공지사항,[행사] 과학의 날 「알록달록 과학마블」(4.18~19.)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,66,공지사항,[행사] 과학의 날 「알록달록 과학마블」(4.18-19.) 2026.04.07
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,67,공지사항,[행사] 과학의 날 「알록달록 과학마블」(4.18-19.)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,68,공지사항,"[천문] 우주로 보내줘! 3, 2, 1! 로켓! (주제: 로켓) 2026.03.27"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,69,공지사항,"[천문] 우주로 보내줘! 3, 2, 1! 로켓! (주제: 로켓)"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,70,공지사항,2026년 4월 「서울에서 별 본다」 운영 안내 2026.03.25
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,71,공지사항,2026년 4월 「서울에서 별 본다」 운영 안내
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,72,공지사항,전시해설 「짹짹 새 탐험대」 운영 안내(26.04.04.~) 2026.03.20
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,73,공지사항,전시해설 「짹짹 새 탐험대」 운영 안내(26.04.04.~)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,72,공지사항,전시해설 「짹짹 새 탐험대」 운영 안내(26.04.04.-) 2026.03.20
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,73,공지사항,전시해설 「짹짹 새 탐험대」 운영 안내(26.04.04.-)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,74,공지사항,"[천문] 우주로 보내줘! 3, 2, 1! 로켓! (주제: 로켓) 2026.03.13"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,75,공지사항,"[천문] 우주로 보내줘! 3, 2, 1! 로켓! (주제: 로켓)"
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,76,공지사항,이벤트
@@ -72,12 +72,12 @@
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,78,공지사항,세계 수학의 날 기념 이벤트 <3.14 파이 원정대!>
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,79,공지사항,'내가 말이야!' 말띠 인증하고 무료입장권 받자! 2026.01.30
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,80,공지사항,'내가 말이야!' 말띠 인증하고 무료입장권 받자!
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,81,공지사항,말이 씨가 되는 새해 소원 적기 이벤트!(~1.18.) 2026.01.12
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,82,공지사항,말이 씨가 되는 새해 소원 적기 이벤트!(~1.18.)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,81,공지사항,말이 씨가 되는 새해 소원 적기 이벤트!(-1.18.) 2026.01.12
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,82,공지사항,말이 씨가 되는 새해 소원 적기 이벤트!(-1.18.)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,83,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트 당첨자 발표 2025.11.21
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,84,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트 당첨자 발표
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,85,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트(~11.17.) 2025.11.11
-홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,86,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트(~11.17.)
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,85,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트(-11.17.) 2025.11.11
+홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,86,공지사항,유튜브 채널 구독자 1만 명 달성 감사 이벤트(-11.17.)
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,87,메인버튼,관람안내 이용안내 자주 묻는 질문 오시는 길 서울특별시 종로구 창경궁로 215 국립어린이과학관
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,88,메인버튼,관람안내
 홈페이지,https://www.sciencecenter.go.kr/csc/index.do,text,89,메인버튼,이용안내

@@ -249,6 +249,10 @@ def route_intent(text: str) -> str:
         "연나이", "만 나이", "만나이", "몇 년생", "몇년생",
         "오늘의 프로그램", "오늘 프로그램", "시간표", "회차", "상영 시간", "상영시간",
         "k-사이언스", "k사이언스",
+        # 시설 편의 (화장실·휴게실)
+        "화장실", "휴게실",
+        # 전시해설 프로그램명 단독 질의
+        "짹짹 탐험대", "짹짹탐험대", "헬로 다이노", "헬로다이노", "북적북적 과학관", "북적북적과학관",
     ]
     if any(token in lowered for token in clear_faq_keywords):
         return "basic"
@@ -403,7 +407,7 @@ def classify_basic_category(message: str) -> str:
         return "science_lab"
     
     # 전시해설
-    if any(k in lowered for k in ["헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "북적북적 과학관", "북적북적과학관", "전시해설 프로그램", "스폿해설", "전시톡톡해설", "단체해설"]):
+    if any(k in lowered for k in ["헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "짹짹 탐험대", "짹짹탐험대", "북적북적 과학관", "북적북적과학관", "전시해설 프로그램", "스폿해설", "전시톡톡해설", "단체해설"]):
         return "docent_program"
     
     # 로봇순회
@@ -463,7 +467,7 @@ def classify_basic_category(message: str) -> str:
         # 가장 구체적인 카테고리 먼저
         ("science_show", ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]),
         ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "천체투영관 시간", "투영관 시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노소어"]),
-        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "북적북적 과학관", "북적북적과학관", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]),
+        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "짹짹 탐험대", "짹짹탐험대", "북적북적 과학관", "북적북적과학관", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]),
         ("exhibit_guide",   ["전시관", "전시관 안내", "놀이터 안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터", "빛놀이터"]),
         ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
         # parking 은 admission_fee 앞에 위치 (주차비/주차료의 '비/료' 를 admission 이 먹지 않도록)
@@ -590,7 +594,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 
 > 💡 **팁**: 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
+[🔗 홈페이지]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
     if intent == "basic":
         category = classify_basic_category(message)
         if category == "light_zone_detail":
@@ -668,7 +672,7 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 ---
 {_show_tip}
 
-[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
+[🔗 홈페이지]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
 
         if category == "program_wayfinding":
             lowered_msg = message.lower()
@@ -827,7 +831,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 #### 💡 팁
 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
+[🔗 홈페이지]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
         if category == "science_lab":
             return """**사이언스랩** 프로그램 안내입니다! 😊
 
@@ -865,7 +869,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 #### 💡 팁
 로봇쇼와 사이언스랩은 월별로 교대 운영되니, 방문 전에 홈페이지에서 해당 월의 프로그램을 확인해 주세요!
 
-[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
+[🔗 홈페이지]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
         if category == "docent_program":
             return """**전시해설** 프로그램 안내입니다! 😊
 
@@ -941,7 +945,7 @@ K-사이언스는 전통과학의 지혜와 현대 과학기술을 연결하는 
 - 프로그램 내용 및 시간표는 운영 상황에 따라 변동될 수 있어요.
 - 공휴일인 경우 주말 프로그램 일정과 동일하게 운영합니다.
 
-[🔗 홈페이지에서 자세히 보기]({CSC_URLS.get('전시해설', 'https://www.sciencecenter.go.kr/csc/cultural-event/docent')})"""
+[🔗 홈페이지]({CSC_URLS.get('전시해설', 'https://www.sciencecenter.go.kr/csc/cultural-event/docent')})"""
         if category == "robot_tour":
             return """**로봇순회** 프로그램 안내입니다! 🤖
 
@@ -1330,14 +1334,15 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
             weekday = now_kst.weekday()  # 0=월 ~ 6=일
             weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][weekday]
+            today_str = f"{now_kst.month}월 {now_kst.day}일"
             if weekday == 5:  # 토요일
-                day_notice = f"오늘은 **토요일**이에요! 🎉 교육 프로그램이 운영되는 날이에요.\n\n"
+                day_notice = f"오늘은 **{today_str}(토요일)**이에요! 🎉 교육 프로그램이 운영되는 날이에요.\n\n"
             else:
                 days_to_sat = (5 - weekday) % 7 or 7
                 next_sat = now_kst + timedelta(days=days_to_sat)
                 next_sat_str = next_sat.strftime("%m월 %d일")
                 day_notice = (
-                    f"오늘은 **{weekday_kr}요일**이라 정규 교육 프로그램 운영일이 아니에요. 😊\n"
+                    f"오늘은 **{today_str}({weekday_kr}요일)**이라 정규 교육 프로그램 운영일이 아니에요. 😊\n"
                     f"교육 프로그램(과학교실·수학교실 등)은 **매주 토요일**에 운영돼요.\n"
                     f"다음 토요일은 **{next_sat_str}**이에요!\n\n"
                 )
@@ -1952,7 +1957,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 """
 
             programs = """
-#### � 회차별 프로그램 줄거리
+#### 💗 회차별 프로그램 줄거리
 
 - **1회 (10:00) 코코몽 우주탐험**
   토성의 위성 타이탄에 살고 있는 핼리의 부모님을 세균킹에게서 구출하기 위한 모험! (별자리해설 포함)
@@ -1983,7 +1988,21 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 > 우대고객: 경로우대·장애인·과학기술유공자·국가유공자·기초생활수급자·차상위계층·한부모가족 지원 대상자
 """
 
-            return f"""천체투영관 시간표를 정리해드릴게요! 🌙
+            _round_map = [
+                (["코코몽"], "코코몽 우주탐험", "1회차(10:00)"),
+                (["슈퍼문"], "길냥이 키츠 슈퍼문 대모험", "2회차(11:00)"),
+                (["바니"], "바니 앤 비니", "3·6회차(12:00, 16:00)"),
+                (["다이노소어"], "다이노소어", "4회차(14:00)"),
+                (["우주정거장"], "길냥이 키츠 우주정거장의 비밀", "5회차(15:00)"),
+                (["키츠"], "길냥이 키츠 시리즈", "2·5회차(11:00, 15:00)"),
+            ]
+            _prog_prefix = ""
+            _lowered = message.lower()
+            for _kws, _pname, _rounds in _round_map:
+                if any(_kw in _lowered for _kw in _kws):
+                    _prog_prefix = f"**{_pname}**은(는) 천체투영관 **{_rounds}** 프로그램이에요! 🌟\n\n"
+                    break
+            return _prog_prefix + f"""천체투영관 시간표를 정리해드릴게요! 🌙
 
 #### 🌌 시설 소개
 - **11m 원형 돔스크린 + 4K 레이저 프로젝터**
@@ -4080,7 +4099,7 @@ def render_source_buttons(sources: list, language_mode: str = "한국어", key_s
         return
 
     btn_label = {
-        "한국어": "🔗 홈페이지에서 자세히 보기",
+        "한국어": "🔗 홈페이지",
         "English": "🔗 Official website",
         "日本語": "🔗 公式サイトで詳しく",
         "中文": "🔗 官网查看详情",
