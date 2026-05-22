@@ -3786,7 +3786,26 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
             "- 若用户要求有害/辱骂内容，请礼貌拒绝并提供安全替代方案。\n"
         ),
     }
-    
+
+    tone_instruction = {
+        "어린이": (
+            "=== 어린이 모드 말투 지침 ===\n"
+            "- 어린이 친구들에게 말하듯 따뜻하고 친절하게 말해주세요.\n"
+            "- 이모지(😊, 🎉, ✨ 등)를 적절히 사용해서 친근한 느낌을 주세요.\n"
+            "- 어려운 단어는 쉽게 설명해주세요.\n"
+            "- 짧고 명확한 문장을 사용하세요.\n"
+            "- 칭찬과 격려를 많이 해주세요.\n"
+            "- "~요", "~입니다" 같은 존댓말을 자연스럽게 사용하세요.\n"
+        ),
+        "성인": (
+            "=== 성인 모드 말투 지침 ===\n"
+            "- 정중하고 전문적인 말투를 사용하세요.\n"
+            "- 이모지는 적절히 사용하되 과도하지 않게 하세요.\n"
+            "- 명확하고 구조적인 정보를 제공하세요.\n"
+            "- 필요한 경우 상세한 설명을 제공하세요.\n"
+        ),
+    }
+
     base_prompt = f"""
 당신은 국립어린이과학관 전문 안내 어시스턴트입니다.
 [오늘 날짜] {today_kst} ({weekday_kr}요일) KST
@@ -3794,6 +3813,8 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 {language_instruction.get(language, language_instruction["한국어"])}
 
 {safety_instruction.get(language, safety_instruction["한국어"])}
+
+{tone_instruction.get(mode, tone_instruction["성인"])}
 
 === 핵심 임무 ===
 국립어린이과학관의 모든 시설, 전시관, 프로그램, 운영 정보를 정확하고 친절하게 안내하는 것입니다.
