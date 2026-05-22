@@ -169,6 +169,16 @@ def route_intent(text: str) -> str:
         st.session_state["directions_origin"] = text.strip()
         return "llm_agent"
 
+    # 다이노 모호성 해소 2단계: 이전에 다이노/공룡 질문 후 대기 중
+    if st.session_state.get("awaiting_dino_clarification") and lowered:
+        st.session_state.pop("awaiting_dino_clarification")
+        if any(k in lowered for k in ["천체투영관", "프로그램", "다이노소어", "영상", "상영"]):
+            st.session_state["_dino_message_override"] = "다이노소어"
+            return "basic"
+        if any(k in lowered for k in ["전시물", "터널", "다이노터널"]):
+            return "llm_agent"
+        # 그 외 입력: 플래그 해제하고 일반 라우팅으로 진행
+
     # 공지사항 → 전용 크롤러
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
@@ -2176,6 +2186,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             return base
 
         if category == "ambiguous_dino":
+            st.session_state["awaiting_dino_clarification"] = True
             if mode == "어린이":
                 return """🦕 **다이노**에 대해 물어봤군요! 공룡 좋아해요? 😄 어떤 다이노인지 알려주면 바로 안내해드릴게요!
 
@@ -4191,6 +4202,11 @@ def answer_rule_based_localized(intent: str, message: str, mode: str, language: 
     4) operating_hours → 동적 status 부분만 매핑 후 템플릿 주입
     5) 정적 번역 미보유 → translate_answer_cached (LLM, 24h 캐시) 폴백
     """
+    # 다이노 모호성 해소: 이전 질문의 맥락으로 메시지를 오버라이드
+    _dino_override = st.session_state.pop("_dino_message_override", None)
+    if _dino_override:
+        message = _dino_override
+
     ko_answer = answer_rule_based(intent, message, mode)
     if not ko_answer:
         return "", ""
