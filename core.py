@@ -560,6 +560,19 @@ def get_today_status() -> str:
         return "오늘 관람 시간은 종료됐어요. 관람시간은 09:30-17:30이고, 입장 마감은 16:30이에요."
     return "현재 정상 운영 중입니다! 관람시간은 09:30-17:30이고, 입장 마감은 16:30이에요."
 
+def adjust_tone_for_mode(text: str, mode: str) -> str:
+    """모드별 말투 조정 함수"""
+    if mode == "어린이":
+        # 어린이 모드: 이모지 추가, 말투 친절하게
+        if not any(emoji in text for emoji in ["😊", "🎉", "✨", "🤖", "🔬", "📐", "💻", "🧸", "🏛️", "📚", "🌿", "🍎", "🌈", "🎯", "⏰", "📋", "⚠️", "📞", "🎫", "📍", "📅"]):
+            text = text.replace("안내입니다!", "안내입니다! 😊")
+            text = text.replace("안내입니다.", "안내입니다. 😊")
+        # "~입니다" → "~이에요"로 친절하게
+        text = text.replace("입니다.", "이에요.")
+        text = text.replace("입니다!", "이에요!")
+        text = text.replace("입니다\n", "이에요\n")
+    return text
+
 def answer_rule_based(intent: str, message: str, mode: str) -> str:
     """규칙 기반 답변 생성"""
     if intent == "notice":
@@ -1194,7 +1207,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
 #### 📋 신청 방법
 - **예약**: 신청콕 예약 (선착순)
-- **신청 기간**: 해당월 17일(금) 오후 2시 ~ 교육일 하루 전
+- **신청 기간**: 3월 20일(금) 14시부터 프로그램 수업 시작 1일 전까지
 - **문의**: 02-3668-3304, 3318
 
 #### ⚠️ 유의사항
@@ -2869,7 +2882,9 @@ def answer_rule_based_localized(intent: str, message: str, mode: str, language: 
     if not ko_answer:
         return "", ""
 
+    # 모드별 말투 조정 (한국어만 적용)
     if language == "한국어":
+        ko_answer = adjust_tone_for_mode(ko_answer, mode)
         return ko_answer, ko_answer
 
     if intent == "basic":
