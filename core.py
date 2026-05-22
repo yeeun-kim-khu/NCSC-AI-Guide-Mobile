@@ -179,6 +179,16 @@ def route_intent(text: str) -> str:
             return "llm_agent"
         # 그 외 입력: 플래그 해제하고 일반 라우팅으로 진행
 
+    # 후속 질문 맥락 보강: "거기", "그거" 등 지시어 포함 시 직전 카테고리 prefix 주입
+    if _is_followup_message(text):
+        _last_cat = st.session_state.get("_last_rule_category")
+        _prefix = _CATEGORY_TOPIC_PREFIX.get(_last_cat, "")
+        if _prefix and _prefix not in text:
+            _augmented = f"{_prefix} {text}"
+            st.session_state["_context_augmented_message"] = _augmented
+            lowered = _augmented.lower().strip()
+            text = _augmented
+
     # 공지사항 → 전용 크롤러
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
@@ -302,6 +312,43 @@ def route_intent(text: str) -> str:
 
     # ── 4단계: 나머지 → LLM+RAG (과학 원리·자유대화·복잡한 추천 등) ──────────
     return "llm_agent"
+
+# 카테고리별 대화 맥락 prefix (후속 질문 보강용)
+_CATEGORY_TOPIC_PREFIX: dict[str, str] = {
+    "planetarium_timetable": "천체투영관",
+    "floor_guide":           "층별 안내",
+    "exhibit_guide":         "전시관",
+    "route_by_age":          "관람 동선",
+    "today_programs":        "오늘 프로그램",
+    "science_show":          "과학쇼",
+    "reservation_guide":     "예약",
+    "admission_fee":         "입장료",
+    "operating_hours":       "운영시간",
+    "parking":               "주차",
+    "robot_tour":            "로봇순회",
+    "light_zone_detail":     "빛놀이터",
+    "directions":            "오시는 길",
+    "science_classroom":     "과학교실",
+    "ai_classroom":          "AI공학교실",
+    "math_classroom":        "수학교실",
+    "sw_classroom":          "SW공학교실",
+    "exhibit_explanation":   "전시해설",
+    "facility_amenities":    "편의시설",
+    "education_guide":       "교육 프로그램",
+}
+
+_FOLLOWUP_MARKERS = ["거기", "그거", "그곳", "그건", "그게", "거기서", "그것", "거기에", "거긴", "거기는", "거기도"]
+_FOLLOWUP_PHRASES = ["더 자세히", "더 알려", "좀 더 알"]
+
+def _is_followup_message(text: str) -> bool:
+    """직전 답변을 지칭하는 후속 질문 여부 판단."""
+    lowered = text.lower().strip()
+    if any(m in lowered for m in _FOLLOWUP_MARKERS):
+        return True
+    if any(p in lowered for p in _FOLLOWUP_PHRASES):
+        return True
+    return False
+
 
 def classify_basic_category(message: str) -> str:
     """기본 질문 카테고리 분류.
@@ -640,6 +687,12 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
 [🔗 홈페이지]({CSC_URLS.get('과학쇼', 'https://www.sciencecenter.go.kr/csc/cultural-event/science-show')})"""
     if intent == "basic":
         category = classify_basic_category(message)
+        # 직전 카테고리 저장 (후속 질문 맥락 보강용)
+        if category and category not in ("ambiguous_dino",):
+            try:
+                st.session_state["_last_rule_category"] = category
+            except Exception:
+                pass
         if category == "light_zone_detail":
             if mode == "어린이":
                 return """✨ **빛놀이터** 체험 안내예요!
@@ -4206,6 +4259,11 @@ def answer_rule_based_localized(intent: str, message: str, mode: str, language: 
     _dino_override = st.session_state.pop("_dino_message_override", None)
     if _dino_override:
         message = _dino_override
+    else:
+        # 후속 질문 맥락 보강: route_intent 에서 저장한 augmented message 적용
+        _aug = st.session_state.pop("_context_augmented_message", None)
+        if _aug:
+            message = _aug
 
     ko_answer = answer_rule_based(intent, message, mode)
     if not ko_answer:
