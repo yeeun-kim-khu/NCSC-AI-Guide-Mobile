@@ -251,8 +251,6 @@ def route_intent(text: str) -> str:
         "k-사이언스", "k사이언스",
         # 시설 편의 (화장실·휴게실)
         "화장실", "휴게실",
-        # 전시해설 프로그램명 단독 질의
-        "짹짹 탐험대", "짹짹탐험대", "헬로 다이노", "헬로다이노", "북적북적 과학관", "북적북적과학관",
     ]
     if any(token in lowered for token in clear_faq_keywords):
         return "basic"
@@ -2095,6 +2093,10 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 - 사전예약 원칙 + 잔여석에 한해 현장 판매
 - 30분 이내 미결제 시 자동 취소 → 반드시 결제 완료 필요
 - 전화 예약 불가 (홈페이지에서만 가능)
+
+⚠️ **(중요) 어린이 동반 없는 성인/청소년 입장**
+- **어린이(신체연령 초등학생 이하)를 동반하지 않은 성인 및 청소년**은 사전 협의 필요
+- 방문 **3일 전까지** proxima11@korea.kr로 방문신청서 제출
 """
             prefix = "관람료를 보기 쉽게 정리해드릴게요! 💸\n" if mode == "어린이" else "관람료 안내입니다.\n"
             return f"{prefix}{exhibit_table}\n\n{planet_table}\n\n{notes}"
@@ -2982,8 +2984,44 @@ def load_csv_data():
             elif "교육프로그램" in csv_file:
                 zone_name = "교육프로그램"
 
+            # Handle 놀이터 CSV format (ID, 분류, 전시형태, 작동방식, 제목, 내용, 세부 설명, 영문 내용, 영문 세부 설명, 비고 및 주의사항, 상태, 영문, 사진1, 사진2)
+            elif zone_name in ["AI놀이터", "탐구놀이터", "관찰놀이터", "행동놀이터", "생각놀이터", "빛놀이터"] and "제목" in df.columns:
+                for idx, row in df.iterrows():
+                    title = str(row.get("제목", "")).strip()
+                    content = str(row.get("내용", "")).strip()
+                    detail = str(row.get("세부 설명", "")).strip()
+                    category = str(row.get("분류", "")).strip()
+                    exhibit_type = str(row.get("전시형태", "")).strip()
+                    operation = str(row.get("작동방식", "")).strip()
+                    
+                    # Skip rows with no title
+                    if not title or title in ('nan', ''):
+                        continue
+                    
+                    # Build text content
+                    text_parts = [f"[{zone_name}] {title}"]
+                    if category and category != 'nan':
+                        text_parts.append(f"분류: {category}")
+                    if exhibit_type and exhibit_type != 'nan':
+                        text_parts.append(f"전시형태: {exhibit_type}")
+                    if operation and operation != 'nan':
+                        text_parts.append(f"작동방식: {operation}")
+                    if content and content != 'nan':
+                        text_parts.append(f"내용: {content}")
+                    if detail and detail != 'nan':
+                        text_parts.append(f"세부 설명: {detail}")
+                    
+                    text = "\n".join(text_parts)
+                    metadata = {
+                        "source": f"csv_{zone_name}",
+                        "title": title,
+                        "category": zone_name,
+                        "subcategory": category if category and category != 'nan' else exhibit_type
+                    }
+                    docs.append(Document(page_content=text, metadata=metadata))
+
             # Handle 교육프로그램.csv (월/프로그램명/주요내용 등 고유 컬럼 구조)
-            if zone_name == "교육프로그램" and "프로그램명" in df.columns:
+            elif zone_name == "교육프로그램" and "프로그램명" in df.columns:
                 for idx, row in df.iterrows():
                     program = str(row.get("프로그램명", "")).strip()
                     if not program or program == "nan":
@@ -3761,6 +3799,22 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 3. 천문우주: 천체투영관, 천체관측소
 4. 과학교육: 교육프로그램, 창작교실
 5. 예약: 개인예약, 단체예약
+
+=== ⚠️ 층별 정보 포함 필수 ===
+시설/전시물 위치를 안내할 때는 반드시 층 정보를 포함하세요:
+- 1층: 매표소·안내데스크, AI놀이터, 생각놀이터, 행동놀이터, 천체투영관·과학극장, 어린이교실, 수유실·유아휴게실, 의무실, 물품보관함, 유모차·휠체어 대여, 꿈트리 동산
+- 2층: 빛놀이터, 탐구놀이터, 관찰놀이터, 창작교실, 휴게실(엉금엉금놀이터 포함), 물품보관함
+- 3층: 하늘마당(옥상)
+- 입구: 2층 게이트
+- 출구: 1층 게이트
+
+예시: "다이노 터널은 2층 관찰놀이터에 위치해 있습니다."처럼 층 정보를 반드시 포함하세요.
+
+=== ⚠️ 유사 명칭 구분 필수 ===
+다음 유사 명칭들을 명확히 구분하세요:
+- **다이노 터널**: 2층 관찰놀이터에 있는 전시물 (실감형 체험, 공룡 두 마리 마주보기)
+- **다이노소어**: 1층 천체투영관에서 상영되는 프로그램 (상영 시간표 확인 필요)
+사용자가 "다이노"라고만 질문하면 둘 다 안내하되, 명확히 구분해서 설명하세요.
 
 === ⛔ 환각 방지 가드레일 (MUST FOLLOW) ===
 **기본 원칙: 모르면 반드시 "모른다"고 말하고 공식 채널로 안내하세요. 추측·지어내기는 절대 금지입니다.**

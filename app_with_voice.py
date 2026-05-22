@@ -392,7 +392,6 @@ def main():
             "record_start": "녹음 시작",
             "spinner_rule": "(규칙기반)확인 중입니다...",
             "spinner_llm": "(LLM)잠시만 기다려 주세요...",
-            "spinner_stream": "💭 답변을 생성하고 있어요...",
             "error_stream_fail": "죄송해요, 일시적인 오류가 발생했어요. 다시 질문해 주세요. 😔",
             "error_no_response": "죄송해요, 응답을 받지 못했어요. 다시 질문해 주세요. 😔",
             "stt_processing": "음성을 텍스트로 변환 중...",
@@ -444,7 +443,6 @@ def main():
             "record_start": "Start recording",
             "spinner_rule": "Checking (rule-based)...",
             "spinner_llm": "Please wait (LLM)...",
-            "spinner_stream": "💭 Generating response...",
             "error_stream_fail": "Sorry, a temporary error occurred. Please try again. 😔",
             "error_no_response": "Sorry, no response was received. Please try again. 😔",
             "stt_processing": "Converting speech to text...",
@@ -496,7 +494,6 @@ def main():
             "record_start": "録音開始",
             "spinner_rule": "（ルール）確認中...",
             "spinner_llm": "少々お待ちください（LLM）...",
-            "spinner_stream": "💭 回答を生成中...",
             "error_stream_fail": "申し訳ありません、一時的なエラーが発生しました。もう一度お試しください。 😔",
             "error_no_response": "申し訳ありません、応答を受信できませんでした。もう一度お試しください。 😔",
             "stt_processing": "音声をテキストに変換中...",
@@ -548,7 +545,6 @@ def main():
             "record_start": "开始录音",
             "spinner_rule": "正在确认（规则）...",
             "spinner_llm": "请稍候（LLM）...",
-            "spinner_stream": "💭 正在生成回答...",
             "error_stream_fail": "抱歉，发生了临时错误，请重新提问。 😔",
             "error_no_response": "抱歉，未能获取回答，请重新提问。 😔",
             "stt_processing": "正在将语音转换为文字...",
@@ -1229,13 +1225,10 @@ setTimeout(function(){{
                         "user_mode": user_mode
                     })
 
-                    # 스트리밍 출력 — st.empty() 수동 스트리밍: 첫 토큰 전 대기 중에도 생성 중 문구 표시
+                    # 스트리밍 출력 (st.write_stream — Streamlit 기본 스트리밍)
                     if _stream_messages is not None:
                         _full_text = ""
                         _got_response = False
-                        _spinner_text = ui_text.get(language_mode, ui_text["한국어"])["spinner_stream"]
-                        _stream_placeholder = st.empty()
-                        _stream_placeholder.markdown(f"*{_spinner_text}*")
                         try:
                             def _token_gen():
                                 for _msg, _meta in agent.stream(
@@ -1251,17 +1244,11 @@ setTimeout(function(){{
                                         and not getattr(_msg, "tool_calls", None)
                                     ):
                                         yield _msg.content
-                            for _tok in _token_gen():
-                                _full_text += _tok
-                                _stream_placeholder.markdown(_full_text + "▌")
-                            if _full_text:
-                                _stream_placeholder.markdown(_full_text)
-                                _got_response = True
-                            else:
-                                _stream_placeholder.empty()
+                            _streamed = st.write_stream(_token_gen())
+                            _full_text = _streamed if isinstance(_streamed, str) else "".join(_streamed)
+                            _got_response = bool(_full_text)
                         except Exception as _e:
                             print(f"Streaming error, fallback to invoke: {_e}")
-                            _stream_placeholder.empty()
                             try:
                                 _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
                                 _full_text = _fb["messages"][-1].content
