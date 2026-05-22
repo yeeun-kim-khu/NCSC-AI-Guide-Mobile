@@ -5346,20 +5346,31 @@ PLANETARIUM_VIDEO_INFO = {
 
 
 def _load_planetarium_videos():
-    """천체투영관 CSV에서 상영 영상 5개를 표준 row 형식으로 반환"""
+    """천체투영관 CSV에서 상영 영상 행을 표준 row 형식으로 반환.
+    현재 CSV 구조: title / content / detail / category (category="천체투영관 프로그램")
+    """
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "data")
     csv_path = os.path.join(data_dir, "천체투영관.csv")
     if not os.path.exists(csv_path):
         return []
 
+    df = None
     for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
         try:
             df = pd.read_csv(csv_path, encoding=enc)
             break
         except Exception:
             continue
-    else:
+    if df is None:
+        # 파싱 실패 시 bad lines 스킵 모드로 재시도
+        for enc in ("utf-8-sig", "utf-8"):
+            try:
+                df = pd.read_csv(csv_path, encoding=enc, on_bad_lines="skip")
+                break
+            except Exception:
+                continue
+    if df is None:
         return []
 
     df.columns = [str(c).strip() for c in df.columns]
@@ -5367,28 +5378,26 @@ def _load_planetarium_videos():
     seen_titles = set()
     for _, r in df.iterrows():
         cat = str(r.get("category", "")).strip()
-        if not cat.startswith("프로그램_"):
+        if cat != "천체투영관 프로그램":
             continue
-        answer = str(r.get("answer", "")).strip()
-        title = None
-        for video_title in PLANETARIUM_VIDEO_INFO.keys():
-            if video_title in answer:
-                title = video_title
-                break
-            cat_clean = cat.replace("프로그램_", "").replace("_", "")
-            vt_no_space = video_title.replace(" ", "")
-            if cat_clean in vt_no_space or vt_no_space.startswith(cat_clean):
-                title = video_title
-                break
-        if not title or title in seen_titles:
+        title = str(r.get("title", "")).strip()
+        content = str(r.get("content", "")).strip()
+        session_detail = str(r.get("detail", "")).strip()
+        if not title or title in ("nan", "") or title in seen_titles:
             continue
         seen_titles.add(title)
 
         info = PLANETARIUM_VIDEO_INFO.get(title, {})
+        detail_parts = []
+        if session_detail and session_detail not in ("nan", ""):
+            detail_parts.append(session_detail)
+        themes = info.get("themes", "")
+        if themes:
+            detail_parts.append(f"학습 주제: {themes}")
         rows.append({
             "title": title,
-            "content": answer,
-            "detail": f"학습 주제: {info.get('themes', '')} | 참고: {info.get('fulldomedb_url', '')}",
+            "content": content,
+            "detail": " | ".join(detail_parts),
             "category": "상영영상",
         })
     return rows
