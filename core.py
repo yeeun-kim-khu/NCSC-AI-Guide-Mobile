@@ -5560,3 +5560,4 @@ def render_source_buttons(sources: list, language_mode: str = "한국어", key_s
         for i, source in enumerate(valid[:3]):
             with cols[i]:
                 st.link_button(f"{btn_label} {i+1}", source, use_container_width=True)
+
