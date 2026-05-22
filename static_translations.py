@@ -626,6 +626,32 @@ _FLOOR_GUIDE = {
 - 과학관 입구(2층)에서 예약한 입장권(QR코드) 확인 후 관람해주시기 바랍니다.""",
     },
     "English": {
+        "어린이": """Welcome to the Children's Science Center! Here's your floor guide! 😊
+
+**Enter on the 2nd floor → Exit on the 1st floor!** 🚪
+
+---
+
+#### ⬆️ 2nd Floor — Start Your Adventure!
+- ✨ **Interactive Theater (Light Zone)** — Plant a seed and grow a forest in an amazing media world! Become an Eco Creator! 🌱
+- 🔬 **Discovery Zone** — Touch and experiment with energy, machines, and tools yourself!
+- 🦖 **Observation Zone** — Real dinosaur fossils are here! Can you guess which dinosaur it is?
+- 🍱 **Lounge** — Snack time and rest! There's also a special toddler play area 😊
+- 🎨 **Creative Classrooms** — Science, math & AI classes run on Saturdays!
+
+#### ⬇️ 1st Floor — Science Experience!
+- 🤖 **AI Zone** — Solve AI missions yourself! You can become an AI expert!
+- 🏃 **Activity Zone** — Jump and run while learning science with your body!
+- 💡 **Thinking Zone** — Test how smart your brain is!
+- 🌌 **Planetarium** — Travel to the stars on a dome screen! *(Advance reservation required)*
+- 🎭 **Science Theater** — Watch a Robot Show or Science Lab performance! *(Free · First come, first served)*
+- 📚 **Dream Tree Corner** — A cozy space to read books
+- 💊 **First Aid Room & Nursing Room** — For when you feel unwell or need a break
+
+#### 💡 Entry Tips!
+1. Get your ticket at the **1st floor ticket office**
+2. Enter through the **2nd floor gate**! *(Exit is on the 1st floor)*
+- Exploring everything takes about **2–3 hours** ⏰""",
         "default": """Floor guide for the National Children's Science Center. 😊
 
 ## 1F
@@ -662,6 +688,32 @@ _FLOOR_GUIDE = {
 - At the entry gate (2F), please present your reserved ticket (QR code) before entering.""",
     },
     "日本語": {
+        "어린이": """こどもサイエンスセンターへようこそ！フロア案内だよ！😊
+
+**2階から入って → 1階から出るよ！** 🚪
+
+---
+
+#### ⬆️ 2階 — 冒険スタート！
+- ✨ **光のあそびば（インタラクティブシアター）** — タネを植えて森を育てる、不思議なメディアの世界！エコクリエイターになれるよ！🌱
+- 🔬 **探究あそびば** — エネルギー・機械・道具を手で触って実験できるよ！
+- 🦖 **観察あそびば** — 本物の恐竜の化石があるよ！どの恐竜か当ててみよう！
+- 🍱 **休憩室** — おやつを食べてひと休みしよう。赤ちゃん専用あそびばもあるよ😊
+- 🎨 **創作教室** — 土曜日に科学・数学・AIの授業があるよ！
+
+#### ⬇️ 1階 — 科学体験！
+- 🤖 **AIゾーン** — AIミッションに挑戦しよう！AIの博士になれるよ！
+- 🏃 **アクティブゾーン** — ジャンプしたり走ったり、体で科学を感じよう！
+- 💡 **考えるゾーン** — 自分の脳がどれだけすごいかテストしよう！
+- 🌌 **プラネタリウム** — 暗いドームで星座の旅へ出発！*(事前予約が必要)*
+- 🎭 **科学劇場** — ロボットショーまたはサイエンスラボを観よう！*(無料・先着順)*
+- 📚 **ドリームツリー広場** — 本を読んでのんびりできる場所だよ
+- 💊 **救護室・授乳室** — 体調が悪かったり赤ちゃんが休む必要があるときはここへ
+
+#### 💡 入場のヒント！
+1. **1階の窓口**でチケットを受け取ろう
+2. **2階のゲート**から入場！*(出口は1階)*
+- 全部見るのに約**2〜3時間**かかるよ ⏰""",
         "default": """フロア案内です。😊
 
 ## 1階
@@ -697,6 +749,32 @@ _FLOOR_GUIDE = {
 - 入口(2階)で予約した入場券(QRコード)をご提示ください。""",
     },
     "中文": {
+        "어린이": """欢迎来到儿童科学馆！楼层导览来啦！😊
+
+**从2层进入 → 从1层出去！** 🚪
+
+---
+
+#### ⬆️ 2层 — 冒险出发！
+- ✨ **光影乐园（互动影院）** — 种下种子，在神奇的媒体世界里长出森林！成为生态创造者吧！🌱
+- 🔬 **探究乐园** — 可以亲手触摸和实验能量、机器和工具！
+- 🦖 **观察乐园** — 这里有真正的恐龙化石！猜猜是什么恐龙吧！
+- 🍱 **休息室** — 吃点零食休息一下吧。还有婴幼儿专属乐园😊
+- 🎨 **创作教室** — 每周六有科学、数学、AI课程哦！
+
+#### ⬇️ 1层 — 科学体验！
+- 🤖 **AI区** — 亲自挑战AI任务！你也可以成为AI博士！
+- 🏃 **行动区** — 跳一跳、跑一跑，用身体感受科学！
+- 💡 **思考区** — 测测自己的大脑有多聪明！
+- 🌌 **天文馆** — 在黑暗的圆顶里开启星座之旅！*(需提前预约)*
+- 🎭 **科学剧场** — 观看机器人表演或科学实验秀！*(免费·先到先得)*
+- 📚 **梦想之树乐园** — 看书休息的温馨空间
+- 💊 **医务室·母婴室** — 身体不舒服或宝宝需要休息时来这里
+
+#### 💡 入场小贴士！
+1. 在**1层售票处**取票
+2. 从**2层闸口**入场！*(出口在1层)*
+- 全部逛完大约需要**2〜3小时** ⏰""",
         "default": """楼层导览。😊
 
 ## 1层
@@ -1163,6 +1241,7 @@ _OPERATING_HOURS_TEMPLATE = {
         "default": "운영 상태 안내입니다.\n\n{status}\n\n휴관일은 기본적으로 매주 월요일, 1월 1일, 설날/추석 당일입니다. (월요일 공휴일은 개관 후 화요일 대체 휴관 가능)",
     },
     "English": {
+        "어린이": "Let's check out the Science Center today! 🚀\n\n{status}\n\nWe're closed on **every Monday**, **January 1st**, and **Lunar New Year & Chuseok day**.\n(If Monday is a holiday, we open that day and might close on Tuesday instead!)",
         "default": "Operating status:\n\n{status}\n\nWe are typically closed every **Monday**, **January 1**, and on the **day of Lunar New Year and Chuseok**. (If a Monday falls on a public holiday, we open that day and may close on Tuesday instead.)",
     },
     "日本語": {
