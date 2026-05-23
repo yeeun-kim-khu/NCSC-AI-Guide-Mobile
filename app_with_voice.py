@@ -23,10 +23,10 @@ from learning import render_post_visit_learning, _backtranslate_to_korean_cached
 # Tip: You can either create separate forms per language, or use one form with Google Forms' built-in translation.
 # To get a link: Open your Google Form → Send → copy the "Link" tab URL
 GOOGLE_FORM_URLS = {
-    "한국어": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
-    "English": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
-    "日本語": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
-    "中文": "https://forms.gle/UvRfnMEwjUEZgFJJ8",
+    "한국어": "https://forms.gle/n1rqMPYvAwdF5az69",
+    "English": "https://forms.gle/n1rqMPYvAwdF5az69",
+    "日本語": "https://forms.gle/n1rqMPYvAwdF5az69",
+    "中文": "https://forms.gle/n1rqMPYvAwdF5az69",
 }
 
 # RAG loading with session state persistence

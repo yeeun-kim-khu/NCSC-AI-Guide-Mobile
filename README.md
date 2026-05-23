@@ -41,4 +41,4 @@ OPENAI_API_KEY = "your-api-key-here"
 
 ## 📝 Feedback Form
 
-피드백 설문 URL: https://forms.gle/UvRfnMEwjUEZgFJJ8
+피드백 설문 URL: https://forms.gle/n1rqMPYvAwdF5az69
