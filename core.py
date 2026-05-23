@@ -365,7 +365,9 @@ def classify_basic_category(message: str) -> str:
 
     # 우선순위 -1: 내부 장소 위치 질문 (장소 + "어디" 조합) → facility_amenities 우선
     internal_facilities = ["매표소", "휴게실", "의무실", "수유실", "유아휴게", "유아휴게실", "물품보관", "물품보관함", "보관함", "락커", "안내데스크", "안내", "꿈트리", "꿈트리동산", "영유아놀이터", "영유아", "엉금엉금", "엉금엉금놀이터", "아기놀이터", "하늘마당", "옥상", "화장실", "자판기", "쉬는곳", "쉬는 곳", "휴식", "병원", "간호실", "응급실", "수유", "아기방", "유아방", "도서관"]
-    if any(fac in lowered for fac in internal_facilities) and "어디" in lowered:
+    # 띄어쓰기 제거하여 비교
+    lowered_no_space = lowered.replace(" ", "")
+    if any(fac.replace(" ", "") in lowered_no_space for fac in internal_facilities) and "어디" in lowered:
         return "facility_amenities"
 
     # 우선순위 0: 연나이 계산 ("연나이 어떻게 계산", "만 나이", "몇 년생") → age_calculator
@@ -2335,6 +2337,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
         if category == "facility_amenities":
             lowered = message.lower()
+            lowered_no_space = lowered.replace(" ", "")
             
             # 특정 장소 위치 안내 (다양한 키워드 포함)
             facility_locations = {
@@ -2373,10 +2376,10 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
                 "자판기": "1층 로비",
             }
             
-            # 질문에 특정 장소가 포함되어 있는지 확인
+            # 질문에 특정 장소가 포함되어 있는지 확인 (띄어쓰기 제거하여 비교)
             mentioned_facility = None
             for fac, loc in facility_locations.items():
-                if fac in lowered:
+                if fac.replace(" ", "") in lowered_no_space:
                     mentioned_facility = fac
                     break
             
