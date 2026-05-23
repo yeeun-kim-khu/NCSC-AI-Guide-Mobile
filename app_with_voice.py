@@ -1378,17 +1378,18 @@ setTimeout(function(){{
             st.session_state["_scroll_to_input"] = True
             st.rerun()
         
-        # 질문 입력 후에만 자동 스크롤 (components.html 사용 — st.markdown의 <script>는 브라우저가 실행 안 함)
+        # 질문 입력 후에만 자동 스크롤 및 커서 포커스
         if st.session_state.get("_scroll_to_input"):
             components.html("""<script>
             (function() {
                 const p = window.parent;
                 if (!p) return;
                 setTimeout(function() {
-                    const el = p.document.querySelector('[data-testid="stChatInput"]')
+                    const el = p.document.querySelector('[data-testid="stChatInput"] textarea')
                             || p.document.querySelector('textarea');
                     if (el) {
                         el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        el.focus();
                     }
                 }, 500);
             })();
