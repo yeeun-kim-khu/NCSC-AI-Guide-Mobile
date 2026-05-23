@@ -1,6 +1,7 @@
 # core.py - 핵심 시스템 통합
 # config.py + rag.py + tools.py + utils.py + multilingual_loader.py 통합
 # Updated with child/adult mode differentiation
+# Cache force refresh
 
 import os
 import glob
