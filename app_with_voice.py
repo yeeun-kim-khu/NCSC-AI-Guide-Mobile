@@ -985,7 +985,7 @@ setTimeout(function(){{
         if "tts_cache" not in st.session_state:
             st.session_state.tts_cache = {}
 
-        system_prompt = get_dynamic_prompt(user_mode, language_mode)
+        system_prompt = get_dynamic_prompt(user_mode, language_mode, st.session_state.get("_last_rule_category"))
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, max_retries=3)
         memory = MemorySaver()
         agent = create_react_agent(

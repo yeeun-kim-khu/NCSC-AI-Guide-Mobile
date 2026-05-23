@@ -5149,12 +5149,21 @@ def get_tools():
 # UTILS - 유틸리티 함수
 # ============================================================================
 
-def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
+def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_category: str = None) -> str:
     """LLM 시스템 프롬프트 생성"""
     now_utc = datetime.now(timezone.utc)
     now_kst = now_utc + timedelta(hours=9)
     today_kst = now_kst.strftime("%Y년 %m월 %d일 %H:%M")
     weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][now_kst.weekday()]
+    
+    # 맥락 정보 추가
+    context_info = ""
+    if last_rule_category:
+        context_info = f"""
+=== 대화 맥락 ===
+사용자가 직전에 규칙기반 시스템에서 다음 카테고리에 대한 정보를 받았습니다: {last_rule_category}
+이 맥락을 고려하여 후속 질문에 답변하세요.
+"""
     
     language_instruction = {
         "한국어": "**중요: 모든 답변은 한국어로 작성하세요.**",
@@ -5226,6 +5235,7 @@ def get_dynamic_prompt(mode: str, language: str = "한국어") -> str:
 당신은 국립어린이과학관 전문 안내 어시스턴트입니다.
 [오늘 날짜] {today_kst} ({weekday_kr}요일) KST
 
+{context_info}
 {language_instruction.get(language, language_instruction["한국어"])}
 
 {safety_instruction.get(language, safety_instruction["한국어"])}
