@@ -4397,6 +4397,8 @@ def load_csv_data():
                 zone_name = "빛놀이터"
             elif "교육프로그램" in csv_file:
                 zone_name = "교육프로그램"
+            elif "천체투영관" in csv_file:
+                zone_name = "천체투영관"
 
             # Handle 놀이터 CSV format (ID, 분류, 전시형태, 작동방식, 제목, 내용, 세부 설명, 영문 내용, 영문 세부 설명, 비고 및 주의사항, 상태, 영문, 사진1, 사진2)
             elif zone_name in ["AI놀이터", "탐구놀이터", "관찰놀이터", "행동놀이터", "생각놀이터", "빛놀이터"] and "제목" in df.columns:
