@@ -4307,6 +4307,7 @@ def answer_rule_based_localized(intent: str, message: str, mode: str, language: 
 # RAG SYSTEM - Vector DB 및 데이터 로딩
 # ============================================================================
 
+@st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
 def load_csv_data():
     """CSV files from data directory - real-time loading"""
     def load_csv_safe(path: str) -> pd.DataFrame:
@@ -4667,6 +4668,7 @@ def load_multilingual_brochures():
     
     return docs
 
+@st.cache_resource(show_spinner=False)
 def initialize_vector_db():
     """Initialize vector database with exhibit information"""
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", max_retries=3)
