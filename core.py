@@ -456,6 +456,15 @@ def classify_basic_category(message: str) -> str:
     # 오늘/이번 주 프로그램 → education_guide보다 우선 처리
     if any(k in lowered for k in ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "오늘 해", "오늘의 행사", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]):
         return "today_programs"
+    
+    # 특정 프로그램 + "알려줘" → today_programs로 분류 (전체 안내 대신 특정 프로그램 안내)
+    if any(k in lowered for k in ["알려줘", "보여줘", "알고 싶어", "궁금해"]):
+        if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇", "사이언스랩", "사이언스 랩", "실험"]):
+            return "science_show"
+        if any(k in lowered for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로 다이노", "헬로다이노", "짹짹 새", "짹짹새", "짹짹 탐험대", "짹짹탐험대"]):
+            return "today_programs"
+        if any(k in lowered for k in ["코코몽", "키츠", "바니", "다이노소어", "슈퍼문", "우주정거장", "길냥이"]):
+            return "planetarium_timetable"
 
     # 휴대폰 충전
     if any(k in lowered for k in ["충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전", "콘센트", "핸드폰 배터리"]):
