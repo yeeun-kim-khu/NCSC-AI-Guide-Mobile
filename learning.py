@@ -253,7 +253,7 @@ def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
 
 @st.cache_data(show_spinner=False, ttl=60 * 60 * 24)
 def _extract_zone_keywords_llm(zone_name: str, language_mode: str, csv_compact_text: str):
-    llm = ChatOpenAI(model="gpt-5.5", temperature=0.2)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0.2)
 
     if language_mode == "한국어":
         prompt = f"""너는 초등 4~6학년 어린이(10~12세)와 학부모를 위한 전시관 키워드 편집자야.
@@ -305,7 +305,7 @@ def _translate_keywords_cached(keywords_tuple: tuple, target_language: str) -> l
         "中文": "Simplified Chinese (中文 only)",
     }.get(target_language, "English")
     try:
-        llm = ChatOpenAI(model="gpt-5.5", temperature=0)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0)
         joined = ", ".join(keywords_tuple)
         prompt = (
             f"Translate each Korean keyword into {lang_label}. "
@@ -1538,7 +1538,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] 只能选一个
     prompt = dna_header + language_prompts.get(language, language_prompts["한국어"])
 
     try:
-        llm = ChatOpenAI(model="gpt-5.5", temperature=0.8)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0.8)
         response = llm.invoke(prompt)
         return response.content
     except Exception as e:
@@ -1965,7 +1965,7 @@ def render_post_visit_learning(
 
         if selected_zones:
             st.markdown("---")
-            llm = ChatOpenAI(model="gpt-5.5", temperature=0.7)
+            llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
             for zone in selected_zones:
                 zone_rows = all_zone_rows.get(zone, [])
                 
@@ -2311,7 +2311,7 @@ def render_post_visit_learning(
         if selected_zones_story and st.button(text["generate_story"]):
             _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
             with st.spinner(text["story_generating"]):
-                llm = ChatOpenAI(model="gpt-5.5", temperature=0.7)
+                llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
                 
                 all_exhibits = []
                 all_principles = []
