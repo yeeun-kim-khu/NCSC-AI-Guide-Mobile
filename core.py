@@ -3428,6 +3428,12 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 원하시면 지금 상황(개인/단체/교육, 관람 날짜, 인원, 어린이 동반 여부)을 말해주시면 딱 맞게 안내해드릴게요!"""
 
         if category == "planetarium_timetable":
+            lowered = message.lower()
+            lowered_no_space = lowered.replace(" ", "")
+            
+            # 전체 시간표 요청 확인
+            show_full_timetable = any(k in lowered for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘", "시간표", "회차"])
+            
             timetable = """
 | 회차 | 시작 시각 | 소요시간 | 프로그램 | 권장연령 |
 | --- | --- | --- | --- | --- |
@@ -3481,17 +3487,27 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
                 (["우주정거장"], "길냥이 키츠 우주정거장의 비밀", "5회차(15:00)"),
                 (["키츠"], "길냥이 키츠 시리즈", "2·5회차(11:00, 15:00)"),
             ]
-            _prog_prefix = ""
-            _lowered = message.lower()
+            
+            # 특정 프로그램 질문 확인
+            mentioned_program = None
+            program_round = None
             for _kws, _pname, _rounds in _round_map:
-                if any(_kw in _lowered for _kw in _kws):
-                    if mode == "어린이":
-                        _prog_prefix = f"**{_pname}**은(는) 천체투영관 **{_rounds}** 프로그램이에요! 🌟\n\n"
-                    else:
-                        _prog_prefix = f"**{_pname}**은(는) 천체투영관 **{_rounds}** 프로그램입니다! 🌟\n\n"
+                if any(_kw in lowered for _kw in _kws):
+                    mentioned_program = _pname
+                    program_round = _rounds
                     break
-            if mode == "어린이":
-                return _prog_prefix + f"""천체투영관 시간표를 정리해드릴게요! 🌙
+            
+            # 전체 시간표 요청 또는 특정 프로그램 없을 때 전체 안내
+            if show_full_timetable or not mentioned_program:
+                _prog_prefix = ""
+                if mentioned_program:
+                    if mode == "어린이":
+                        _prog_prefix = f"**{mentioned_program}**은(는) 천체투영관 **{program_round}** 프로그램이에요! 🌟\n\n"
+                    else:
+                        _prog_prefix = f"**{mentioned_program}**은(는) 천체투영관 **{program_round}** 프로그램입니다! 🌟\n\n"
+                
+                if mode == "어린이":
+                    return _prog_prefix + f"""천체투영관 시간표를 정리해드릴게요! 🌙
 
 #### 🌌 시설 소개
 - **11m 원형 돔스크린 + 4K 레이저 프로젝터**
@@ -3545,8 +3561,8 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### ⚠️ 빛놀이터 연속 관람 주의
 천체투영관과 빛놀이터는 같은 시간대 연속 관람 불가 (예: 10시 천투 후 10:30 빛놀이터 불가). 예매 전 확인 필요. 동시 예매로 관람 불가 시 1층 매표소에서 환불 도와드립니다.
 """
-            else:
-                return _prog_prefix + f"""천체투영관 시간표를 정리해드리겠습니다. 🌙
+                else:
+                    return _prog_prefix + f"""천체투영관 시간표를 정리해드리겠습니다. 🌙
 
 #### 🌌 시설 소개
 - **11m 원형 돔스크린 + 4K 레이저 프로젝터**
@@ -3600,6 +3616,24 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### ⚠️ 빛놀이터 연속 관람 주의
 천체투영관과 빛놀이터는 같은 시간대 연속 관람 불가 (예: 10시 천투 후 10:30 빛놀이터 불가). 예매 전 확인 필요. 동시 예매로 관람 불가 시 1층 매표소에서 환불 도와드립니다.
 """
+            
+            # 특정 프로그램만 짧게 안내
+            if mentioned_program and mode == "어린이":
+                return f"""**{mentioned_program}**은(는) 천체투영관 **{program_round}** 프로그램이에요! 🌟
+
+📍 **위치**: 1층 상설전시관 안쪽
+⏰ **시간**: {program_round}
+👶 **권장연령**: 유아 이상
+
+다른 천체투영관 프로그램 정보도 알려드릴까요?"""
+            elif mentioned_program and mode == "성인":
+                return f"""**{mentioned_program}**은(는) 천체투영관 **{program_round}** 프로그램입니다! 🌟
+
+📍 **위치**: 1층 상설전시관 안쪽
+⏰ **시간**: {program_round}
+👶 **권장연령**: 유아 이상
+
+다른 천체투영관 프로그램 정보도 알려드릴까요?"""
 
         if category == "admission_fee":
             if mode == "어린이":
