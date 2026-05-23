@@ -1360,11 +1360,11 @@ setTimeout(function(){{
 
     # Chat input at page bottom (outside tabs for stable positioning)
     if st.session_state.active_tab == "guide":
-        # Add CSS for red placeholder
+        # Add CSS for placeholder color matching border (orange)
         st.markdown("""
 <style>
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #ff4444 !important;
+    color: #ff6b35 !important;
 }
 </style>
 """, unsafe_allow_html=True)
