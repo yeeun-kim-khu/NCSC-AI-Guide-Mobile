@@ -2905,7 +2905,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
                 mentioned_program = "로봇쇼"
             elif any(k in lowered for k in ["사이언스랩", "사이언스 랩", "실험"]):
                 mentioned_program = "사이언스랩"
-            elif any(k in lowered for k in ["전시해설", "해설", "헬로 다이노", "짹짹 새", "짹짹새"]):
+            elif any(k in lowered for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로 다이노", "짹짹 새", "짹짹새", "짹짹 탐험대", "짹짹탐험대"]):
                 mentioned_program = "전시해설"
             
             # 특정 프로그램만 짧게 안내
