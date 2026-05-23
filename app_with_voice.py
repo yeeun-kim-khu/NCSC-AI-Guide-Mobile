@@ -380,7 +380,7 @@ def main():
             "quick_exhibits": "🧩 전시관",
             "tab_guide": "🏙️ 과학관 안내",
             "tab_learning": "🥰 또만나 놀이터",
-            "chat_placeholder": "예) 오늘의 프로그램은 무엇인가요?",
+            "chat_placeholder": "무엇이 궁금하신가요? 질문을 입력해보세요!",
             "mode_lang_changed": "사용자 모드/언어 설정이 변경되었어요. 다음 답변부터 새 설정으로 안내할게요.",
             "settings_label": "⚙️ 설정",
             "program_explain": "전시해설",
@@ -432,7 +432,7 @@ def main():
             "quick_exhibits": "🧩 Exhibits",
             "tab_guide": "🏙️ Guide",
             "tab_learning": "🥰 Again Zone",
-            "chat_placeholder": "e.g., What programs are available today?",
+            "chat_placeholder": "What would you like to know? Enter your question!",
             "mode_lang_changed": "User mode/language settings changed. Responses will use the new settings from now on.",
             "settings_label": "⚙️ Settings",
             "program_explain": "Exhibit tour",
@@ -484,7 +484,7 @@ def main():
             "quick_exhibits": "🧩 展示",
             "tab_guide": "🏙️ 科学館案内",
             "tab_learning": "🥰 またねゾーン",
-            "chat_placeholder": "例）今日のプログラムは何ですか？",
+            "chat_placeholder": "何が知りたいですか？質問を入力してください！",
             "mode_lang_changed": "モード/言語が変更されました。次の回答から新しい設定で案内します。",
             "settings_label": "⚙️ 設定",
             "program_explain": "展示解説",
@@ -536,7 +536,7 @@ def main():
             "quick_exhibits": "🧩 展馆",
             "tab_guide": "🏙️ 参观导览",
             "tab_learning": "🥰 再次乐园",
-            "chat_placeholder": "例) 今天有什么节目?",
+            "chat_placeholder": "您想知道什么？请输入您的问题！",
             "mode_lang_changed": "用户模式/语言设置已更改。从下一个回答开始，将使用新设置进行引导。",
             "settings_label": "⚙️ 设置",
             "program_explain": "展览讲解",
@@ -1360,6 +1360,15 @@ setTimeout(function(){{
 
     # Chat input at page bottom (outside tabs for stable positioning)
     if st.session_state.active_tab == "guide":
+        # Add CSS for red placeholder
+        st.markdown("""
+<style>
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #ff4444 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+        
         typed_input = st.chat_input(
             ui_text.get(language_mode, ui_text["한국어"])["chat_placeholder"],
             key="main_chat_input"
