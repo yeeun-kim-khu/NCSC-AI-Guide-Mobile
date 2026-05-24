@@ -161,6 +161,7 @@ def route_intent(text: str) -> str:
     - "llm_agent": LangGraph ReAct 에이전트 (RAG + 도구 호출 필요한 동적 질의)
     """
     lowered = text.lower().strip()
+    lowered_no_space = lowered.replace(" ", "")
 
     # ── 1단계: 특수 케이스 즉시 처리 ────────────────────────────────────────
 
@@ -173,10 +174,10 @@ def route_intent(text: str) -> str:
     # 다이노 모호성 해소 2단계: 이전에 다이노/공룡 질문 후 대기 중
     if st.session_state.get("awaiting_dino_clarification") and lowered:
         st.session_state.pop("awaiting_dino_clarification")
-        if any(k in lowered for k in ["천체투영관", "프로그램", "다이노소어", "영상", "상영"]):
+        if any(k in lowered_no_space for k in ["천체투영관", "프로그램", "다이노소어", "영상", "상영"]):
             st.session_state["_dino_message_override"] = "다이노소어"
             return "basic"
-        if any(k in lowered for k in ["전시물", "터널", "다이노터널"]):
+        if any(k in lowered_no_space for k in ["전시물", "터널", "다이노터널"]):
             return "llm_agent"
         # 그 외 입력: 플래그 해제하고 일반 라우팅으로 진행
 
@@ -375,198 +376,201 @@ def classify_basic_category(message: str) -> str:
         return "facility_amenities"
 
     # 우선순위 0: 연나이 계산 ("연나이 어떻게 계산", "만 나이", "몇 년생") → age_calculator
-    if any(k in lowered for k in ["연나이", "만 나이", "몇 년생", "몇년생", "나이 계산", "나이계산"]):
+    if any(k in lowered_no_space for k in ["연나이", "만나이", "몇년생", "나이계산"]):
         return "age_calculator"
 
     # 우선순위 1: 나이 패턴 — "7살 뭐 봐?", "5세 추천" 류는 route_by_age 로 직행.
     # 단, "6세 무료/요금/입장료" 처럼 가격 키워드가 함께 오면 admission_fee 로 양보.
     age_hit = bool(re.search(r"\d+\s*[살세]", lowered))
-    fee_hit = any(k in lowered for k in ["요금", "얼마", "입장료", "관람료", "유료", "무료", "할인", "티켓값", "표값", "비용"])
+    fee_hit = any(k in lowered_no_space for k in ["요금", "얼마", "입장료", "관람료", "유료", "무료", "할인", "티켓값", "표값", "비용"])
     if age_hit and not fee_hit:
         return "route_by_age"
 
     # 우선순위 2: 단체 키워드는 reservation_guide 보다 먼저 잡아야 함
-    if any(k in lowered for k in ["단체예약", "단체 예약", "단체관람", "단체 관람", "단체로", "유치원", "어린이집", "인솔자", "인솔교사", "학교 단체", "기관 단체", "워크인 단체"]):
+    if any(k in lowered_no_space for k in ["단체예약", "단체관람", "단체로", "유치원", "어린이집", "인솔자", "인솔교사", "학교단체", "기관단체", "워크인단체"]):
         return "group_reservation"
 
     # 우선순위 3: 유모차·휠체어 → 전용 카테고리 (facility_amenities 보다 우선)
-    if any(k in lowered for k in ["유모차", "유아차", "휠체어", "이동수단 대여"]):
+    if any(k in lowered_no_space for k in ["유모차", "유아차", "휠체어", "이동수단대여"]):
         return "stroller_wheelchair"
 
     # 우선순위 4: 음식/도시락
-    if any(k in lowered for k in ["도시락", "취식", "음식 반입", "음식반입", "매점", "식당", "자판기", "먹을 수", "먹을수", "간식 먹", "음료 마", "물 마"]):
+    if any(k in lowered_no_space for k in ["도시락", "취식", "음식반입", "매점", "식당", "자판기", "먹을수", "간식먹", "음료마", "물마"]):
         return "food_drink"
 
     # 우선순위 5: 반려동물 / 와이파이 / 분실물 / 재입장 (신규 단일 카테고리)
-    if any(k in lowered for k in ["반려동물", "강아지", "고양이", "애완동물", "안내견"]):
+    if any(k in lowered_no_space for k in ["반려동물", "강아지", "고양이", "애완동물", "안내견"]):
         return "pet_policy"
-    if any(k in lowered for k in ["와이파이", "wifi", "와이 파이", "무선 인터넷", "무선인터넷", "csc_1", "csc_2", "csc_3"]):
+    if any(k in lowered_no_space for k in ["와이파이", "wifi", "무선인터넷", "csc_1", "csc_2", "csc_3"]):
         return "wifi_info"
-    if any(k in lowered for k in ["분실물", "잃어버", "잃어버렸", "찾아주", "두고 왔", "두고 갔", "두고왔", "lost"]):
+    if any(k in lowered_no_space for k in ["분실물", "잃어버", "잃어버렸", "찾아주", "두고왔", "두고갔", "lost"]):
         return "lost_found"
-    if any(k in lowered for k in ["재입장", "다시 들어", "다시 입장", "나갔다", "나갔다가", "재입국", "다시 와도"]):
+    if any(k in lowered_no_space for k in ["재입장", "다시들어", "다시입장", "나갔다", "나갔다가", "재입국", "다시와도"]):
         return "reentry_policy"
 
     # 천체투영관 시간/일정/예약 → planetarium_timetable (program_wayfinding보다 우선)
-    if "천체투영관" in lowered and any(k in lowered for k in ["예약", "예매", "시간", "언제", "일정", "몇 시", "몇시", "회차", "상영", "스케줄"]):
+    if "천체투영관" in lowered_no_space and any(k in lowered_no_space for k in ["예약", "예매", "시간", "언제", "일정", "몇시", "회차", "상영", "스케줄"]):
         return "planetarium_timetable"
 
     # 야간관측 키워드
-    if any(k in lowered for k in ["야간관측", "야간 관측", "야간 프로그램", "천체관측소", "별 관찰", "별 보기", "별 관측"]):
+    if any(k in lowered_no_space for k in ["야간관측", "야간프로그램", "천체관측소", "별관찰", "별보기", "별관측"]):
         return "night_observation"
 
     # 프로그램 위치 찾기 (바닥 색깔 선 안내) — 교육/프로그램 상세 안내보다 우선
-    _wayfind_words = ["어디", "가야", "찾아", "찾고", "어느", "가려", "가고", "가면", "위치", "어디서", "어디로", "가는 곳", "어디 있", "어디있"]
-    _wayfind_programs = ["사이언스랩", "사이언스 랩", "과학극장", "과학쇼", "과학 쇼", "로봇쇼", "로봇 쇼",
-                         "천체투영관", "창경궁 과학 나들이", "창경궁과학나들이", "창경궁 과학나들이",
-                         "창경궁 나들이", "과학나들이", "과학 나들이",
-                         "얼음공", "과학마블", "씨앗의 모험", "열매와 씨앗",
-                         "도형 마을 드림팀", "지구와 태양계", "헬로메이플", "디지털 만화",
-                         "세종과 장영실", "똑딱똑딱", "시간 여행"]
-    _has_wayfind = any(w in lowered for w in _wayfind_words)
-    _has_program = any(p in lowered for p in _wayfind_programs)
+    _wayfind_words = ["어디", "가야", "찾아", "찾고", "어느", "가려", "가고", "가면", "위치", "어디서", "어디로", "가는곳", "어디있", "어디있"]
+    _wayfind_programs = ["사이언스랩", "과학극장", "과학쇼", "로봇쇼",
+                         "천체투영관", "창경궁과학나들이", "창경궁나들이", "과학나들이",
+                         "얼음공", "과학마블", "씨앗의모험", "열매와씨앗",
+                         "도형마을드림팀", "지구와태양계", "헬로메이플", "디지털만화",
+                         "세종과장영실", "똑딱똑딱", "시간여행"]
+    _has_wayfind = any(w in lowered_no_space for w in _wayfind_words)
+    _has_program = any(p in lowered_no_space for p in _wayfind_programs)
     _has_info = any(w in lowered for w in ["자세히", "알려줘", "알려주", "설명", "어떤", "뭐야", "뭔지", "뭐지"])
     if _has_program and (_has_wayfind or (len(lowered.strip()) <= 15 and not _has_info)):
         return "program_wayfinding"
     # 광의 교육 카테고리는 장소 키워드가 명시될 때만 wayfinding으로 분기
     _edu_wayfind_broad = [
-        "과학교실", "과학 교실", "지구과학",
-        "수학교실", "수학 교실",
-        "ai공학", "ai 공학", "sw공학", "sw 공학",
-        "유아특화교실", "유아 특화교실",
-        "방학과정", "나눔과정", "나눔 과정",
-        "빛놀이터 교육", "빛놀이터교육",
+        "과학교실", "지구과학",
+        "수학교실",
+        "ai공학", "sw공학",
+        "유아특화교실",
+        "방학과정", "나눔과정",
+        "빛놀이터교육",
         "k-사이언스", "k사이언스", "케이사이언스",
     ]
-    if any(p in lowered for p in _edu_wayfind_broad) and _has_wayfind:
+    if any(p in lowered_no_space for p in _edu_wayfind_broad) and _has_wayfind:
         return "program_wayfinding"
 
     # 빛놀이터 시간 → operating_hours (exhibit_guide보다 우선)
-    if "빛놀이터" in lowered and any(k in lowered for k in ["시간", "언제", "몇 시", "몇시", "열어", "운영", "마감", "닫"]):
+    if "빛놀이터" in lowered_no_space and any(k in lowered_no_space for k in ["시간", "언제", "몇시", "열어", "운영", "마감", "닫"]):
         return "operating_hours"
 
     # 빛놀이터 체험 상세 안내 (교육 키워드보다 먼저 처리)
-    if "빛놀이터" in lowered and any(k in lowered for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐 있", "있어", "있나", "소개", "설명", "알려"]):
+    if "빛놀이터" in lowered_no_space and any(k in lowered_no_space for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐있", "있어", "있나", "소개", "설명", "알려"]):
         return "light_zone_detail"
 
     # 오늘/이번 주 교육프로그램 → today_programs보다 우선 처리
-    if any(k in lowered for k in ["오늘의 교육프로그램", "오늘 교육프로그램", "오늘 교육", "오늘 교육 뭐", "오늘 교육 있어", "오늘 수업", "오늘 수업 뭐", "오늘 수업 있어", "오늘 과학교실", "오늘 교실", "이번주 교육프로그램", "이번 주 교육프로그램", "이번주 교육", "이번 주 교육", "이번주 수업", "이번 주 수업"]):
+    if any(k in lowered_no_space for k in ["오늘의교육프로그램", "오늘교육프로그램", "오늘교육", "오늘교육뭐", "오늘교육있어", "오늘수업", "오늘수업뭐", "오늘수업있어", "오늘과학교실", "오늘교실", "이번주교육프로그램", "이번주교육", "이번주수업"]):
         return "education_guide"
 
     # 오늘/이번 주 프로그램 → education_guide보다 우선 처리
-    if any(k in lowered for k in ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "오늘 해", "오늘의 행사", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램"]):
+    if any(k in lowered_no_space for k in ["오늘의프로그램", "오늘프로그램", "오늘뭐", "오늘해", "오늘의행사", "이번주", "다음주", "내일프로그램", "모레프로그램"]):
         return "today_programs"
     
     # 특정 프로그램 + "알려줘" → today_programs로 분류 (전체 안내 대신 특정 프로그램 안내)
-    if any(k in lowered for k in ["알려줘", "보여줘", "알고 싶어", "궁금해"]):
-        if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇", "사이언스랩", "사이언스 랩", "실험"]):
+    if any(k in lowered_no_space for k in ["알려줘", "보여줘", "알고싶어", "궁금해"]):
+        if any(k in lowered_no_space for k in ["로봇쇼", "로봇", "사이언스랩", "실험"]):
             return "science_show"
-        if any(k in lowered for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로 다이노", "헬로다이노", "짹짹 새", "짹짹새", "짹짹 탐험대", "짹짹탐험대"]):
+        if any(k in lowered_no_space for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로다이노", "짹짹새", "짹짹탐험대"]):
             return "today_programs"
-        if any(k in lowered for k in ["코코몽", "키츠", "바니", "다이노소어", "슈퍼문", "우주정거장", "길냥이"]):
+        if any(k in lowered_no_space for k in ["코코몽", "키츠", "바니", "다이노소어", "슈퍼문", "우주정거장", "길냥이"]):
             return "planetarium_timetable"
 
     # 휴대폰 충전
-    if any(k in lowered for k in ["충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전", "콘센트", "핸드폰 배터리"]):
+    if any(k in lowered_no_space for k in ["충전", "핸드폰충전", "휴대폰충전", "충전기", "배터리충전", "콘센트", "핸드폰배터리"]):
         return "phone_charging"
 
     # 우산 대여
-    if any(k in lowered for k in ["우산", "우산 대여", "우산 빌려", "비 올 때"]):
+    if any(k in lowered_no_space for k in ["우산", "우산대여", "우산빌려", "비올때"]):
         return "umbrella_rental"
 
     # 프로그램 지각
-    if any(k in lowered for k in ["지각", "늦게 도착", "늦었어", "늦어도", "늦게 가면", "늦게 가도", "늦게 갔", "프로그램 늦", "공연 늦", "회차 늦", "시간 늦"]):
+    if any(k in lowered_no_space for k in ["지각", "늦게도착", "늦었어", "늦어도", "늦게가면", "늦게가도", "늦게갔", "프로그램늦", "공연늦", "회차늦", "시간늦"]):
         return "late_arrival"
 
     # ── 교육 프로그램: 구체적 → 포괄적 순서로 분류 ───────────────────────────
     # K-사이언스
-    if any(k in lowered for k in ["k-사이언스", "k사이언스", "케이사이언스", "k-science", "k science"]):
+    if any(k in lowered_no_space for k in ["k-사이언스", "k사이언스", "케이사이언스", "k-science", "kscience"]):
         return "k_science"
     
     # 로봇쇼
-    if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇프렌즈", "로봇 프렌즈", "축구로봇", "댄스로봇", "로봇개"]):
+    if any(k in lowered_no_space for k in ["로봇쇼", "로봇프렌즈", "축구로봇", "댄스로봇", "로봇개"]):
         return "robot_show"
     
     # 사이언스랩
-    if any(k in lowered for k in ["사이언스랩", "사이언스 랩", "드라이아이스", "비눗방울", "팡팡 공기", "보이지 않는 힘"]):
+    if any(k in lowered_no_space for k in ["사이언스랩", "드라이아이스", "비눗방울", "팡팡공기", "보이지않는힘"]):
         return "science_lab"
     
     # 전시해설
-    if any(k in lowered for k in ["헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "짹짹 탐험대", "짹짹탐험대", "북적북적 과학관", "북적북적과학관", "전시해설 프로그램", "스폿해설", "전시톡톡해설", "단체해설", "전시해설", "해설"]):
+    if any(k in lowered_no_space for k in ["헬로다이노", "짹짹새탐험대", "짹짹탐험대", "북적북적과학관", "전시해설프로그램", "스폿해설", "전시톡톡해설", "단체해설", "전시해설", "해설"]):
         return "docent_program"
     
     # 로봇순회
-    if any(k in lowered for k in ["로봇순회", "로봇 순회"]):
+    if any(k in lowered_no_space for k in ["로봇순회"]):
         return "robot_tour"
     
     # 과학교실
-    if any(k in lowered for k in ["과학교실", "과학 교실", "지구과학", "지구 과학", "태양계"]):
+    if any(k in lowered_no_space for k in ["과학교실", "지구과학", "태양계"]):
         return "science_classroom"
     
     # 수학교실
-    if any(k in lowered for k in ["수학교실", "수학 교실", "도형 마을 드림팀"]):
+    if any(k in lowered_no_space for k in ["수학교실", "도형마을드림팀"]):
         return "math_classroom"
     
     # SW·AI 공학교실
-    if any(k in lowered for k in ["sw공학교실", "sw 공학교실", "ai공학", "ai 공학", "코딩", "헬로메이플"]):
+    if any(k in lowered_no_space for k in ["sw공학교실", "ai공학", "코딩", "헬로메이플"]):
         return "sw_ai_classroom"
     
     # 유아특화교실
-    if any(k in lowered for k in ["유아특화교실", "유아 특화교실"]):
+    if any(k in lowered_no_space for k in ["유아특화교실"]):
         return "toddler_classroom"
     
     # 빛놀이터 교육
-    if any(k in lowered for k in ["빛놀이터 교육", "빛놀이터교육"]):
+    if any(k in lowered_no_space for k in ["빛놀이터교육"]):
         return "light_playground_education"
     
     # 전시연계 교육
-    if any(k in lowered for k in ["전시연계 교육", "전시연계교육", "과학마블", "얼음공"]):
+    if any(k in lowered_no_space for k in ["전시연계교육", "과학마블", "얼음공"]):
         return "exhibit_linked_education"
     
     # 창경궁 과학 나들이
-    if any(k in lowered for k in ["창경궁 과학", "창경궁과학", "창경궁 나들이", "창경궁의 우리나무와 꽃", "과학나들이", "과학 나들이", "창경궁 프로그램", "창경궁 교육"]):
+    if any(k in lowered_no_space for k in ["창경궁과학", "창경궁나들이", "창경궁의우리나무와꽃", "과학나들이", "창경궁프로그램", "창경궁교육"]):
         return "changgyeonggung_science"
     
     # 어린이 맞춤 과학
-    if any(k in lowered for k in ["어린이 맞춤 과학", "어린이맞춤과학", "어린이 맞춤과학"]):
+    if any(k in lowered_no_space for k in ["어린이맞춤과학"]):
         return "custom_science"
     
     # 방학과정
-    if any(k in lowered for k in ["방학과정", "여름방학", "겨울방학"]):
+    if any(k in lowered_no_space for k in ["방학과정", "여름방학", "겨울방학"]):
         return "vacation_course"
     
     # 나눔과정
-    if any(k in lowered for k in ["나눔과정", "나눔 과정"]):
+    if any(k in lowered_no_space for k in ["나눔과정"]):
         return "sharing_course"
     
     # 교육 일반 catch-all (구체적 프로그램 미매칭 시)
-    if any(k in lowered for k in ["교육", "교육 프로그램", "교육프로그램", "프로그램"]):
+    if any(k in lowered_no_space for k in ["교육", "교육프로그램"]):
         return "education_guide"
     
+    # "프로그램"만 입력하면 today_programs로 연결
+    if "프로그램" in lowered_no_space:
+        return "today_programs"
+    
     # 모호한 질문 처리: 다이노, 공룡 등 단독 키워드
-    if any(k in lowered for k in ["다이노", "공룡"]):
+    if any(k in lowered_no_space for k in ["다이노", "공룡"]):
         # 다이노소어(프로그램), 다이노터널(전시물) 등 여러 의미가 있으므로 사용자에게 질문
         return "ambiguous_dino"
 
     rules = [
         # 가장 구체적인 카테고리 먼저
-        ("education_guide", ["교육 프로그램", "교육프로그램", "교육과정", "교육 과정", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔과정", "창경궁 프로그램", "창경궁프로그램", "창경궁 교육", "창경궁교육", "빛놀이터 교육", "빛놀이터교육", "전시연계 교육", "전시연계교육", "어린이 맞춤 과학", "어린이맞춤과학"]),
-        ("science_show", ["로봇쇼", "사이언스랩", "과학쇼", "과학 쇼", "로봇 쇼", "과학실험", "과학 실험"]),
-        ("planetarium_timetable", ["천체투영관 시간표", "투영관 시간표", "천체투영관 시간", "투영관 시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노소어", "슈퍼문", "우주정거장", "길냥이"]),
-        ("today_programs",  ["오늘의 프로그램", "오늘 프로그램", "오늘 뭐", "과학쇼", "전시해설", "오늘 해", "오늘의 행사", "헬로 다이노", "헬로다이노", "짹짹 새 탐험대", "짹짹새탐험대", "짹짹 탐험대", "짹짹탐험대", "북적북적 과학관", "북적북적과학관", "이번주", "이번 주", "다음주", "다음 주", "내일 프로그램", "모레 프로그램", "today's programs", "今日のプログラム", "今日节目"]),
-        ("exhibit_guide",   ["전시관", "전시관 안내", "놀이터 안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터", "빛놀이터", "exhibition guide", "展示館案内", "展馆导览"]),
-        ("reservation_guide", ["예약", "예매", "방문신청", "방문 신청", "개인예약", "교육예약", "모바일 qr", "입장권", "정원", "1600"]),
+        ("education_guide", ["교육프로그램", "교육과정", "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실", "방학과정", "나눔과정", "창경궁프로그램", "창경궁교육", "빛놀이터교육", "전시연계교육", "어린이맞춤과학"]),
+        ("science_show", ["로봇쇼", "사이언스랩", "과학쇼", "과학실험"]),
+        ("planetarium_timetable", ["천체투영관시간표", "투영관시간표", "천체투영관시간", "투영관시간", "상영", "회차", "프로그램(투영관)", "코코몽", "키츠", "바니", "다이노소어", "슈퍼문", "우주정거장", "길냥이"]),
+        ("today_programs",  ["오늘의프로그램", "오늘프로그램", "오늘뭐", "과학쇼", "전시해설", "오늘해", "오늘의행사", "헬로다이노", "짹짹새탐험대", "짹짹탐험대", "북적북적과학관", "이번주", "다음주", "내일프로그램", "모레프로그램", "today's programs", "今日のプログラム", "今日节目"]),
+        ("exhibit_guide",   ["전시관", "전시관안내", "놀이터안내", "ai놀이터", "행동놀이터", "관찰놀이터", "탐구놀이터", "생각놀이터", "빛놀이터", "exhibition guide", "展示館案内", "展馆导览"]),
+        ("reservation_guide", ["예약", "예매", "방문신청", "개인예약", "교육예약", "모바일qr", "입장권", "정원", "1600"]),
         # parking 은 admission_fee 앞에 위치 (주차비/주차료의 '비/료' 를 admission 이 먹지 않도록)
-        ("parking",         ["주차", "주차장", "주차비", "주차료", "주차 요금", "주차 되", "주차되", "파킹", "parking", "car park"]),
+        ("parking",         ["주차", "주차장", "주차비", "주차료", "주차요금", "주차되", "파킹", "parking", "car park"]),
         ("admission_fee",   ["관람료", "입장료", "요금", "가격", "얼마", "얼만", "비용", "유료", "무료", "할인", "티켓값", "표값"]),
-        ("directions",      ["오시는길", "오는길", "오시는 길", "오는 길", "교통", "길찾기", "길 찾", "주소", "위치", "어떻게 가", "어떻게 오", "어디에 있", "어디야", "가는 방법", "가는길"]),
+        ("directions",      ["오시는길", "오는길", "교통", "길찾기", "길찾", "주소", "위치", "어떻게가", "어떻게오", "어디에있", "어디야", "가는방법", "가는길"]),
         ("facility_amenities", ["시설", "편의시설", "의무실", "수유실", "유아휴게", "물품보관", "보관함", "락커", "대여", "안내데스크", "매표소", "꿈트리", "휴게실", "영유아놀이터", "하늘마당", "옥상", "화장실"]),
-        ("route_by_age",    ["동선", "연령별", "연령", "나이", "추천 코스", "추천 동선", "추천코스", "추천동선", "추천해", "4~7", "7세", "유아", "초등", "저학년", "고학년", "몇 살", "몇살", "초등학생", "유아 코스", "어린이 코스", "관람 코스", "관람코스", "recommended route by age", "年齢別おすすめルート", "按年龄推荐路线"]),
-        ("floor_guide",     ["층별", "층 안내", "1층", "2층", "3층", "게이트", "입구", "출구", "어느 층", "무슨 층", "floor guide", "フロア案内", "楼层导览"]),
-        ("operating_hours", ["운영시간", "운영 시간", "운영", "휴관", "휴무", "몇 시", "몇시", "마감", "언제 열", "언제 닫", "여는 시간", "닫는 시간", "개관", "폐관", "여나요", "여나"]),
+        ("route_by_age",    ["동선", "연령별", "연령", "나이", "추천코스", "추천동선", "추천해", "4~7", "7세", "유아", "초등", "저학년", "고학년", "몇살", "초등학생", "유아코스", "어린이코스", "관람코스", "recommended route by age", "年齢別おすすめルート", "按年龄推荐路线"]),
+        ("floor_guide",     ["층별", "층안내", "1층", "2층", "3층", "게이트", "입구", "출구", "어느층", "무슨층", "floor guide", "フロア案内", "楼层导览"]),
+        ("operating_hours", ["운영시간", "운영", "휴관", "휴무", "몇시", "마감", "언제열", "언제닫", "여는시간", "닫는시간", "개관", "폐관", "여나요", "여나"]),
     ]
     for category, keywords in rules:
-        if any(keyword in lowered for keyword in keywords):
+        if any(keyword in lowered_no_space for keyword in keywords):
             return category
     return "operating_hours"
 
@@ -810,12 +814,13 @@ def answer_rule_based(intent: str, message: str, mode: str) -> str:
             import datetime as _dt
             _month = _dt.datetime.now().month
             lowered = message.lower()
+            lowered_no_space = lowered.replace(" ", "")
             
             # 특정 프로그램 감지
             mentioned_show = None
-            if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇"]):
+            if any(k in lowered_no_space for k in ["로봇쇼", "로봇"]):
                 mentioned_show = "로봇쇼"
-            elif any(k in lowered for k in ["사이언스랩", "사이언스 랩", "실험"]):
+            elif any(k in lowered_no_space for k in ["사이언스랩", "실험"]):
                 mentioned_show = "사이언스랩"
             
             # 특정 프로그램만 짧게 안내
@@ -2343,7 +2348,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             lowered_no_space = lowered.replace(" ", "")
             
             # 전체 층별 안내 요청 확인
-            show_full_floors = any(k in lowered for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
+            show_full_floors = any(k in lowered_no_space for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
             
             # 특정 층 질문 확인
             mentioned_floor = None
@@ -2474,7 +2479,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             lowered_no_space = lowered.replace(" ", "")
             
             # 전체 편의시설 안내 요청 확인
-            show_full_facilities = any(k in lowered for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
+            show_full_facilities = any(k in lowered_no_space for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
             
             # 특정 장소 위치 안내 (다양한 키워드 포함)
             facility_locations = {
@@ -2591,7 +2596,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             lowered_no_space = lowered.replace(" ", "")
             
             # 전체 전시관 안내 요청 확인
-            show_full_exhibits = any(k in lowered for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
+            show_full_exhibits = any(k in lowered_no_space for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘"])
             
             # 특정 놀이터 질문 확인
             exhibit_locations = {
@@ -2908,13 +2913,15 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             date_label = "오늘" if not is_specific else f"{target_date.strftime('%m월 %d일')}({weekday_kr}요일)"
             lowered = message.lower()
             
+            lowered_no_space = lowered.replace(" ", "")
+
             # 특정 프로그램 감지
             mentioned_program = None
-            if any(k in lowered for k in ["로봇쇼", "로봇 쇼", "로봇"]):
+            if any(k in lowered_no_space for k in ["로봇쇼", "로봇"]):
                 mentioned_program = "로봇쇼"
-            elif any(k in lowered for k in ["사이언스랩", "사이언스 랩", "실험"]):
+            elif any(k in lowered_no_space for k in ["사이언스랩", "실험"]):
                 mentioned_program = "사이언스랩"
-            elif any(k in lowered for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로 다이노", "짹짹 새", "짹짹새", "짹짹 탐험대", "짹짹탐험대"]):
+            elif any(k in lowered_no_space for k in ["전시해설", "해설", "스폿해설", "전시톡톡해설", "단체해설", "헬로다이노", "짹짹새", "짹짹탐험대"]):
                 mentioned_program = "전시해설"
             
             # 특정 프로그램만 짧게 안내
@@ -3635,7 +3642,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
             lowered_no_space = lowered.replace(" ", "")
             
             # 전체 시간표 요청 확인 (특정 프로그램이 있으면 전체 안내로 간주하지 않음)
-            show_full_timetable = any(k in lowered for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘", "시간표", "회차"])
+            show_full_timetable = any(k in lowered_no_space for k in ["전체", "다른", "모든", "전부", "알려줘", "보여줘", "시간표", "회차"])
             
             timetable = """
 | 회차 | 시작 시각 | 소요시간 | 프로그램 | 권장연령 |

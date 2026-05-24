@@ -24,7 +24,20 @@
       "Bash(python _test_route.py)",
       "Bash(python _test_edu.py)",
       "Bash(del _test_route.py _test_edu.py)",
-      "Bash(python _test_stream.py)"
+      "Bash(python _test_stream.py)",
+      "Bash(python -c \"import py_compile; py_compile.compile\\('core.py', doraise=True\\)\")",
+      "Bash(python -c \"import sys; sys.stdout.buffer.write\\(sys.stdin.buffer.read\\(\\)\\)\")",
+      "Bash(python -c \"import core; print\\('core.py import OK'\\)\")",
+      "Bash(python -c \"import app_with_voice; print\\('app_with_voice.py import OK'\\)\")",
+      "Bash(python -m streamlit run app_with_voice.py --server.headless true)",
+      "Bash(git commit *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('core.py', encoding='utf-8'\\).read\\(\\)\\); print\\('core.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('static_translations.py', encoding='utf-8'\\).read\\(\\)\\); print\\('static_translations.py OK'\\)\")",
+      "Bash(gh api *)",
+      "Bash(python -c \"import pandas as pd; df = pd.read_csv\\('data/천체투영관.csv', encoding='utf-8-sig'\\); print\\(df.columns.tolist\\(\\)\\); print\\(\\); print\\(df.head\\(3\\).to_string\\(\\)\\)\")",
+      "Bash(python -m py_compile core.py)",
+      "Bash(gh run *)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }
