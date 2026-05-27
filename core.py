@@ -229,6 +229,11 @@ def route_intent(text: str) -> str:
     if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
         return "llm_agent"
 
+    # 맥락 의존 질문 → LLM 에이전트 (대명사, 지시어, 시간/장소 질문)
+    _context_keywords = ["그거", "그것", "그게", "거기", "그쪽", "그건", "그거는", "그것은", "그게는", "몇 시야", "몇시야", "언제야", "어디야", "어디예요", "어디에", "어디로", "어디서", "언제", "어디", "몇 시", "몇시"]
+    if any(k in lowered for k in _context_keywords):
+        return "llm_agent"
+
     # 나이 패턴 ("7살은 뭐 봐?") → 정적 FAQ
     if re.search(r"\d+\s*[살세]", text) or "연나이" in lowered or "만 나이" in lowered:
         return "basic"
