@@ -2,7 +2,7 @@
 
 > **검토 목적**: 이 문서는 앱 설계 전반에 대한 전문가 피드백을 받기 위해 작성되었습니다.  
 > **최종 업데이트**: 2026-05-21  
-> **배포 환경**: Streamlit Cloud  
+> **배포 환경**: Streamlit Cloud
 
 ---
 
@@ -13,29 +13,29 @@
 
 ### 핵심 기능
 
-| 기능 | 설명 |
-|---|---|
-| **챗봇 안내** | 운영시간·요금·예약·동선 등 FAQ + RAG 기반 자유 질의 |
-| **음성 입출력** | 마이크 녹음(STT) + 답변 음성 출력(TTS) |
-| **또만나 놀이터** | 사후 학습 시스템 — 퀴즈, 궁금해요!, 과학동화+오디오북 |
-| **다국어 지원** | 한국어 / English / 日本語 / 中文 |
-| **어린이·성인 모드** | UI 언어 난이도·이모지·어조 분기 |
+| 기능                 | 설명                                                  |
+| -------------------- | ----------------------------------------------------- |
+| **챗봇 안내**        | 운영시간·요금·예약·동선 등 FAQ + RAG 기반 자유 질의   |
+| **음성 입출력**      | 마이크 녹음(STT) + 답변 음성 출력(TTS)                |
+| **또만나 놀이터**    | 사후 학습 시스템 — 퀴즈, 궁금해요!, 과학동화+오디오북 |
+| **다국어 지원**      | 한국어 / English / 日本語 / 中文                      |
+| **어린이·성인 모드** | UI 언어 난이도·이모지·어조 분기                       |
 
 ---
 
 ## 2. 기술 스택
 
-| 레이어 | 기술 | 용도 |
-|---|---|---|
-| **프레임워크** | Streamlit ≥ 1.30 | UI 렌더링, 세션 관리, 배포 |
-| **LLM** | OpenAI GPT-4o-mini | 채팅 에이전트, 퀴즈/동화 생성, 번역, 의도 분류 |
-| **Agent** | LangGraph ReAct Agent + MemorySaver | 도구 호출·대화 메모리 관리 |
-| **RAG** | LangChain + ChromaDB + text-embedding-3-small | 전시물 정보 벡터 검색 |
-| **STT** | OpenAI Whisper (whisper-1) | 음성 → 텍스트 |
-| **TTS** | ElevenLabs (1순위) → edge-tts (2순위) → OpenAI tts-1 (3순위) | 텍스트 → 음성 |
-| **분석** | Google Analytics 4 (Measurement Protocol, 서버사이드) | 이벤트 트래킹 |
-| **피드백** | Google Forms + Google Sheets (gspread) | 사용자 만족도 수집 |
-| **호스팅** | Streamlit Cloud | 서버리스 배포 |
+| 레이어         | 기술                                                         | 용도                                           |
+| -------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| **프레임워크** | Streamlit ≥ 1.30                                             | UI 렌더링, 세션 관리, 배포                     |
+| **LLM**        | OpenAI GPT-4o-mini                                           | 채팅 에이전트, 퀴즈/동화 생성, 번역, 의도 분류 |
+| **Agent**      | LangGraph ReAct Agent + MemorySaver                          | 도구 호출·대화 메모리 관리                     |
+| **RAG**        | LangChain + ChromaDB + text-embedding-3-small                | 전시물 정보 벡터 검색                          |
+| **STT**        | OpenAI Whisper (whisper-1)                                   | 음성 → 텍스트                                  |
+| **TTS**        | ElevenLabs (1순위) → edge-tts (2순위) → OpenAI tts-1 (3순위) | 텍스트 → 음성                                  |
+| **분석**       | Google Analytics 4 (Measurement Protocol, 서버사이드)        | 이벤트 트래킹                                  |
+| **피드백**     | Google Forms + Google Sheets (gspread)                       | 사용자 만족도 수집                             |
+| **호스팅**     | Streamlit Cloud                                              | 서버리스 배포                                  |
 
 ---
 
@@ -99,47 +99,48 @@ answer_rule_based()   RAG 검색 (ChromaDB k=3)
 
 `classify_basic_category()`에서 처리되는 카테고리 (~30개):
 
-| 카테고리 | 예시 질문 |
-|---|---|
-| `operating_hours` | 몇 시에 열어요? |
-| `admission_fee` | 입장료 얼마예요? |
-| `reservation_guide` | 예약 어떻게 해요? |
-| `route_by_age` | 7살 어디 보면 좋아요? / 추천 동선 |
-| `today_programs` | 오늘 프로그램 뭐 있어요? |
-| `floor_guide` | 층별 안내 |
-| `directions` | 오시는 길 |
-| `parking` | 주차 |
-| `facility_amenities` | 유모차 대여, 수유실, 물품보관함 |
-| `science_show` | 과학쇼, 로봇쇼, 사이언스랩 |
-| `planetarium` | 천체투영관 예약 |
-| `robot_show` | 로봇쇼 시간 |
-| `education_guide` | 교육 프로그램 안내 |
-| `food_drink` | 도시락 반입, 매점 |
-| `umbrella_rental` | 우산 빌려줘 |
-| `lost_found` | 분실물 |
-| `wifi_info` | 와이파이 |
-| `pet_policy` | 반려동물 |
-| `wheelchair_stroller` | 휠체어, 유모차 |
-| `phone_charging` | 핸드폰 충전 |
-| `late_arrival` | 늦게 도착하면 |
-| ... | 등 총 ~30개 |
+| 카테고리              | 예시 질문                         |
+| --------------------- | --------------------------------- |
+| `operating_hours`     | 몇 시에 열어요?                   |
+| `admission_fee`       | 입장료 얼마예요?                  |
+| `reservation_guide`   | 예약 어떻게 해요?                 |
+| `route_by_age`        | 7살 어디 보면 좋아요? / 추천 동선 |
+| `today_programs`      | 오늘 프로그램 뭐 있어요?          |
+| `floor_guide`         | 층별 안내                         |
+| `directions`          | 오시는 길                         |
+| `parking`             | 주차                              |
+| `facility_amenities`  | 유모차 대여, 수유실, 물품보관함   |
+| `science_show`        | 과학쇼, 로봇쇼, 사이언스랩        |
+| `planetarium`         | 천체투영관 예약                   |
+| `robot_show`          | 로봇쇼 시간                       |
+| `education_guide`     | 교육 프로그램 안내                |
+| `food_drink`          | 도시락 반입, 매점                 |
+| `umbrella_rental`     | 우산 빌려줘                       |
+| `lost_found`          | 분실물                            |
+| `wifi_info`           | 와이파이                          |
+| `pet_policy`          | 반려동물                          |
+| `wheelchair_stroller` | 휠체어, 유모차                    |
+| `phone_charging`      | 핸드폰 충전                       |
+| `late_arrival`        | 늦게 도착하면                     |
+| `exhibit_guide`       | 전시관 안내, 놀이터별 전시물 질문 |
+| ...                   | 등 총 ~30개                       |
 
 ---
 
 ## 6. LLM 사용 현황
 
-| 위치 | 모델 | 용도 | 캐시 |
-|---|---|---|---|
-| 메인 채팅 에이전트 | gpt-4o-mini | RAG + 대화 답변 | ✗ (스트리밍) |
-| 퀴즈 생성 | gpt-4o-mini | 전시물 기반 퀴즈 | 세션 내 캐시 |
-| 과학동화 생성 | gpt-4o-mini | 어린이 과학 스토리 | ✗ |
-| 의도 분류 | gpt-4o-mini | 애매한 질문 분류 | 1시간 |
-| 규칙 답변 번역 | gpt-4o-mini | 한국어 → 다국어 | 24시간 |
-| 키워드 추출 (폴백) | gpt-4o-mini | CSV 존 키워드 추출 | 24시간 |
-| 키워드 번역 | gpt-4o-mini | 한국어 → 다국어 | 24시간 |
-| 임베딩 | text-embedding-3-small | RAG 벡터화 | 세션 |
-| STT | whisper-1 | 음성 → 텍스트 | ✗ |
-| TTS (3순위 폴백) | tts-1 | 텍스트 → 음성 | 세션 |
+| 위치               | 모델                   | 용도               | 캐시         |
+| ------------------ | ---------------------- | ------------------ | ------------ |
+| 메인 채팅 에이전트 | gpt-4o-mini            | RAG + 대화 답변    | ✗ (스트리밍) |
+| 퀴즈 생성          | gpt-4o-mini            | 전시물 기반 퀴즈   | 세션 내 캐시 |
+| 과학동화 생성      | gpt-4o-mini            | 어린이 과학 스토리 | ✗            |
+| 의도 분류          | gpt-4o-mini            | 애매한 질문 분류   | 1시간        |
+| 규칙 답변 번역     | gpt-4o-mini            | 한국어 → 다국어    | 24시간       |
+| 키워드 추출 (폴백) | gpt-4o-mini            | CSV 존 키워드 추출 | 24시간       |
+| 키워드 번역        | gpt-4o-mini            | 한국어 → 다국어    | 24시간       |
+| 임베딩             | text-embedding-3-small | RAG 벡터화         | 세션         |
+| STT                | whisper-1              | 음성 → 텍스트      | ✗            |
+| TTS (3순위 폴백)   | tts-1                  | 텍스트 → 음성      | 세션         |
 
 ---
 
@@ -158,12 +159,12 @@ text_to_speech() 호출
 
 **언어별 음성 설정**:
 
-| 언어 | ElevenLabs Voice ID | edge-tts |
-|---|---|---|
-| 한국어 | uyVNoMrnUku1dZyVEXwD | ko-KR-InJoonNeural |
-| English | 8LVfoRdkh4zgjr8v5ObE | en-US-AriaNeural |
-| 日本語 | 3JDquces8E8bkmvbh6Bc | ja-JP-NanamiNeural |
-| 中文 | vZZLclMx4wouUtKBRfZn | zh-CN-XiaoxiaoNeural |
+| 언어    | ElevenLabs Voice ID  | edge-tts             |
+| ------- | -------------------- | -------------------- |
+| 한국어  | uyVNoMrnUku1dZyVEXwD | ko-KR-InJoonNeural   |
+| English | 8LVfoRdkh4zgjr8v5ObE | en-US-AriaNeural     |
+| 日本語  | 3JDquces8E8bkmvbh6Bc | ja-JP-NanamiNeural   |
+| 中文    | vZZLclMx4wouUtKBRfZn | zh-CN-XiaoxiaoNeural |
 
 ---
 
@@ -185,6 +186,13 @@ System Prompt (동적 생성, 사용자 모드·언어 반영)
 + 사용자 입력 (+ 언어 오버라이드 지시)
 ```
 
+### 전시물 검색 도구
+
+- **도구**: `search_exhibit_info(zone_name)`
+- **용도**: 특정 놀이터의 전시물 목록을 CSV에서 직접 검색
+- **사용 시기**: 사용자가 "행동놀이터에 어떤 전시물이 있어?" 같은 질문을 할 때
+- **데이터**: `data/놀이터이름.csv` 파일에서 title, content, detail, category 정보 추출
+
 ---
 
 ## 9. 또만나 놀이터 (사후 학습 시스템)
@@ -202,6 +210,7 @@ System Prompt (동적 생성, 사용자 모드·언어 반영)
 ```
 
 **품질 규칙**:
+
 - 이전 3개 문제 이력 전달 → 반복 방지
 - "제공된 전시물 데이터 외 과학 개념 창작 금지" 규칙 프롬프트에 명시
 - 난이도 분기: 유아(유치~초등 저학년) / 초등(3~6학년)
@@ -225,42 +234,42 @@ System Prompt (동적 생성, 사용자 모드·언어 반영)
 
 `route_by_age` 핸들러에서 현재 시각(KST)을 기준으로 분기:
 
-| 요일 | 동작 |
-|---|---|
-| 월요일 | 휴관일 안내 배너 표시 |
-| 화~금 (평일) | "로봇순회(14:30)" 강조, "관람객 여유" 안내 |
-| 토~일 (주말) | "일찍 도착 권장", "예약 필수" 강조 |
-| 방학 월 (1, 2, 8월) | 방학 특수 운영 안내 추가 |
+| 요일                | 동작                                       |
+| ------------------- | ------------------------------------------ |
+| 월요일              | 휴관일 안내 배너 표시                      |
+| 화~금 (평일)        | "로봇순회(14:30)" 강조, "관람객 여유" 안내 |
+| 토~일 (주말)        | "일찍 도착 권장", "예약 필수" 강조         |
+| 방학 월 (1, 2, 8월) | 방학 특수 운영 안내 추가                   |
 
 ---
 
 ## 11. 외부 서비스 및 Secrets 구성
 
-| 서비스 | Secret 키 | 필수 여부 | 비고 |
-|---|---|---|---|
-| OpenAI | `OPENAI_API_KEY` | **필수** | LLM, Whisper, TTS 폴백 |
-| ElevenLabs | `ELEVENLABS_API_KEY` | 선택 | TTS 1순위, 없으면 edge-tts 사용 |
-| ElevenLabs | `ELEVENLABS_VOICE_ID` | 선택 | 없으면 언어별 기본 voice_id 사용 |
-| ElevenLabs | `ELEVENLABS_MODEL_ID` | 선택 | 없으면 eleven_multilingual_v2 |
-| Google Analytics 4 | `GA4_API_SECRET` | 선택 | 없으면 이벤트 전송 스킵 |
-| Google Analytics 4 | `GA4_MEASUREMENT_ID` | 선택 | 없으면 하드코딩 ID 사용 |
-| Google Sheets | `gcp_service_account` | 선택 | 피드백 스프레드시트 저장 |
-| Google Sheets | `app.feedback_sheet_id` | 선택 | 없으면 Sheets 저장 스킵 |
+| 서비스             | Secret 키               | 필수 여부 | 비고                             |
+| ------------------ | ----------------------- | --------- | -------------------------------- |
+| OpenAI             | `OPENAI_API_KEY`        | **필수**  | LLM, Whisper, TTS 폴백           |
+| ElevenLabs         | `ELEVENLABS_API_KEY`    | 선택      | TTS 1순위, 없으면 edge-tts 사용  |
+| ElevenLabs         | `ELEVENLABS_VOICE_ID`   | 선택      | 없으면 언어별 기본 voice_id 사용 |
+| ElevenLabs         | `ELEVENLABS_MODEL_ID`   | 선택      | 없으면 eleven_multilingual_v2    |
+| Google Analytics 4 | `GA4_API_SECRET`        | 선택      | 없으면 이벤트 전송 스킵          |
+| Google Analytics 4 | `GA4_MEASUREMENT_ID`    | 선택      | 없으면 하드코딩 ID 사용          |
+| Google Sheets      | `gcp_service_account`   | 선택      | 피드백 스프레드시트 저장         |
+| Google Sheets      | `app.feedback_sheet_id` | 선택      | 없으면 Sheets 저장 스킵          |
 
 ---
 
 ## 12. 성능 최적화 현황
 
-| 최적화 | 방법 |
-|---|---|
-| 규칙 기반 우선 처리 | ~70% 질문은 LLM 없이 즉시 응답 |
-| 의도 분류 캐시 | 동일 문장 1시간 캐시 (`@st.cache_data(ttl=3600)`) |
-| 번역 캐시 | 규칙 기반 답변 번역 24시간 캐시 |
-| 키워드 캐시 | 존 키워드 추출·번역 24시간 캐시 |
-| TTS 캐시 | 답변별 음성 세션 내 캐시 (음성 변경 시 자동 갱신) |
-| RAG 캐시 | ChromaDB 1시간 캐시 (`@st.cache_resource(ttl=3600)`) |
-| LLM 재시도 | `max_retries=3` 설정 (모든 OpenAI 클라이언트) |
-| 스트리밍 | 메인 채팅은 토큰 스트리밍으로 체감 속도 개선 |
+| 최적화              | 방법                                                 |
+| ------------------- | ---------------------------------------------------- |
+| 규칙 기반 우선 처리 | ~70% 질문은 LLM 없이 즉시 응답                       |
+| 의도 분류 캐시      | 동일 문장 1시간 캐시 (`@st.cache_data(ttl=3600)`)    |
+| 번역 캐시           | 규칙 기반 답변 번역 24시간 캐시                      |
+| 키워드 캐시         | 존 키워드 추출·번역 24시간 캐시                      |
+| TTS 캐시            | 답변별 음성 세션 내 캐시 (음성 변경 시 자동 갱신)    |
+| RAG 캐시            | ChromaDB 1시간 캐시 (`@st.cache_resource(ttl=3600)`) |
+| LLM 재시도          | `max_retries=3` 설정 (모든 OpenAI 클라이언트)        |
+| 스트리밍            | 메인 채팅은 토큰 스트리밍으로 체감 속도 개선         |
 
 ---
 
@@ -286,17 +295,17 @@ System Prompt (동적 생성, 사용자 모드·언어 반영)
 
 ## 14. 최근 개선 이력 (2026-05)
 
-| 항목 | 내용 |
-|---|---|
-| 퀴즈 프롬프트 개선 | `quiz_detail`에 content + detail 두 필드 모두 주입 |
-| 퀴즈 데이터 보충 | 부실 키워드(< 200자) 시 같은 category 이웃 전시물 자동 결합 |
-| 동화 폴백 강화 | content/detail 없을 때 전시물 제목 목록으로 대체 |
-| 동화 가드레일 | "목록 외 전시물·과학 개념 창작 금지" 규칙 프롬프트 추가 |
-| route_by_age 분기 | 요일별 운영 차이 안내 (로봇순회·예약·붐빔 등) |
-| 오류 메시지 다국어화 | 스트리밍 실패·STT 처리 등 에러 메시지 4개 언어 지원 |
-| URL 링크 정리 | 홈페이지 URL 텍스트 직접 노출 제거 (link_button으로 대체) |
-| 재시도 로직 | OpenAI 클라이언트 전체 `max_retries=3` 추가 |
-| LLM prep 오류 처리 | RAG 검색 실패 시 다국어 에러 메시지 출력 |
+| 항목                 | 내용                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| 퀴즈 프롬프트 개선   | `quiz_detail`에 content + detail 두 필드 모두 주입          |
+| 퀴즈 데이터 보충     | 부실 키워드(< 200자) 시 같은 category 이웃 전시물 자동 결합 |
+| 동화 폴백 강화       | content/detail 없을 때 전시물 제목 목록으로 대체            |
+| 동화 가드레일        | "목록 외 전시물·과학 개념 창작 금지" 규칙 프롬프트 추가     |
+| route_by_age 분기    | 요일별 운영 차이 안내 (로봇순회·예약·붐빔 등)               |
+| 오류 메시지 다국어화 | 스트리밍 실패·STT 처리 등 에러 메시지 4개 언어 지원         |
+| URL 링크 정리        | 홈페이지 URL 텍스트 직접 노출 제거 (link_button으로 대체)   |
+| 재시도 로직          | OpenAI 클라이언트 전체 `max_retries=3` 추가                 |
+| LLM prep 오류 처리   | RAG 검색 실패 시 다국어 에러 메시지 출력                    |
 
 ---
 
@@ -317,4 +326,4 @@ maxUploadSize = 10
 
 ---
 
-*이 문서는 `ARCHITECTURE.md`로 저장되었습니다.*
+_이 문서는 `ARCHITECTURE.md`로 저장되었습니다._

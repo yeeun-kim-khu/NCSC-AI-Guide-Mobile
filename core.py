@@ -5618,6 +5618,46 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
         return f"교육프로그램 조회 오류: {e}"
 
 
+@tool
+def search_exhibit_info(zone_name: str) -> str:
+    """
+    특정 놀이터의 전시물 정보를 CSV에서 검색하여 반환합니다.
+    
+    [언제 사용하는가]
+    - 사용자가 특정 놀이터(행동놀이터, 생각놀이터, AI놀이터, 빛놀이터, 탐구놀이터, 관찰놀이터)의 전시물에 대해 질문할 때
+    - 질문 예시: "행동놀이터에 어떤 전시물이 있어?", "생각놀이터 전시물 뭐야?", "AI놀이터 뭐가 있어?", "뭐가 있어?", "전시물 뭐야?"
+    
+    Args:
+        zone_name: 놀이터 이름 (예: "행동놀이터", "생각놀이터", "AI놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터")
+    
+    Returns:
+        전시물 목록 (제목, 내용, 상세 설명 포함)
+    """
+    try:
+        rows = load_zone_rows_from_csv(zone_name)
+        if not rows:
+            return f"{zone_name}의 전시물 정보를 찾을 수 없습니다."
+        
+        exhibits = []
+        for r in rows:
+            title = r.get("title", "")
+            content = r.get("content", "")
+            detail = r.get("detail", "")
+            category = r.get("category", "")
+            
+            exhibit_text = f"- **{title}** ({category})\n"
+            if content:
+                exhibit_text += f"  설명: {content}\n"
+            if detail:
+                exhibit_text += f"  상세: {detail}\n"
+            exhibits.append(exhibit_text)
+        
+        result = f"**{zone_name} 전시물 목록**\n\n" + "\n".join(exhibits)
+        return result
+    except Exception as e:
+        return f"전시물 검색 오류: {e}"
+
+
 def get_tools():
     """LangChain agent에서 사용할 도구 목록 반환"""
     return [
@@ -5625,6 +5665,7 @@ def get_tools():
         search_csc_live_info,
         fetch_latest_notices,
         get_education_programs_by_date,
+        search_exhibit_info,
     ]
 
 # ============================================================================
@@ -5755,6 +5796,13 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 === ⚠️ 천체투영관 프로그램 검색 ===
 천체투영관은 영화 형태의 상영 프로그램을 운영합니다. 사용자가 "영화", "상영", "프로그램" 또는 특정 프로그램명(코코몽, 길냥이 키츠, 바니 앤 비니, 다이노소어 등)으로 질문하면 천체투영관 CSV에서 검색하세요.
 - 길냥이 키츠 관련: "길냥이 키츠 슈퍼문 대모험"(2회차), "길냥이 키츠 우주정거장의 비밀"(5회차) 두 개가 있습니다.
+
+=== ⚠️ 전시물 검색 도구 사용 (강제) ===
+사용자가 특정 놀이터(행동놀이터, 생각놀이터, AI놀이터, 빛놀이터, 탐구놀이터, 관찰놀이터)의 전시물에 대해 질문하면 **반드시** search_exhibit_info 도구를 사용하여 CSV에서 전시물 목록을 검색하세요.
+- 질문 예시: "행동놀이터에 어떤 전시물이 있어?", "생각놀이터 전시물 뭐야?", "AI놀이터 뭐가 있어?", "뭐가 있어?", "전시물 뭐야?"
+- **절대 도구 사용 없이 일반적인 답변을 하지 마세요.** 반드시 search_exhibit_info 도구를 먼저 호출하세요.
+- 도구 사용 방법: search_exhibit_info(zone_name="놀이터이름")
+- 검색 결과에는 전시물 제목, 설명, 상세 정보가 포함되어 있습니다. 이 정보를 바탕으로 친절하고 상세하게 답변하세요.
 
 === ⚠️ 층별 정보 포함 필수 ===
 시설/전시물 위치를 안내할 때는 반드시 층 정보를 포함하세요:
