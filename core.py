@@ -441,6 +441,14 @@ def classify_basic_category(message: str) -> str:
     if any(p in lowered_no_space for p in _edu_wayfind_broad) and _has_wayfind:
         return "program_wayfinding"
 
+    # 전시물 상세 질문 → LLM 에이전트로 전달 (정형 응답에 전시물 목록이 없음)
+    # 놀이터 이름 + 전시물 질문 조합 체크
+    _exhibit_zones = ["ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터"]
+    _has_exhibit_zone = any(z in lowered_no_space for z in _exhibit_zones)
+    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거"])
+    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
+        return "llm_agent"
+
     # 빛놀이터 시간 → operating_hours (exhibit_guide보다 우선)
     if "빛놀이터" in lowered_no_space and any(k in lowered_no_space for k in ["시간", "언제", "몇시", "열어", "운영", "마감", "닫"]):
         return "operating_hours"
@@ -448,10 +456,6 @@ def classify_basic_category(message: str) -> str:
     # 빛놀이터 체험 상세 안내 (교육 키워드보다 먼저 처리)
     if "빛놀이터" in lowered_no_space and any(k in lowered_no_space for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐있", "있어", "있나", "소개", "설명", "알려"]):
         return "light_zone_detail"
-
-    # 전시물 상세 질문 → LLM 에이전트로 전달 (정형 응답에 전시물 목록이 없음)
-    if any(k in lowered_no_space for k in ["전시물", "뭐있", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야"]):
-        return "llm_agent"
 
     # 오늘/이번 주 교육프로그램 → today_programs보다 우선 처리
     if any(k in lowered_no_space for k in ["오늘의교육프로그램", "오늘교육프로그램", "오늘교육", "오늘교육뭐", "오늘교육있어", "오늘수업", "오늘수업뭐", "오늘수업있어", "오늘과학교실", "오늘교실", "이번주교육프로그램", "이번주교육", "이번주수업"]):
