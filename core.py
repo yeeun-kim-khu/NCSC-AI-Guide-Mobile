@@ -449,6 +449,10 @@ def classify_basic_category(message: str) -> str:
     if "빛놀이터" in lowered_no_space and any(k in lowered_no_space for k in ["체험", "어떤", "뭐가", "뭐야", "구성", "뭐있", "있어", "있나", "소개", "설명", "알려"]):
         return "light_zone_detail"
 
+    # 전시물 상세 질문 → LLM 에이전트로 전달 (정형 응답에 전시물 목록이 없음)
+    if any(k in lowered_no_space for k in ["전시물", "뭐있", "무엇이", "어떤게", "구성", "목록"]):
+        return "llm_agent"
+
     # 오늘/이번 주 교육프로그램 → today_programs보다 우선 처리
     if any(k in lowered_no_space for k in ["오늘의교육프로그램", "오늘교육프로그램", "오늘교육", "오늘교육뭐", "오늘교육있어", "오늘수업", "오늘수업뭐", "오늘수업있어", "오늘과학교실", "오늘교실", "이번주교육프로그램", "이번주교육", "이번주수업"]):
         return "education_guide"
