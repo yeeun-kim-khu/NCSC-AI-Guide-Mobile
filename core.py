@@ -222,6 +222,13 @@ def route_intent(text: str) -> str:
     if "천체투영관" in lowered and any(t in lowered for t in ["뭐", "내용", "줄거리", "어떤", "코코몽", "키츠", "다이노소어", "바니"]):
         return "llm_agent"
 
+    # 전시물 상세 질문 → LLM 에이전트로 전달
+    _exhibit_zones = ["ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터"]
+    _has_exhibit_zone = any(z in lowered_no_space for z in _exhibit_zones)
+    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거"])
+    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
+        return "llm_agent"
+
     # 나이 패턴 ("7살은 뭐 봐?") → 정적 FAQ
     if re.search(r"\d+\s*[살세]", text) or "연나이" in lowered or "만 나이" in lowered:
         return "basic"
