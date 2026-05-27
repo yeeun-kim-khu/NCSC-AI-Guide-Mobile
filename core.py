@@ -450,7 +450,7 @@ def classify_basic_category(message: str) -> str:
         return "light_zone_detail"
 
     # 전시물 상세 질문 → LLM 에이전트로 전달 (정형 응답에 전시물 목록이 없음)
-    if any(k in lowered_no_space for k in ["전시물", "뭐있", "무엇이", "어떤게", "구성", "목록"]):
+    if any(k in lowered_no_space for k in ["전시물", "뭐있", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야"]):
         return "llm_agent"
 
     # 오늘/이번 주 교육프로그램 → today_programs보다 우선 처리
