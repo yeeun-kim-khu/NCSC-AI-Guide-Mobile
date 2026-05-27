@@ -225,7 +225,7 @@ def route_intent(text: str) -> str:
     # 전시물 상세 질문 → LLM 에이전트로 전달
     _exhibit_zones = ["ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터"]
     _has_exhibit_zone = any(z in lowered_no_space for z in _exhibit_zones)
-    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거"])
+    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거", "볼수", "볼 수", "볼게", "볼까", "뭐봐", "뭐 봐", "무엇을", "뭐를", "어떤걸", "어떤 것을", "어떤걸볼", "어떤걸봐"])
     if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
         return "llm_agent"
 
@@ -5633,6 +5633,47 @@ def search_exhibit_info(zone_name: str) -> str:
     Returns:
         전시물 목록 (제목, 내용, 상세 설명 포함)
     """
+    # 빛놀이터 특별 처리: 몰입형 인터랙션 체험관 안내
+    if zone_name == "빛놀이터":
+        return """**빛놀이터는 몰입형 인터랙션 체험관입니다.** 🌿
+
+빛놀이터에서는 빛과 함께 다음 내용을 살펴볼 수 있어요:
+
+- **에코크리에이터**: 씨앗을 심고 숲을 가꾸며 아름다운 미래의 자연을 만들어가는 체험
+- **똑똑한 식물 전략**: 바람, 물, 동물을 통해 씨앗이 퍼지는 과정 체험
+- **식물의 성장**: 민들레 홀씨 불기, 식물 키우기, 유기물 순환 체험
+- **신비한 식물속으로**: 광합성, 피보나치 수열, 프랙탈 구조 등 과학적 원리 탐색
+
+2층에 위치한 빛놀이터는 벽면/바닥면 인터랙션 연동으로 몸으로 직접 체험할 수 있는 공간이에요! ✨"""
+    
+    # 천체투영관 특별 처리: 5개 프로그램 모두 표시
+    if zone_name == "천체투영관":
+        return """**천체투영관 상영 프로그램 목록** 🌌
+
+천체투영관에서는 다음 5개 프로그램을 상영해요:
+
+- **코코몽 우주탐험** (1회차 10시)
+  토성의 위성 타이탄에 살고 있는 핼리의 부모님을 세균킹에서 구출하는 모험 이야기
+  학습 주제: 토성, 위성 타이탄, 태양계 행성, 우주여행, 모험
+
+- **길냥이 키츠 슈퍼문 대모험** (2회차 11시)
+  고양이들과 재미있게 알아보는 아폴로 미션과 미래 달 기지 이야기
+  학습 주제: 달, 슈퍼문, 아폴로 미션, 달 기지, 미래 우주 탐사
+
+- **바니 앤 비니** (3회차 12시, 6회차 16시)
+  잠수함 바니와 해마 비니가 들려주는 아름다운 바다와 별 이야기
+  학습 주제: 바다 생태계, 별과 별자리, 해양 생물, 자연의 신비
+
+- **다이노소어** (4회차 14시)
+  공룡이 살던 환경은 어땠을까? 달과 셀레스테의 시간여행 이야기
+  학습 주제: 공룡, 중생대, 시간여행, 멸종, 지구의 역사
+
+- **길냥이 키츠 우주정거장의 비밀** (5회차 15시)
+  세 마리 고양이들이 국제우주정거장에서 A.I.를 만나는 이야기
+  학습 주제: 국제우주정거장(ISS), 무중력, 인공지능(A.I.), 우주생활
+
+각 회차 약 30분 / 정원 65명 / 사전예약 필수 🎬"""
+    
     try:
         rows = load_zone_rows_from_csv(zone_name)
         if not rows:
@@ -6085,24 +6126,33 @@ def load_zone_rows_from_csv(zone_name: str):
 
     # 먼저 한글/동의어 컬럼명을 표준 영어로 매핑 (has_expected 체크 전에 실행)
     rename_map = {}
-    synonyms = {
-        "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
-        "content": ["content", "내용", "설명", "전시내용", "본문"],
-        "detail": ["detail", "세부 설명", "세부설명", "상세", "상세설명"],
-        "category": ["category", "분류", "카테고리", "구분"],
-    }
-    cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
-    for target, candidates in synonyms.items():
-        if target in df.columns:
-            continue
-        found = None
-        for cand in candidates:
-            key = str(cand).strip().lower()
-            if key in cols_lower:
-                found = cols_lower[key]
-                break
-        if found is not None and found != target:
-            rename_map[found] = target
+    
+    # 행동놀이터 특별 처리: 분류=제목, 제목=카테고리
+    if zone_name == "행동놀이터":
+        cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
+        if "분류" in cols_lower:
+            rename_map[cols_lower["분류"]] = "title"
+        if "제목" in cols_lower:
+            rename_map[cols_lower["제목"]] = "category"
+    else:
+        synonyms = {
+            "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
+            "content": ["content", "내용", "설명", "전시내용", "본문"],
+            "detail": ["detail", "세부 설명", "세부설명", "상세", "상세설명"],
+            "category": ["category", "분류", "카테고리", "구분"],
+        }
+        cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
+        for target, candidates in synonyms.items():
+            if target in df.columns:
+                continue
+            found = None
+            for cand in candidates:
+                key = str(cand).strip().lower()
+                if key in cols_lower:
+                    found = cols_lower[key]
+                    break
+            if found is not None and found != target:
+                rename_map[found] = target
     if rename_map:
         df = df.rename(columns=rename_map)
 
