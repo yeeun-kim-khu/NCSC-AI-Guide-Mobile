@@ -229,6 +229,18 @@ def route_intent(text: str) -> str:
     if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
         return "llm_agent"
 
+    # 프로그램 위치 찾기 (바닥 색깔 선 안내) — 맥락 의존 질문보다 우선
+    _wayfind_words = ["어디", "가야", "찾아", "찾고", "어느", "가려", "가고", "가면", "위치", "어디서", "어디로", "가는곳", "어디있", "어디있"]
+    _wayfind_programs = ["사이언스랩", "과학극장", "과학쇼", "로봇쇼",
+                         "천체투영관", "창경궁과학나들이", "창경궁나들이", "과학나들이",
+                         "얼음공", "과학마블", "씨앗의모험", "열매와씨앗",
+                         "도형마을드림팀", "지구와태양계", "헬로메이플", "디지털만화",
+                         "세종과장영실", "똑딱똑딱", "시간여행"]
+    _has_wayfind = any(w in lowered_no_space for w in _wayfind_words)
+    _has_program = any(p in lowered_no_space for p in _wayfind_programs)
+    if _has_program and _has_wayfind:
+        return "program_wayfinding"
+
     # 맥락 의존 질문 → LLM 에이전트 (대명사, 지시어, 시간/장소 질문)
     _context_keywords = ["그거", "그것", "그게", "거기", "그쪽", "그건", "그거는", "그것은", "그게는", "몇 시야", "몇시야", "언제야", "어디야", "어디예요", "어디에", "어디로", "어디서", "언제", "어디", "몇 시", "몇시"]
     if any(k in lowered for k in _context_keywords):
