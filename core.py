@@ -195,7 +195,7 @@ def route_intent(text: str) -> str:
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
         return "notice"
 
-    # 길찾기 (출발지 명시) → LLM 도구 필요
+    # 길찾기 (출발지 명시) → LLM이 경로 안내 + 답변 끝에 지도앱 확인 권고
     has_origin = bool(re.search(r"(에서|출발|출발지|역에서|집에서)", text)) or bool(re.search(r"[가-힣A-Za-z0-9]{2,}역", text))
     if has_origin and any(token in lowered for token in ["가", "길", "오", "교통", "어떻게"]):
         return "llm_agent"
@@ -5844,6 +5844,12 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - **하지만 이 챗봇은 국립어린이과학관 전용 안내 챗봇입니다.**
 - **절대로 과천과학관 홈페이지(scipia)로 안내하지 마세요.**
 - 홈페이지 URL을 안내할 때는 반드시 **https://www.sciencecenter.go.kr/csc/** 를 사용하세요.
+
+=== ⚠️ 교통/길찾기 안내 지침 ===
+- 특정 출발지(예: 개봉동, 강남역 등)에서 오는 경로를 안내할 때, 아는 범위 내에서 최선의 경로를 안내하되
+- **반드시 답변 마지막에** 다음 면책 문구를 추가하세요:
+  "⚠️ 지하철 노선·환승 정보는 변경될 수 있습니다. 정확한 실시간 경로는 **네이버지도** 또는 **카카오맵**에서 '국립어린이과학관'을 검색해 확인하세요."
+- 환승역·호선 정보를 확신할 수 없다면 추측하지 말고 "정확한 환승 정보는 지도 앱을 통해 확인해주세요"라고 안내하세요.
 
 === 답변해야 할 주요 영역 ===
 1. 운영 정보: 관람시간, 휴관일, 입장료, 교통안내
