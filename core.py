@@ -236,10 +236,11 @@ def route_intent(text: str) -> str:
     _pronoun_keywords = ["그거", "그것", "그게", "거기", "그쪽", "그건", "그거는", "그것은", "그게는"]
     _standalone_followup = ["몇 시야", "몇시야", "언제야", "어디야", "어디예요"]
     # 구체적인 프로그램/장소명이 함께 있으면 정형 FAQ가 더 정확하게 처리 → LLM으로 넘기지 않음
-    _wayfind_subjects = ["사이언스랩", "과학극장", "과학쇼", "로봇쇼", "천체투영관", "비눗방울",
+    _wayfind_subjects = ["사이언스랩", "과학극장", "과학쇼", "로봇쇼", "로봇순회", "천체투영관", "비눗방울",
                          "얼음공", "과학마블", "씨앗의모험", "열매와씨앗", "창경궁", "과학나들이",
                          "ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터",
-                         "수유실", "락커", "의무실", "매표소", "꿈트리", "어린이교실", "창작교실"]
+                         "수유실", "락커", "의무실", "매표소", "꿈트리", "어린이교실", "창작교실",
+                         "방학과정", "나눔과정", "유아특화교실", "수학교실", "과학교실", "ai공학", "sw공학"]
     _has_wayfind_subject = any(s in lowered_no_space for s in _wayfind_subjects)
     if any(k in lowered for k in _pronoun_keywords) or \
        (any(k in lowered for k in _standalone_followup) and not _has_wayfind_subject):

@@ -1149,7 +1149,9 @@ setTimeout(function(){{
                             intent, user_input, user_mode, language_mode
                         )
                     # 규칙기반 카테고리 저장 (LLM 맥락 유지용)
-                    st.session_state["_last_rule_category"] = intent
+                    # "basic"은 answer_rule_based 내부에서 구체적 카테고리로 이미 저장함 → 덮어쓰지 않음
+                    if intent != "basic":
+                        st.session_state["_last_rule_category"] = intent
                     log_monitoring(intent=intent, rule_based=True, latency_ms=(time.time()-_t0)*1000)
                     _track_ga_event("answer_delivered", {
                         "intent": intent,
