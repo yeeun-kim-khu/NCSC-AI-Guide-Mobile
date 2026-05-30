@@ -279,6 +279,7 @@ def route_intent(text: str) -> str:
         "안내데스크", "매표소", "꿈트리", "영유아놀이터",
         # 음식
         "도시락", "음식 반입", "음식반입", "취식", "매점",
+        "eat", "food", "restaurant", "lunch", "snack", "drink", "cafeteria", "meal", "hungry",
         # 편의 FAQ
         "충전", "핸드폰 충전", "휴대폰 충전", "충전기", "배터리 충전",
         "우산", "우산 대여", "우산대여", "우산 빌려", "우산빌려",
@@ -286,7 +287,7 @@ def route_intent(text: str) -> str:
         # 교육 프로그램
         "교육 프로그램", "교육프로그램", "교육과정", "교육 과정",
         "과학교실", "수학교실", "sw공학교실", "ai공학교실", "유아특화교실",
-        "방학과정", "나눔과정", "창경궁 프로그램", "창경궁프로그램", "창경궁 교육", "창경궁교육",
+        "방학과정", "나눔과정", "창경궁", "창경궁 프로그램", "창경궁프로그램", "창경궁 교육", "창경궁교육",
         "빛놀이터 교육", "빛놀이터교육", "전시연계 교육", "전시연계교육", "어린이 맞춤 과학", "어린이맞춤과학",
         "프로그램",
         # 전시해설
@@ -420,7 +421,8 @@ def classify_basic_category(message: str) -> str:
         return "stroller_wheelchair"
 
     # 우선순위 4: 음식/도시락
-    if any(k in lowered_no_space for k in ["도시락", "취식", "음식반입", "매점", "식당", "자판기", "먹을수", "간식먹", "음료마", "물마"]):
+    if any(k in lowered_no_space for k in ["도시락", "취식", "음식반입", "매점", "식당", "자판기", "먹을수", "간식먹", "음료마", "물마",
+                                              "eat", "food", "restaurant", "lunch", "snack", "drink", "cafeteria", "meal", "hungry", "eatery", "dining"]):
         return "food_drink"
 
     # 우선순위 5: 반려동물 / 와이파이 / 분실물 / 재입장 (신규 단일 카테고리)
@@ -557,7 +559,7 @@ def classify_basic_category(message: str) -> str:
         return "exhibit_linked_education"
     
     # 창경궁 과학 나들이
-    if any(k in lowered_no_space for k in ["창경궁과학", "창경궁나들이", "창경궁의우리나무와꽃", "과학나들이", "창경궁프로그램", "창경궁교육"]):
+    if any(k in lowered_no_space for k in ["창경궁", "창경궁과학", "창경궁나들이", "창경궁의우리나무와꽃", "과학나들이", "창경궁프로그램", "창경궁교육"]):
         return "changgyeonggung_science"
     
     # 어린이 맞춤 과학
