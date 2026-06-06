@@ -206,17 +206,17 @@ def route_intent(text: str) -> str:
     ):
         return "llm_agent"
 
+    # 날짜 + 교육프로그램 조회 → LLM 에이전트 우선 (날짜 계산 필요, basic보다 먼저 체크)
+    if re.search(r"(오늘|이번\s*주|이번주|다음\s*주|다음주|내일|모레|\d+월\s*\d+일|\d+일)", text) and any(
+        t in lowered_no_space for t in ["교육프로그램", "교육과정", "교육", "수업", "교실"]
+    ):
+        return "llm_agent"
+
     # 오늘/이번 주 체험 프로그램 (과학쇼·전시해설·천체투영관·빛놀이터) → basic (today_programs)
     if re.search(r"(오늘|이번\s*주|이번주|다음\s*주|다음주|내일|모레)", text) and any(
         t in lowered for t in ["프로그램", "시간표", "일정", "행사", "뭐 해", "뭐해", "뭐야", "뭐 있"]
     ):
         return "basic"
-
-    # 오늘/이번 주/특정 날짜 교육프로그램(수업·교실) 조회 → LLM 필요 (날짜 계산)
-    if re.search(r"(오늘|이번\s*주|이번주|\d+월\s*\d+일|\d+일)", text) and any(
-        t in lowered for t in ["교육", "수업", "교실"]
-    ):
-        return "llm_agent"
 
     # 천체투영관 줄거리/내용 → RAG 필요
     if "천체투영관" in lowered and any(t in lowered for t in ["뭐", "내용", "줄거리", "어떤", "코코몽", "키츠", "다이노소어", "바니"]):
