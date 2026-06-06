@@ -191,8 +191,11 @@ def route_intent(text: str) -> str:
             lowered = _augmented.lower().strip()
             text = _augmented
 
-    # 공지사항 → 전용 크롤러
+    # 공지사항 → 전용 크롤러 (단, 복합 질문이면 llm_agent로)
     if any(token in lowered for token in ["공지", "공지사항", "알림"]):
+        _multi_intent_signals = ["전시물", "놀이터", "교육", "프로그램", "전시관", "알려주고", "그리고", "also", "and"]
+        if any(s in lowered for s in _multi_intent_signals):
+            return "llm_agent"
         return "notice"
 
     # 길찾기 (출발지 명시) → LLM이 경로 안내 + 답변 끝에 지도앱 확인 권고
