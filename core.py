@@ -5563,19 +5563,23 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             return "교육프로그램 데이터를 읽을 수 없습니다."
         df.columns = [str(c).strip() for c in df.columns]
 
-        # 이번 주 토요일/일요일 날짜 계산
+        # 이번 주/다음 주 토요일/일요일 날짜 계산
         days_to_sat = (5 - today.weekday()) % 7
         days_to_sun = (6 - today.weekday()) % 7
         this_sat = today + timedelta(days=days_to_sat)
         this_sun = today + timedelta(days=days_to_sun)
+        next_sat = this_sat + timedelta(days=7)
+        next_sun = this_sun + timedelta(days=7)
 
         results = []
         results.append(f"[오늘: {today.month}월 {today.day}일 ({weekday_kr}요일)]")
         results.append(f"[이번 주 토요일: {this_sat.month}월 {this_sat.day}일 / 일요일: {this_sun.month}월 {this_sun.day}일]")
+        results.append(f"[다음 주 토요일: {next_sat.month}월 {next_sat.day}일 / 일요일: {next_sun.month}월 {next_sun.day}일]")
         results.append("")
 
         today_programs = []
         this_week_programs = []
+        next_week_programs = []
 
         for _, row in df.iterrows():
             program = str(row.get("프로그램명", "")).strip()
@@ -5587,6 +5591,7 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             time_slot = str(row.get("수업시간", "")).strip().replace("~", "-")
             target = str(row.get("교육대상", "")).strip()
             fee = str(row.get("교육비", "")).strip()
+            location = str(row.get("장소", "")).strip()
             apply_period = str(row.get("신청기간", "")).strip().replace("~", "-")
 
             title = program + (f" - {sub}" if sub and sub != "nan" else "")
@@ -5609,8 +5614,11 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             is_today = _date_in_schedule(today, dates_str)
             is_this_sat = _date_in_schedule(this_sat, dates_str)
             is_this_sun = _date_in_schedule(this_sun, dates_str)
+            is_next_sat = _date_in_schedule(next_sat, dates_str)
+            is_next_sun = _date_in_schedule(next_sun, dates_str)
 
-            entry = f"- **{title}** | 대상: {target} | 시간: {time_slot} | 교육비: {fee} | 신청: {apply_period}"
+            loc_str = f" | 장소: {location}" if location and location != "nan" else ""
+            entry = f"- **{title}** | 대상: {target} | 시간: {time_slot}{loc_str} | 교육비: {fee} | 신청: {apply_period}"
 
             if is_today:
                 today_programs.append(entry)
@@ -5618,6 +5626,10 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
                 this_week_programs.append(f"[토요일 {this_sat.month}월 {this_sat.day}일] {entry}")
             if is_this_sun:
                 this_week_programs.append(f"[일요일 {this_sun.month}월 {this_sun.day}일] {entry}")
+            if is_next_sat:
+                next_week_programs.append(f"[다음 주 토요일 {next_sat.month}월 {next_sat.day}일] {entry}")
+            if is_next_sun:
+                next_week_programs.append(f"[다음 주 일요일 {next_sun.month}월 {next_sun.day}일] {entry}")
 
         if today_programs:
             results.append(f"✅ **오늘({weekday_kr}요일) 교육 프로그램:**")
@@ -5631,6 +5643,13 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             results.extend(this_week_programs)
         else:
             results.append("이번 주 예정된 프로그램 정보가 없습니다.")
+
+        results.append("")
+        if next_week_programs:
+            results.append("📅 **다음 주 예정 프로그램:**")
+            results.extend(next_week_programs)
+        else:
+            results.append("다음 주 예정된 프로그램 정보가 없습니다.")
 
         return "\n".join(results)
 
