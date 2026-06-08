@@ -5757,16 +5757,13 @@ def search_exhibit_info(zone_name: str, purpose: str = "list") -> str:
                 exhibit_text += f"  체험방법: {detail}\n"
             exhibits.append(exhibit_text)
 
-        if purpose == "list":
-            MAX_EXHIBITS = 5
-            if len(exhibits) > MAX_EXHIBITS:
-                exhibits = exhibits[:MAX_EXHIBITS]
-                suffix = f"\n*(외 더 많은 전시물이 있습니다)*"
-            else:
-                suffix = ""
-            result = f"✨ **{zone_name} 대표 전시물 소개해드릴게요!**\n\n" + "\n".join(exhibits) + suffix
+        MAX_EXHIBITS = 5 if purpose != "detail" else len(exhibits)
+        if len(exhibits) > MAX_EXHIBITS:
+            exhibits = exhibits[:MAX_EXHIBITS]
+            suffix = f"\n*(외 더 많은 전시물이 있어요)*"
         else:
-            result = f"**{zone_name} 전시물 전체 목록**\n\n" + "\n".join(exhibits)
+            suffix = ""
+        result = f"✨ **{zone_name} 대표 전시물 소개해드릴게요!**\n\n" + "\n".join(exhibits) + suffix
         return result
     except Exception as e:
         return f"전시물 검색 오류: {e}"
@@ -5922,8 +5919,8 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - 질문 예시: "행동놀이터에 어떤 전시물이 있어?", "생각놀이터 전시물 뭐야?", "AI놀이터 뭐가 있어?", "뭐가 있어?", "전시물 뭐야?"
 - **절대 도구 사용 없이 일반적인 답변을 하지 마세요.** 반드시 search_exhibit_info 도구를 먼저 호출하세요.
 - 도구 사용 방법: search_exhibit_info(zone_name="놀이터이름")
-- 전시물 목록 안내 시: search_exhibit_info(zone_name="...", purpose="list") — 대표 5개만 반환
-- 퀴즈 출제, 전시물 질문 답변, 과학동화 생성 시: search_exhibit_info(zone_name="...", purpose="detail") — 전체 반환
+- **기본값은 반드시 purpose="list"** — 전시물 목록, 체험 소개, "뭐있어?", "어떤 체험?", "뭐해볼 수 있어?" 등 모든 안내 질문에 사용. 대표 5개만 반환.
+- purpose="detail"은 **퀴즈 출제, 과학동화 생성** 두 가지 경우에만 사용. 전체 반환.
 - 검색 결과에는 전시물 제목, 설명, 상세 정보가 포함되어 있습니다. 이 정보를 바탕으로 친절하고 상세하게 답변하세요.
 - 전시물 제목이 한국어와 영어 두 줄로 표기된 경우(예: "지구가 아파요\nThe Earth Hurts"), 현재 대화 언어에 맞는 제목만 사용하세요. 한국어 대화 시 한국어 제목만, 영어 대화 시 영어 제목만 사용하세요.
 - 전시물 데이터에 유형(🖐 직접 체험, 📺 터치 디스플레이, 📋 패널 등)과 체험방법이 포함된 경우 전시물 소개 시 함께 안내하세요.
