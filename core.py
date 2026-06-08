@@ -5736,6 +5736,9 @@ def search_exhibit_info(zone_name: str) -> str:
             category = r.get("category", "")
             operation = str(r.get("operation", "")).strip()
 
+            if operation == "텍스트":
+                continue
+
             is_experience_sub = title.strip().endswith("- 체험")
             display_title = title.strip()[:-len("- 체험")].strip() if is_experience_sub else title
 
@@ -5749,7 +5752,7 @@ def search_exhibit_info(zone_name: str) -> str:
             if detail:
                 exhibit_text += f"  상세: {detail}\n"
             exhibits.append(exhibit_text)
-        
+
         result = f"**{zone_name} 전시물 목록**\n\n" + "\n".join(exhibits)
         return result
     except Exception as e:
