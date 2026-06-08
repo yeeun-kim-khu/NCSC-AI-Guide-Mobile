@@ -6245,6 +6245,7 @@ def load_zone_rows_from_csv(zone_name: str):
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
             "detail": "" if pd.isna(r.get("detail", "")) else str(r.get("detail", "")),
             "category": effective_category,
+            "operation": "" if pd.isna(r.get("operation", "")) else str(r.get("operation", "")),
         })
     rows = [x for x in rows if x.get("title")]
     return rows
