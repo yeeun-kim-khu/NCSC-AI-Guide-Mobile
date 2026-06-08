@@ -1,105 +1,107 @@
-ID,ë¶„ë¥˜,ì „ì‹œí˜•íƒœ,ì‘ë™ë°©ì‹,ì œëª©,ë‚´ìš©,ì˜ë¬¸ ë‚´ìš©,ì„¸ë¶€ ì„¤ëª…,ì˜ë¬¸ ì„¸ë¶€ ì„¤ëª…,ë¹„ê³  ë° ì£¼ì˜ì‚¬í•­,ìƒíƒœ,ì˜ë¬¸,ì‚¬ì§„1,ì‚¬ì§„2
-íƒêµ¬-1," ë„êµ¬
-Simple machine",ë„ì…ë¶€ íŒ¨ë„,í…ìŠ¤íŠ¸," ë„êµ¬
-Simple machine","ë„êµ¬ Simple machine
-ë„êµ¬ëŠ” ìš°ë¦¬ê°€ ì¼ì„ ë” ì‰½ê²Œ í•  ìˆ˜ ìˆë„ë¡ ë„ì™€ì£¼ëŠ” ë¬¼ê±´ì´ì—ìš”. ì—¬ëŸ¬ ê°€ì§€ ë„êµ¬ ì¤‘, ì‘ì€ í˜ìœ¼ë¡œë„ ë¬´ê±°ìš´ ë¬¼ì²´ë¥¼ ì›€ì§ì¼ ìˆ˜ ìˆê²Œ í•˜ëŠ” ë„êµ¬ë¥¼ 'ë‹¨ìˆœ ê¸°ê³„'ë¼ê³  í•´ìš”. ë‹¤ì–‘í•œ ë„êµ¬ë¥¼ ì²´í—˜í•´ ë³´ë©° í˜ì˜ ì°¨ì´ë¥¼ ëŠê»´ë³´ì•„ìš”.","Simple Machine
-Tools are things that make our work much easier! Among many tools, the ones that help us move heavy things with just a little bit of strength are called 'simple machines'. Let's try different tools and feel the difference in strength!","ì‚¬ëŒë“¤ì€ ì•„ì£¼ ì˜¤ë˜ì „ë¶€í„° í˜ë“  ì¼ì„ ì‰½ê²Œ í•  ë°©ë²•ì„ ì°¾ì•˜ì–´ìš”.
-ì•½ 250ë§Œ ë…„ ì „ ëŒ, ë‚˜ë¬´, ë™ë¬¼ ë¼ˆ ë“±ì„ ì´ìš©í•´ ê°„ë‹¨í•œ ë„êµ¬ë¥¼ ë§Œë“¤ê¸° ì‹œì‘í–ˆì–´ìš”.
-ì‹œê°„ì´ ì§€ë‚˜ ë‹¨ë‹¨í•œ ê¸ˆì†ì„ ë°œê²¬í•˜ë©´ì„œ ë” íŠ¼íŠ¼í•˜ê³  ì˜¤ë˜ê°€ëŠ” ë„êµ¬ë¥¼ ë§Œë“¤ ìˆ˜ ìˆê²Œ ë˜ì—ˆë‹µë‹ˆë‹¤.","People have been looking for ways to make hard work easier for a long, long time!
+ID,ºĞ·ù,Àü½ÃÇüÅÂ,ÀÛµ¿¹æ½Ä,Á¦¸ñ,³»¿ë,¿µ¹® ³»¿ë,¼¼ºÎ ¼³¸í,¿µ¹® ¼¼ºÎ ¼³¸í,ºñ°í ¹× ÁÖÀÇ»çÇ×,»óÅÂ,¿µ¹®,»çÁø1,»çÁø2
+Å½±¸-1," µµ±¸
+Simple machine",µµÀÔºÎ ÆĞ³Î,ÅØ½ºÆ®," µµ±¸
+Simple machine","µµ±¸ Simple machine
+µµ±¸´Â ¿ì¸®°¡ ÀÏÀ» ´õ ½±°Ô ÇÒ ¼ö ÀÖµµ·Ï µµ¿ÍÁÖ´Â ¹°°ÇÀÌ¿¡¿ä. ¿©·¯ °¡Áö µµ±¸ Áß, ÀÛÀº ÈûÀ¸·Îµµ ¹«°Å¿î ¹°Ã¼¸¦ ¿òÁ÷ÀÏ ¼ö ÀÖ°Ô ÇÏ´Â µµ±¸¸¦ '´Ü¼ø ±â°è'¶ó°í ÇØ¿ä. ´Ù¾çÇÑ µµ±¸¸¦ Ã¼ÇèÇØ º¸¸ç ÈûÀÇ Â÷ÀÌ¸¦ ´À²¸º¸¾Æ¿ä.","Simple Machine
+Tools are things that make our work much easier! Among many tools, the ones that help us move heavy things with just a little bit of strength are called 'simple machines'. Let's try different tools and feel the difference in strength!","»ç¶÷µéÀº ¾ÆÁÖ ¿À·¡ÀüºÎÅÍ Èûµç ÀÏÀ» ½±°Ô ÇÒ ¹æ¹ıÀ» Ã£¾Ò¾î¿ä.
+¾à 250¸¸ ³â Àü µ¹, ³ª¹«, µ¿¹° »À µîÀ» ÀÌ¿ëÇØ °£´ÜÇÑ µµ±¸¸¦ ¸¸µé±â ½ÃÀÛÇß¾î¿ä.
+½Ã°£ÀÌ Áö³ª ´Ü´ÜÇÑ ±İ¼ÓÀ» ¹ß°ßÇÏ¸é¼­ ´õ Æ°Æ°ÇÏ°í ¿À·¡°¡´Â µµ±¸¸¦ ¸¸µé ¼ö ÀÖ°Ô µÇ¾ú´ä´Ï´Ù.","People have been looking for ways to make hard work easier for a long, long time!
 About 2.5 million years ago, they started making simple tools out of stones, wood, and animal bones.
-Later, they discovered strong metals and learned how to make even stronger tools that last a long time!",,ì •ìƒ,ì—†ìŒ,,
-íƒêµ¬-2,,ì²´í—˜,í•¸ì¦ˆì˜¨,"ë„ë¥´ë˜
-Pulley","ë°”í€´ì— ì¤„ì„ ê±¸ì–´ ë¬´ê±°ìš´ ë¬¼ê±´ì„ ì‰½ê²Œ ë“¤ì–´ì˜¬ë¦¬ê²Œ í•˜ëŠ” ë„êµ¬ì˜ˆìš”. í˜ì„ ì“°ëŠ” ë°©í–¥ì„ ë°”ê¾¸ê±°ë‚˜, í˜ì„ ì ê²Œ ì“°ê²Œ í•´ìš”.
-ê³ ì •ë„ë¥´ë˜, ì›€ì§ë„ë¥´ë˜
-ê³¼ì¼ìƒìê°€ ë” ê°€ë³ê²Œ ëŠê»´ì§€ëŠ” ë„ë¥´ë˜ëŠ” ë¬´ì—‡ì¸ê°€ìš”?","It is a tool with a wheel and a rope that helps you lift heavy things easily! 
+Later, they discovered strong metals and learned how to make even stronger tools that last a long time!",,Á¤»ó,¾øÀ½,,
+Å½±¸-2,,Ã¼Çè,ÇÚÁî¿Â,"µµ¸£·¡
+Pulley - Ã¼Çè","¹ÙÄû¿¡ ÁÙÀ» °É¾î ¹«°Å¿î ¹°°ÇÀ» ½±°Ô µé¾î¿Ã¸®°Ô ÇÏ´Â µµ±¸¿¹¿ä. ÈûÀ» ¾²´Â ¹æÇâÀ» ¹Ù²Ù°Å³ª, ÈûÀ» Àû°Ô ¾²°Ô ÇØ¿ä.
+°íÁ¤µµ¸£·¡, ¿òÁ÷µµ¸£·¡
+°úÀÏ»óÀÚ°¡ ´õ °¡º±°Ô ´À²¸Áö´Â µµ¸£·¡´Â ¹«¾ùÀÎ°¡¿ä?","It is a tool with a wheel and a rope that helps you lift heavy things easily! 
 It can change the direction you pull or make the load feel lighter.
 Fixed Pulley, Movable Pulley
-Which pulley makes the fruit box feel lighter?",,,"ì¤„ì„ ì‚´ì‚´ ë†“ì•„ì£¼ì„¸ìš”.
+Which pulley makes the fruit box feel lighter?",,,"ÁÙÀ» »ì»ì ³õ¾ÆÁÖ¼¼¿ä.
 Please let go of the rope gently!",,,,
-íƒêµ¬-3,,ì²´í—˜,í•¸ì¦ˆì˜¨,"ë¹—ë©´
-Slope",ë¹„ìŠ¤ë“¬íˆ ê¸°ìš¸ì–´ì§„ ë©´ìœ¼ë¡œ ë¬´ê±°ìš´ ë¬¼ê±´ì„ ë°€ê±°ë‚˜ ë‹¹ê²¨ì„œ ë” ì‰½ê²Œ ì˜®ê¸¸ ìˆ˜ ìˆê²Œ í•˜ëŠ” ë„êµ¬ì˜ˆìš”. ê¸°ìš¸ì–´ì§„ ê°ë„ê°€ ì‘ì„ìˆ˜ë¡ í˜ì€ ëœ ë“¤ì§€ë§Œ ë” ë§ì´ ì›€ì§ì—¬ì•¼ í•´ìš”.,"It is a slanted surface that helps you push or pull heavy things much more easily. If the slope is gentle, it takes less strength, but you have to push it a longer distance!",ìƒìë¥¼ ë“¤ì–´ë³´ì„¸ìš”!,Lift the box!,,,,,
-íƒêµ¬-4,,ì²´í—˜,íŒ¨ë„,"ìê¸°
-Wedge","ì‡ ë‚˜ ë‚˜ë¬´ë¥¼ ë¹„ìŠ¤ë“¬í•˜ê²Œ ê¹ì•„ ë§Œë“  ë„êµ¬ì˜ˆìš”. ìê¸°ë¥¼ ë¬¼ê±´ì˜ í‹ˆì— ë„£ê³  í˜ì„ ì£¼ë©´, ë¬¼ê±´ì„ ì‰½ê²Œ ë“¤ì–´ ì˜¬ë¦¬ê±°ë‚˜ ìª¼ê°¤ ìˆ˜ ìˆì–´ìš”.","It is a tool made by cutting metal or wood at an angle. If you put a wedge into a crack and push, you can easily lift or split things apart!",,,,,,,
-,,,í•¸ì¦ˆì˜¨,,"ìê¸°ì™€ ë‚˜ì‚¬
-ë¹—ë©´ì˜ ì›ë¦¬ë¥¼ í™œìš©í•œ ìê¸°ì™€ ë‚˜ì‚¬ê°€ ìš°ë¦¬ ìƒí™œì—ì„œ ì–´ë–»ê²Œ ì‚¬ìš©ë˜ëŠ”ì§€ ì²´í—˜í•´ ë³´ì„¸ìš”","Wedge and Screw
-Let's see how wedges and screws, which use the power of slopes, are used in our daily lives!",ì²´í—˜í•œ ë„êµ¬ëŠ” ë‹¤ìŒ ì¹œêµ¬ë¥¼ ìœ„í•´ ì •ë¦¬í•´ì£¼ì„¸ìš”.,Please put the tools back for the next friend!,,,,,
-,,,í•¸ì¦ˆì˜¨,,ì¹¼ ì†ì—ëŠ” ìê¸°ì˜ ì›ë¦¬ê°€ ìˆ¨ì–´ ìˆì–´ìš”. ì¹¼ë‚  ê°ë„ê°€ ë‹¤ë¥¸ ë‘ê°œì˜ ì¹¼ë¡œ ê³¼ì¼ ëª¨í˜•ì„ ì˜ë¼ë³´ë©° í˜ì˜ ì„¸ê¸°ë¥¼ ë¹„êµí•´ ë³´ì•„ìš”. í˜ì´ ì ê²Œ ë“¤ì—ˆë˜ ì¹¼ì€ ì–´ë–¤ ì¹¼ì¸ê°€ìš”?,The secret of the wedge is hidden in a knife! Try cutting the toy fruit with two knives that have different angles and compare how hard you have to push. Which knife was easier to use?,,,,,,,
-,,,íŒ¨ë„,"ë‚˜ì‚¬
-Screw", ë¹—ë©´ì´ ì†Œìš©ëŒì´ì²˜ëŸ¼ ê°ê²¨ ìˆëŠ” ëª¨ì–‘ì˜ ë„êµ¬ì˜ˆìš”. ìˆ˜ë§ì€ ë‚˜ì‚¬ì˜ í™ˆ ë•ë¶„ì— ì‘ì€ í˜ìœ¼ë¡œë„ ,"It is a tool that looks like a slope wrapped around like a whirlpool! Thanks to the many grooves on the screw, you can twist it with just a little bit of strength.",,,,,,,
-,,,í•¸ì¦ˆì˜¨,,ë³‘ëšœê»‘ ì†ì— ë‚˜ì‚¬ì˜ ì›ë¦¬ê°€ ìˆ¨ì–´ìˆì–´ìš”.. ëª¨ì–‘ì´ ë‹¤ë¥¸ ì„¸ ê°œì˜ ë³‘ëšœê»‘ì„ ëŒë ¤ ë³´ë©´ì„œ ì–´ë–¤ ë³‘ì´ ë” ì‰½ê²Œ ì—´ë¦¬ëŠ”ì§€ ë¹„êµí•´ ë³´ì•„ìš”. ê°€ì¥ ì‰½ê²Œ ì—´ë¦° ë³‘ì˜ ë‚˜ì‚¬ì‚° ëª¨ì–‘ì€ ì–´ë• ë‚˜ìš”?,The secret of the screw is hidden in a bottle cap! Try twisting three different bottle caps and see which one opens the easiest. What did the screw threads look like on the easiest bottle?,,,"ëšœê»‘ì€ ì„¸ê²Œ ì¡ì•„ë‹¹ê¸°ì§€ ë§ˆì„¸ìš”.
+Å½±¸-3,,Ã¼Çè,ÇÚÁî¿Â,"ºø¸é
+Slope","ºñ½ºµëÈ÷ ±â¿ï¾îÁø ¸éÀ¸·Î ¹«°Å¿î ¹°°ÇÀ» ¹Ğ°Å³ª ´ç°Ü¼­ ´õ ½±°Ô ¿Å±æ ¼ö ÀÖ°Ô ÇÏ´Â µµ±¸¿¹¿ä. ±â¿ï¾îÁø °¢µµ°¡ ÀÛÀ»¼ö·Ï ÈûÀº ´ú µéÁö¸¸ ´õ ¸¹ÀÌ ¿òÁ÷¿©¾ß ÇØ¿ä.
+
+ºø¸é¿¡ ÀÖ´Â °úÀÏ »óÀÚ¿Í ¶È¹Ù·Î ¼­ÀÖ´Â ¸é¿¡ ÀÖ´Â °úÀÏ»óÀÚ¸¦ ¹Ğ¾îº¸¼¼¿ä. ¾î¶² »óÀÚ°¡ ´õ °¡º±°Ô ´À²¸Áö³ª¿ä?","It is a slanted surface that helps you push or pull heavy things much more easily. If the slope is gentle, it takes less strength, but you have to push it a longer distance!",»óÀÚ¸¦ µé¾îº¸¼¼¿ä!,Lift the box!,,,,,
+Å½±¸-4,,Ã¼Çè,ÆĞ³Î,"½û±â
+Wedge","¼è³ª ³ª¹«¸¦ ºñ½ºµëÇÏ°Ô ±ğ¾Æ ¸¸µç µµ±¸¿¹¿ä. ½û±â¸¦ ¹°°ÇÀÇ Æ´¿¡ ³Ö°í ÈûÀ» ÁÖ¸é, ¹°°ÇÀ» ½±°Ô µé¾î ¿Ã¸®°Å³ª ÂÉ°¶ ¼ö ÀÖ¾î¿ä.","It is a tool made by cutting metal or wood at an angle. If you put a wedge into a crack and push, you can easily lift or split things apart!",,,,,,,
+,,,ÇÚÁî¿Â,½û±â¿Í ³ª»ç - Ã¼Çè,"½û±â¿Í ³ª»ç
+ºø¸éÀÇ ¿ø¸®¸¦ È°¿ëÇÑ ½û±â¿Í ³ª»ç°¡ ¿ì¸® »ıÈ°¿¡¼­ ¾î¶»°Ô »ç¿ëµÇ´ÂÁö Ã¼ÇèÇØ º¸¼¼¿ä","Wedge and Screw
+Let's see how wedges and screws, which use the power of slopes, are used in our daily lives!",Ã¼ÇèÇÑ µµ±¸´Â ´ÙÀ½ Ä£±¸¸¦ À§ÇØ Á¤¸®ÇØÁÖ¼¼¿ä.,Please put the tools back for the next friend!,,,,,
+,,,ÇÚÁî¿Â,½û±â - Ã¼Çè,Ä® ¼Ó¿¡´Â ½û±âÀÇ ¿ø¸®°¡ ¼û¾î ÀÖ¾î¿ä. Ä®³¯ °¢µµ°¡ ´Ù¸¥ µÎ°³ÀÇ Ä®·Î °úÀÏ ¸ğÇüÀ» Àß¶óº¸¸ç ÈûÀÇ ¼¼±â¸¦ ºñ±³ÇØ º¸¾Æ¿ä. ÈûÀÌ Àû°Ô µé¾ú´ø Ä®Àº ¾î¶² Ä®ÀÎ°¡¿ä?,The secret of the wedge is hidden in a knife! Try cutting the toy fruit with two knives that have different angles and compare how hard you have to push. Which knife was easier to use?,,,,,,,
+,,,ÆĞ³Î,"³ª»ç
+Screw", ºø¸éÀÌ ¼Ò¿ëµ¹ÀÌÃ³·³ °¨°Ü ÀÖ´Â ¸ğ¾çÀÇ µµ±¸¿¹¿ä. ¼ö¸¹Àº ³ª»çÀÇ È¨ ´öºĞ¿¡ ÀÛÀº ÈûÀ¸·Îµµ ¹°°ÇÀ» ´Ü´ÜÈ÷ °íÁ¤ÇÒ ¼ö ÀÖ¾î¿ä.,"It is a tool that looks like a slope wrapped around like a whirlpool! Thanks to the many grooves on the screw, you can twist it with just a little bit of strength.",,,,,,,
+,,,ÇÚÁî¿Â,³ª»ç - Ã¼Çè,º´¶Ñ²± ¼Ó¿¡ ³ª»çÀÇ ¿ø¸®°¡ ¼û¾îÀÖ¾î¿ä. ¸ğ¾çÀÌ ´Ù¸¥ ¼¼ °³ÀÇ º´¶Ñ²±À» µ¹·Á º¸¸é¼­ ¾î¶² º´ÀÌ ´õ ½±°Ô ¿­¸®´ÂÁö ºñ±³ÇØ º¸¾Æ¿ä. °¡Àå ½±°Ô ¿­¸° º´ÀÇ ³ª»ç»ê ¸ğ¾çÀº ¾î¶®³ª¿ä?,The secret of the screw is hidden in a bottle cap! Try twisting three different bottle caps and see which one opens the easiest. What did the screw threads look like on the easiest bottle?,,,"¶Ñ²±Àº ¼¼°Ô Àâ¾Æ´ç±âÁö ¸¶¼¼¿ä.
 Please do not pull the bottle cap too hard!",,,,
-íƒêµ¬-5,ì—ë„ˆì§€ì™€ ê¸°ê³„ ë„ì…ë¶€,íŒ¨ë„,í…ìŠ¤íŠ¸,"ì—ë„ˆì§€ì™€ ê¸°ê³„
-ì‹œì‘ê³¼ ë°œì „
+Å½±¸-5,¿¡³ÊÁö¿Í ±â°è µµÀÔºÎ,ÆĞ³Î,ÅØ½ºÆ®,"¿¡³ÊÁö¿Í ±â°è
+½ÃÀÛ°ú ¹ßÀü
 Energy & Machine
-start & development","ì¸ë¥˜ëŠ” ë¶ˆì„ ë°œê²¬í•˜ë©´ì„œ ì²˜ìŒìœ¼ë¡œ ì—ë„ˆì§€ë¥¼ ì‚¬ìš©í•˜ê²Œ ë˜ì—ˆì–´ìš”.
-ì‹œê°„ì´ ì§€ë‚˜ë©´ì„œ ì‚¬ëŒë“¤ì€ ë¬¼, ë°”ëŒ ê°™ì€ ìì—°ì˜ í˜ì„ ì´ìš©í•´ ë‹¤ì–‘í•œ ì¼ì„ í–ˆì–´ìš”.
-ì‘ê³  ê°„ë‹¨í•œ ë„êµ¬ë¥¼ í•©ì¹˜ê³  ìƒˆë¡œìš´ ì—ë„ˆì§€ë¥¼ ì´ìš©í•˜ì—¬ í¬ê³  ë³µì¡í•œ ê¸°ê³„ë“¤ì„ ë§Œë“¤ì–´ëƒˆì–´ìš”.
-ë‹¤ì–‘í•œ ê¸°ê³„ ë•ë¶„ì— ìš°ë¦¬ëŠ” í¸ë¦¬í•˜ê²Œ ì‚´ì•„ê°€ê³  ìˆì–´ìš”.","People first started using energy when they discovered fire.
+start & development","ÀÎ·ù´Â ºÒÀ» ¹ß°ßÇÏ¸é¼­ Ã³À½À¸·Î ¿¡³ÊÁö¸¦ »ç¿ëÇÏ°Ô µÇ¾ú¾î¿ä.
+½Ã°£ÀÌ Áö³ª¸é¼­ »ç¶÷µéÀº ¹°, ¹Ù¶÷ °°Àº ÀÚ¿¬ÀÇ ÈûÀ» ÀÌ¿ëÇØ ´Ù¾çÇÑ ÀÏÀ» Çß¾î¿ä.
+ÀÛ°í °£´ÜÇÑ µµ±¸¸¦ ÇÕÄ¡°í »õ·Î¿î ¿¡³ÊÁö¸¦ ÀÌ¿ëÇÏ¿© Å©°í º¹ÀâÇÑ ±â°èµéÀ» ¸¸µé¾î³Â¾î¿ä.
+´Ù¾çÇÑ ±â°è ´öºĞ¿¡ ¿ì¸®´Â Æí¸®ÇÏ°Ô »ì¾Æ°¡°í ÀÖ¾î¿ä.","People first started using energy when they discovered fire.
 As time passed, people used the power of nature, like water and wind, to do many things.
 They put small, simple tools together and used new energy to invent big, complex machines!
 Thanks to all these amazing machines, our lives are very comfortable today.",,,,,,,
-,,íŒ¨ë„,í…ìŠ¤íŠ¸,"ì—ë„ˆì§€ì™€ ê¸°ê³„
-Energy & Machine","ì—ë„ˆì§€ Energy
-ì—ë„ˆì§€ë€ ë¬¼ì²´ê°€ ì¼ì„ í•  ìˆ˜ ìˆëŠ” ëŠ¥ë ¥ì„ ë§í•´ìš”.
-ì—ë„ˆì§€ëŠ” ì—¬ëŸ¬ ê°€ì§€ ëª¨ìŠµìœ¼ë¡œ ì¡´ì¬í•˜ê³ , ì„œë¡œ ë‹¤ë¥¸ ì—ë„ˆì§€ë¡œ ë°”ë€” ìˆ˜ë„ ìˆì–´ìš”. ì²´í—˜ì„ í†µí•´ ì—ë„ˆì§€ì˜ ë³€í™”ë¥¼ í™•ì¸í•´ ë³´ì•„ìš”.
+,,ÆĞ³Î,ÅØ½ºÆ®,"¿¡³ÊÁö¿Í ±â°è
+Energy & Machine","¿¡³ÊÁö Energy
+¿¡³ÊÁö¶õ ¹°Ã¼°¡ ÀÏÀ» ÇÒ ¼ö ÀÖ´Â ´É·ÂÀ» ¸»ÇØ¿ä.
+¿¡³ÊÁö´Â ¿©·¯ °¡Áö ¸ğ½ÀÀ¸·Î Á¸ÀçÇÏ°í, ¼­·Î ´Ù¸¥ ¿¡³ÊÁö·Î ¹Ù²ğ ¼öµµ ÀÖ¾î¿ä. Ã¼ÇèÀ» ÅëÇØ ¿¡³ÊÁöÀÇ º¯È­¸¦ È®ÀÎÇØ º¸¾Æ¿ä.
 
-ê¸°ê³„ Machines
-ê¸°ê³„ëŠ” ì‚¬ëŒì„ ëŒ€ì‹ í•˜ì—¬ ì¼ì„ ë” ì‰½ê³  ë¹ ë¥´ê²Œ í•´ì£¼ëŠ” ë¬¼ê±´ì„ ë§í•´ìš”.
-ë‹¤ì–‘í•œ ê¸°ê³„ ì¤‘, ìš°ë¦¬ê°€ ì˜ ì•„ëŠ” ìë™ì°¨ì™€ í”„ë¡œí ëŸ¬ë¥¼ ì´ìš©í•˜ëŠ” ê¸°ê³„ì— ëŒ€í•´ ì•Œì•„ë³´ê³  ì²´í—˜í•´ ë³´ì•„ìš”.","Energy
+±â°è Machines
+±â°è´Â »ç¶÷À» ´ë½ÅÇÏ¿© ÀÏÀ» ´õ ½±°í ºü¸£°Ô ÇØÁÖ´Â ¹°°ÇÀ» ¸»ÇØ¿ä.
+´Ù¾çÇÑ ±â°è Áß, ¿ì¸®°¡ Àß ¾Æ´Â ÀÚµ¿Â÷¿Í ÇÁ·ÎÆç·¯¸¦ ÀÌ¿ëÇÏ´Â ±â°è¿¡ ´ëÇØ ¾Ë¾Æº¸°í Ã¼ÇèÇØ º¸¾Æ¿ä.","Energy
 Energy is the power that makes things work!
 Energy comes in many different forms, and it can even change from one form to another. Let's see how energy changes through this activity!
 
 Machines
 Machines are things that do the hard work for us, making it easier and faster!
 Among many machines, let's learn about and play with cars and machines that use propellers.",,,,,,,
-íƒêµ¬-6,"ì—ë„ˆì§€ ìˆ²
-Energy Forest",íŒ¨ë„,í…ìŠ¤íŠ¸,"ì—ë„ˆì§€ í•˜ë² ìŠ¤íŒ… íŠ¸ë¦¬
-Energy Harvesting Tree","ì—ë„ˆì§€ í•˜ë² ìŠ¤íŒ…ì´ë€ ìš°ë¦¬ ì£¼ë³€ì—ì„œ ì“¸ëª¨ì—†ì´ ë²„ë ¤ì§€ëŠ” ì—ë„ˆì§€ë¥¼ ëª¨ì•„ ì „ê¸°ë¡œ ë°”ê¾¸ëŠ” ê¸°ìˆ ì„ ë§í•´ìš”. ìš°ë¦¬ê°€ ê±·ê±°ë‚˜ ë›°ë©´ì„œ ìƒê¸°ëŠ” ì‹ ì²´ ì—ë„ˆì§€ë¥¼ ì´ìš©í•´ ì „ê¸°ë¥¼ ë§Œë“¤ ìˆ˜ ìˆì–´ìš”. ëª¸ì„ ì›€ì§ì—¬ ì—ë„ˆì§€ ë‚˜ë¬´ë¥¼ ë°˜ì§ ë°˜ì§ ë¹›ë‚´ì£¼ì„¸ìš”.
-ì²œì²œíˆ ëŒë ¤ì£¼ì„¸ìš”
-ì†ì„ ë„£ì§€ ë§ì•„ì£¼ì„¸ìš”. ì•ˆì „ì´ ìµœìš°ì„ ì…ë‹ˆë‹¤.","Energy harvesting is a cool technology that collects wasted energy around us and turns it into electricity! We can even make electricity using the energy from our bodies when we walk or run. Move your body and make the Energy Tree shine bright!
+Å½±¸-6,"¿¡³ÊÁö ½£
+Energy Forest",ÆĞ³Î,ÅØ½ºÆ®,"¿¡³ÊÁö ÇÏº£½ºÆÃ Æ®¸®
+Energy Harvesting Tree - Ã¼Çè","¿¡³ÊÁö ÇÏº£½ºÆÃÀÌ¶õ ¿ì¸® ÁÖº¯¿¡¼­ ¾µ¸ğ¾øÀÌ ¹ö·ÁÁö´Â ¿¡³ÊÁö¸¦ ¸ğ¾Æ Àü±â·Î ¹Ù²Ù´Â ±â¼úÀ» ¸»ÇØ¿ä. ¿ì¸®°¡ °È°Å³ª ¶Ù¸é¼­ »ı±â´Â ½ÅÃ¼ ¿¡³ÊÁö¸¦ ÀÌ¿ëÇØ Àü±â¸¦ ¸¸µé ¼ö ÀÖ¾î¿ä. Á¡ÇÁÇÏ¸ç ¿¡³ÊÁö ³ª¹«¸¦ ¹İÂ¦ ¹İÂ¦ ºû³»ÁÖ¼¼¿ä.
+ÇÚµéÀº ÃµÃµÈ÷ µ¹·ÁÁÖ¼¼¿ä
+¼ÕÀ» ³ÖÁö ¸»¾ÆÁÖ¼¼¿ä. ¾ÈÀüÀÌ ÃÖ¿ì¼±ÀÔ´Ï´Ù.","Energy harvesting is a cool technology that collects wasted energy around us and turns it into electricity! We can even make electricity using the energy from our bodies when we walk or run. Move your body and make the Energy Tree shine bright!
 Please turn it slowly.
-Please do not put your hands inside. Safety first!",ë°œíŒì„ ë°Ÿì„ìˆ˜ë¡ ë‚˜ë¬´ê°€ ë°ì•„ì ¸ìš”,"The more you step on the pedals, the brighter the tree shines!",,,,,
-,,íŒ¨ë„,í…ìŠ¤íŠ¸,"ì—ë„ˆì§€ìˆ² íŒ¨ë„
-Energy Forest Pannel","ì‘í’ˆëª… | ì—ë„ˆì§€ ìˆ² 2017 ì‘ê°€ | ê¹€ë™ì› Kim, Dongone
-ì´ ì „ì‹œë¬¼ì€ ë‚˜ë¬´, ë°”ëŒ, ë¬¼ ë“± ìˆ²ì„ êµ¬ì„±í•˜ëŠ” ìš”ì†Œë“¤ì„ ì†Œì¬ë¡œ
-6ì¢…ë¥˜ì˜ ê³µì„ ì´ìš©í•˜ì—¬ ë‹¤ì–‘í•œ í˜•íƒœì˜ ""ì—ë„ˆì§€ ë³´ì¡´ì˜ ë²•ì¹™""ì„ í‘œí˜„í•˜ê³ ì í•˜ì˜€ìŠµë‹ˆë‹¤.
-ì†ìœ¼ë¡œ í•¸ë“¤ì„ ëŒë ¤ ê¸°ê³„ë¥¼ ì›€ì§ì´ê²Œ í•˜ëŠ” ì²´í—˜ì„ í†µí•´ ì¸ê°„ê³¼ ê¸°ê³„ì˜ ì†Œí†µì„ ì¶”êµ¬í•˜ì˜€ê³ , ê³µì˜ ìœ„ì¹˜ì—ë„ˆì§€ê°€ ìš´ë™ì—ë„ˆì§€ë¡œ ì „í™˜ë˜ëŠ” ê³¼ì •ì„ ë³¼ ìˆ˜ ìˆë„ë¡ í•˜ì˜€ìŠµë‹ˆë‹¤.","Artwork | Energy Forest 2017 Artist | Kim, Dongone
+Please do not put your hands inside. Safety first!",¹ßÆÇÀ» ¹âÀ»¼ö·Ï ³ª¹«°¡ ¹à¾ÆÁ®¿ä,"The more you step on the pedals, the brighter the tree shines!",,,,,
+,,ÆĞ³Î,ÅØ½ºÆ®,"¿¡³ÊÁö½£ ÆĞ³Î
+Energy Forest Pannel","ÀÛÇ°¸í | ¿¡³ÊÁö ½£ 2017 ÀÛ°¡ | ±èµ¿¿ø Kim, Dongone
+ÀÌ Àü½Ã¹°Àº ³ª¹«, ¹Ù¶÷, ¹° µî ½£À» ±¸¼ºÇÏ´Â ¿ä¼ÒµéÀ» ¼ÒÀç·Î
+6Á¾·ùÀÇ °øÀ» ÀÌ¿ëÇÏ¿© ´Ù¾çÇÑ ÇüÅÂÀÇ ""¿¡³ÊÁö º¸Á¸ÀÇ ¹ıÄ¢""À» Ç¥ÇöÇÏ°íÀÚ ÇÏ¿´½À´Ï´Ù.
+¼ÕÀ¸·Î ÇÚµéÀ» µ¹·Á ±â°è¸¦ ¿òÁ÷ÀÌ°Ô ÇÏ´Â Ã¼ÇèÀ» ÅëÇØ ÀÎ°£°ú ±â°èÀÇ ¼ÒÅëÀ» Ãß±¸ÇÏ¿´°í, °øÀÇ À§Ä¡¿¡³ÊÁö°¡ ¿îµ¿¿¡³ÊÁö·Î ÀüÈ¯µÇ´Â °úÁ¤À» º¼ ¼ö ÀÖµµ·Ï ÇÏ¿´½À´Ï´Ù.","Artwork | Energy Forest 2017 Artist | Kim, Dongone
 This artwork uses things from the forest like trees, wind, and water!
 Using six different kinds of balls, it shows how the rule of keeping energy works in many ways.
 By turning the handle to move the machine, you can see how humans and machines work together, and watch how the ball's high-up energy turns into moving energy!",,,,,,,
-íƒêµ¬-7,ì—ë„ˆì§€ Energy,íŒ¨ë„,í…ìŠ¤íŠ¸,"ì—´ì—ë„ˆì§€
-Thermal energy","ì—´ì—ë„ˆì§€ëŠ” ë¬¼ì²´ë¥¼ ë”°ëœ»í•˜ê²Œ ë§Œë“œëŠ” ì—ë„ˆì§€ë¥¼ ë§í•´ìš”.
-ë‚˜ë¬´, í™”ì„ ì—°ë£Œë¥¼ íƒœìš°ë©´ ë‚˜ì˜¤ëŠ” ì—´ì—ë„ˆì§€ë¥¼ ì´ìš©í•´ ë¬¼ì²´ë¥¼ ì›€ì§ì´ê±°ë‚˜, ë‹¤ë¥¸ ì—ë„ˆì§€ë¡œ ë°”ê¿€ ìˆ˜ ìˆì–´ìš”.
-ì•„ë˜ ë²„íŠ¼ì„ ëˆŒëŸ¬ ì—´ì—ë„ˆì§€ê°€ ë§Œë“¤ì–´ë‚¸ ì„¸ìƒì˜ ë³€í™”ë¥¼ í™•ì¸í•´ ë³´ì„¸ìš”.
-ë²„íŠ¼: ì—´íŒ½ì°½, ì¦ê¸°ê¸°ê´€, ë°œì „ì†Œ, ìë™ì°¨, ë¹„í–‰ê¸°, ë¡œì¼“","Thermal energy is the energy that makes things warm!
+Å½±¸-7,¿¡³ÊÁö Energy,ÆĞ³Î,ÅØ½ºÆ®,"¿­¿¡³ÊÁö
+Thermal energy - Ã¼Çè","¿­¿¡³ÊÁö´Â ¹°Ã¼¸¦ µû¶æÇÏ°Ô ¸¸µå´Â ¿¡³ÊÁö¸¦ ¸»ÇØ¿ä.
+³ª¹«, È­¼® ¿¬·á¸¦ ÅÂ¿ì¸é ³ª¿À´Â ¿­¿¡³ÊÁö¸¦ ÀÌ¿ëÇØ ¹°Ã¼¸¦ ¿òÁ÷ÀÌ°Å³ª, ´Ù¸¥ ¿¡³ÊÁö·Î ¹Ù²Ü ¼ö ÀÖ¾î¿ä.
+¾Æ·¡ ¹öÆ°À» ´­·¯ ¿­¿¡³ÊÁö°¡ ¸¸µé¾î³½ ¼¼»óÀÇ º¯È­¸¦ È®ÀÎÇØ º¸¼¼¿ä.
+¹öÆ°: ¿­ÆØÃ¢, Áõ±â±â°ü, ¹ßÀü¼Ò, ÀÚµ¿Â÷, ºñÇà±â, ·ÎÄÏ","Thermal energy is the energy that makes things warm!
 When we burn wood or fossil fuels, we get thermal energy. We can use this heat to move things or change it into other kinds of energy!
 Press the buttons below to see how thermal energy has changed the world!
-Buttons: Heat Expansion, Steam Engine, Power Plant, Car, Airplane, Rocket",ì•„í¬ë¦´ ì•ˆì— ì†ì„ ë„£ì§€ ë§ì•„ì£¼ì„¸ìš”.,Do not put your hands inside the clear plastic box.,,,,,
-íƒêµ¬-8,,ì²´í—˜,"ì‘ë™í˜•
-(ìì„í¼ì¦)","ì—ë„ˆì§€ í€´ì¦ˆ
-Energy Quiz","ì—ë„ˆì§€ëŠ” ìš°ë¦¬ ì‚¶ì˜ ëª¨ë“  ê³³ì— ì¡´ì¬í•©ë‹ˆë‹¤.
-í€´ì¦ˆë¥¼ í†µí•´ ì—ë„ˆì§€ì— ëŒ€í•´ ì•Œì•„ë³´ê³ , ì§€ì† ê°€ëŠ¥í•œ ë¯¸ë˜ë¥¼ ìœ„í•œ ì•„ì´ë””ì–´ë¥¼ í•¨ê»˜ ë‚˜ëˆ ë³´ì•„ìš”.
+Buttons: Heat Expansion, Steam Engine, Power Plant, Car, Airplane, Rocket",¾ÆÅ©¸± ¾È¿¡ ¼ÕÀ» ³ÖÁö ¸»¾ÆÁÖ¼¼¿ä.,Do not put your hands inside the clear plastic box.,,,,,
+Å½±¸-8,,Ã¼Çè,"ÀÛµ¿Çü
+(ÀÚ¼®ÆÛÁñ)","¿¡³ÊÁö ÄûÁî
+Energy Quiz - Ã¼Çè","¿¡³ÊÁö´Â ¿ì¸® »îÀÇ ¸ğµç °÷¿¡ Á¸ÀçÇÕ´Ï´Ù.
+ÄûÁî¸¦ ÅëÇØ ¿¡³ÊÁö¿¡ ´ëÇØ ¾Ë¾Æº¸°í, Áö¼Ó °¡´ÉÇÑ ¹Ì·¡¸¦ À§ÇÑ ¾ÆÀÌµğ¾î¸¦ ÇÔ²² ³ª´²º¸¾Æ¿ä.
 
-ì§ˆë¬¸ì— ë§ëŠ” ë‹µì„ ì°¾ì•„ ë¶™ì—¬ì£¼ì„¸ìš”.","Energy is everywhere in our lives!
+Áú¹®¿¡ ¸Â´Â ´äÀ» Ã£¾Æ ºÙ¿©ÁÖ¼¼¿ä.","Energy is everywhere in our lives!
 Let's take a quiz to learn about energy and share ideas for a healthy, green future together!
 
-Find the right answer and stick it to the question!","Q1. ìš°ë¦¬ê°€ ì‚¬ìš©í•˜ëŠ” ì—ë„ˆì§€! ì£¼ë¡œ ë¬´ì—‡ìœ¼ë¡œ ë§Œë“¤ê¹Œìš”?
-> í™”ì„ì—°ë£Œë¥¼ íƒœì›Œ ë§Œë“¤ì–´ìš”
+Find the right answer and stick it to the question!","Q1. ¿ì¸®°¡ »ç¿ëÇÏ´Â ¿¡³ÊÁö! ÁÖ·Î ¹«¾ùÀ¸·Î ¸¸µé±î¿ä?
+> È­¼®¿¬·á¸¦ ÅÂ¿ö ¸¸µé¾î¿ä
 
-Q2. í™”ì„ì—°ë£Œë¥¼ íƒœìš°ë©´ ì–´ë–¤ ì—ë„ˆì§€ë¥¼ ì–»ì„ ìˆ˜ ìˆë‚˜ìš”?
-> ì—´ì—ë„ˆì§€, ì „ê¸°ì—ë„ˆì§€
+Q2. È­¼®¿¬·á¸¦ ÅÂ¿ì¸é ¾î¶² ¿¡³ÊÁö¸¦ ¾òÀ» ¼ö ÀÖ³ª¿ä?
+> ¿­¿¡³ÊÁö, Àü±â¿¡³ÊÁö
 
-Q3. í™”ì„ ì—°ë£Œë¥¼ íƒœìš¸ ë•Œ, ê°€ì¥ ë§ì´ ë‚˜ì˜¤ëŠ” ë¬¼ì§ˆì€ ë¬´ì—‡ì¼ê¹Œìš”?
->ì´ì‚°í™”íƒ„ì†Œ
+Q3. È­¼® ¿¬·á¸¦ ÅÂ¿ï ¶§, °¡Àå ¸¹ÀÌ ³ª¿À´Â ¹°ÁúÀº ¹«¾ùÀÏ±î¿ä?
+>ÀÌ»êÈ­Åº¼Ò
 
-Q4. í™”ì„ ì—°ë£Œë¥¼ íƒœìš°ë©´ ìƒê¸°ëŠ” ë¬¸ì œì ì€ ë¬´ì—‡ì¼ê¹Œìš”?
-> ê¸°í›„ë³€í™”ë¥¼ ì¼ìœ¼ì¼œìš”, í™˜ê²½ì˜¤ì—¼ì„ ì¼ìœ¼ì¼œìš”
+Q4. È­¼® ¿¬·á¸¦ ÅÂ¿ì¸é »ı±â´Â ¹®Á¦Á¡Àº ¹«¾ùÀÏ±î¿ä?
+> ±âÈÄº¯È­¸¦ ÀÏÀ¸ÄÑ¿ä, È¯°æ¿À¿°À» ÀÏÀ¸ÄÑ¿ä
 
-Q5. í™”ì„ ì—°ë£Œë¥¼ ëŒ€ì‹ í•  ìˆ˜ ìˆëŠ” ìƒˆë¡œìš´ ì—ë„ˆì§€ë“¤ì€ ë¬´ì—‡ì´ ìˆì„ê¹Œìš”?
-> ë²„ë ¤ì§„ ì—ë„ˆì§€ë¥¼ ë‹¤ì‹œ ëª¨ìœ¼ëŠ” ì—ë„ˆì§€ í•˜ë² ìŠ¤íŒ…, ìì—°ì—ì„œ ì–»ì„ ìˆ˜ ìˆê³  ê³„ì†í•´ì„œ ë‹¤ì‹œ ìƒê²¨ë‚˜ëŠ” ì¬ìƒì—ë„ˆì§€, ìƒˆë¡œìš´ ì—ë„ˆì§€ë¥¼ ë§Œë“œëŠ” ì‹ ì—ë„ˆì§€
+Q5. È­¼® ¿¬·á¸¦ ´ë½ÅÇÒ ¼ö ÀÖ´Â »õ·Î¿î ¿¡³ÊÁöµéÀº ¹«¾ùÀÌ ÀÖÀ»±î¿ä?
+> ¹ö·ÁÁø ¿¡³ÊÁö¸¦ ´Ù½Ã ¸ğÀ¸´Â ¿¡³ÊÁö ÇÏº£½ºÆÃ, ÀÚ¿¬¿¡¼­ ¾òÀ» ¼ö ÀÖ°í °è¼ÓÇØ¼­ ´Ù½Ã »ı°Ü³ª´Â Àç»ı¿¡³ÊÁö, »õ·Î¿î ¿¡³ÊÁö¸¦ ¸¸µå´Â ½Å¿¡³ÊÁö
 
-Q6. ìš°ë¦¬ê°€ í•  ìˆ˜ ìˆëŠ” ì—ë„ˆì§€ ì ˆì•½! ë¬´ì—‡ì´ ìˆì„ê¹Œìš”?
-> ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” ê¸°ê³„ì˜ ì½”ë“œë¥¼ ë½‘ì•„ìš”, ì§‘ ì˜¨ë„ë¥¼ ì¼ì •í•˜ê²Œ ìœ ì§€í•´ìš”, ì“°ë ˆê¸°ëŠ” ë¶„ë¦¬ë°°ì¶œì„ í•´ìš”.","Q1. Where does the energy we use mostly come from?
+Q6. ¿ì¸®°¡ ÇÒ ¼ö ÀÖ´Â ¿¡³ÊÁö Àı¾à! ¹«¾ùÀÌ ÀÖÀ»±î¿ä?
+> »ç¿ëÇÏÁö ¾Ê´Â ±â°èÀÇ ÄÚµå¸¦ »Ì¾Æ¿ä, Áı ¿Âµµ¸¦ ÀÏÁ¤ÇÏ°Ô À¯ÁöÇØ¿ä, ¾²·¹±â´Â ºĞ¸®¹èÃâÀ» ÇØ¿ä.","Q1. Where does the energy we use mostly come from?
 We make it by burning fossil fuels!
 
 Q2. What kind of energy do we get when we burn fossil fuels?
@@ -116,30 +118,29 @@ Energy Harvesting to collect wasted energy, Renewable Energy that comes from nat
 
 Q6. How can we save energy?
 Unplug machines we are not using, keep the house at a steady temperature, and always recycle our trash!",,,,,
-íƒêµ¬-9,,íŒ¨ë„,í…ìŠ¤íŠ¸,"íŒŒìŠ¤ì¹¼ì˜ ì›ë¦¬
-Pascal's Principle","íŒŒìŠ¤ì¹¼ì˜ ì›ë¦¬ Pascal's Principle
+Å½±¸-9,,ÆĞ³Î,ÅØ½ºÆ®,"ÆÄ½ºÄ®ÀÇ ¿ø¸®
+Pascal's Principle","ÆÄ½ºÄ®ÀÇ ¿ø¸® Pascal's Principle
 When you press on one side of a container filled with water or air, the force spreads evenly throughout the inside of the container.
 This is called Pascal's principle.
 Using this principle, you can lift a heavy object with a small amount of force.","Pascal's Principle
 When you press on one side of a container filled with water or air, the force spreads evenly throughout the inside of the container.
 This is called Pascal's principle.
-Using this principle, you can lift a heavy object with a small amount of force.",,,,,"êµ­ë¬¸
-ë¶€ì¬",,
-,,ì²´í—˜,"ì‘ë™í˜•
-(ìœ ì••ì²´í—˜)","ì²´í—˜ë°©ë²•
-Try it","ì²« ë²ˆì§¸! ì¡°ì‹¬ì¡°ì‹¬ - ì•‰ì•„ë´…ì‹œë‹¤
-ë¹¨ê°„ë¶ˆ ì¼ë•Œ ì²´í—˜ ê°€ëŠ¥ ìƒíƒœ!
--> ì¤€ë¹„í•˜ê³  ì˜ìì— ì•‰ì•„ë´…ì‹œë‹¤.
+Using this principle, you can lift a heavy object with a small amount of force.",,,,,"±¹¹®
+ºÎÀç",,
+,,Ã¼Çè,"ÀÛµ¿Çü
+(À¯¾ĞÃ¼Çè)",ÆÄ½ºÄ®ÀÇ ¿ø¸® - Ã¼Çè,"Ã¹ ¹øÂ°! Á¶½ÉÁ¶½É - ¾É¾Æº¾½Ã´Ù
+»¡°£ºÒ ÀÏ¶§ Ã¼Çè °¡´É »óÅÂ!
+-> ÁØºñÇÏ°í ÀÇÀÚ¿¡ ¾É¾Æº¾½Ã´Ù.
 Red light: ready to sit down for experience
 
-ë‘ ë²ˆì§¸!
-ì´ˆë¡ë¶ˆ ì¼ë•Œ ë¬´ê²Œ ê°ì§€ ìƒíƒœ!
--> íŒŒìŠ¤ì¹¼ì˜ ì›ë¦¬ë¥¼ ì²´í—˜ í•´ë´…ì‹œë‹¤.
+µÎ ¹øÂ°!
+ÃÊ·ÏºÒ ÀÏ¶§ ¹«°Ô °¨Áö »óÅÂ!
+-> ÆÄ½ºÄ®ÀÇ ¿ø¸®¸¦ Ã¼Çè ÇØº¾½Ã´Ù.
 Green light: working on exhibition
 
-ë§ˆì§€ë§‰! ì¡°ì‹¬ì¡°ì‹¬ - ë‚´ë ¤ì˜¤ì„¸ìš”
-ë…¸ë€ë¶ˆ ì¼ë•Œ ì¬ì •ë¹„ ìƒíƒœ!
--> ì²´í—˜ì´ ëë‚˜ê³  ë‚´ë ¤ì˜¤ë©´ ìœ ì••í”„ë ˆìŠ¤ê°€ ë‹¤ì‹œ ì›ìœ„ì¹˜ë¡œ ëŒì•„ê°€ìš”.
+¸¶Áö¸·! Á¶½ÉÁ¶½É - ³»·Á¿À¼¼¿ä
+³ë¶õºÒ ÀÏ¶§ ÀçÁ¤ºñ »óÅÂ!
+-> Ã¼ÇèÀÌ ³¡³ª°í ³»·Á¿À¸é À¯¾ĞÇÁ·¹½º°¡ ´Ù½Ã ¿øÀ§Ä¡·Î µ¹¾Æ°¡¿ä.
 Yellow light: working back to position","1. Red light: ready to sit down for experience
 First! Sit down carefully.
 Red Light means it's ready!
@@ -153,38 +154,38 @@ Let's experience Pascal's Principle together.
 3. Yellow light: working back to position
 Last! Step down carefully.
 Yellow Light means it is resetting!
-When you finish and step down, the machine goes back to its starting spot.","ë°œì´ ë¼ì§€ ì•Šê²Œ ì¡°ì‹¬í•˜ì„¸ìš”!
-ê¸°ëŒ€ê±°ë‚˜ ì•‰ì§€ ë§ˆì„¸ìš”
+When you finish and step down, the machine goes back to its starting spot.","¹ßÀÌ ³¢Áö ¾Ê°Ô Á¶½ÉÇÏ¼¼¿ä!
+±â´ë°Å³ª ¾ÉÁö ¸¶¼¼¿ä
 
-ì–´ë¥¸ì´ ë‘ ëª…ì´ìƒ ì•‰ì§€ ë§ˆì„¸ìš”. ì†ì¡ì´ë¥¼ ê¼­ ì¡ì•„ìš”.
-ì–´ë¦°ì´ë§Œ ì•‰ì•„ì£¼ì„¸ìš”. ì†ì¡ì´ë¥¼ ê¼­ ì¡ì•„ìš”.
+¾î¸¥ÀÌ µÎ ¸íÀÌ»ó ¾ÉÁö ¸¶¼¼¿ä. ¼ÕÀâÀÌ¸¦ ²À Àâ¾Æ¿ä.
+¾î¸°ÀÌ¸¸ ¾É¾ÆÁÖ¼¼¿ä. ¼ÕÀâÀÌ¸¦ ²À Àâ¾Æ¿ä.
 
-ê°€ë²¼ìš´ ì‚¬ëŒì€ ì‘ì€ ì˜ìì—, ë¬´ê±°ìš´ ì‚¬ëŒì€ í° ì˜ìì— ì•‰ì•„ ì£¼ì„¸ìš”.
+°¡º­¿î »ç¶÷Àº ÀÛÀº ÀÇÀÚ¿¡, ¹«°Å¿î »ç¶÷Àº Å« ÀÇÀÚ¿¡ ¾É¾Æ ÁÖ¼¼¿ä.
 Please lighter people sit on the small chair, and heavier people sit on the large chair.","Be careful not to get your feet caught!
 Please do not lean or sit here.
 
 No more than two adults can sit here. Hold the handles tightly!
 Only children can sit here. Hold the handles tightly!
 
-Please lighter people sit on the small chair, and heavier people sit on the large chair.",,ìë™ ë°©ì‹ìœ¼ë¡œ ë³€ê²½ë¨ ìˆ˜ì‹œ ì ê²€,,,
-íƒêµ¬-10,,íŒ¨ë„,í…ìŠ¤íŠ¸,"ë¶€ë ¥
-Buoyancy","ë¶€ë ¥ Buoyancy
-ê³µê¸°ë‚˜ ë¬¼ì†ì— ìˆëŠ” ë¬¼ì²´ë¥¼ ìœ„ë¡œ ë– ì˜¤ë¥´ê²Œ í•˜ëŠ” í˜ì„ ë§í•´ìš”.
-ë¬´ê±°ìš´ ë°°ê°€ ë¬¼ì— ëœ¨ëŠ” ì´ìœ ë„ ë¶€ë ¥ ë•Œë¬¸ì´ì—ìš”.
-ê³µê¸° íŒí”„ë¥¼ ëˆŒëŸ¬ ë¬¸ì–´ê°€ ì–´ë–»ê²Œ ì›€ì§ì´ëŠ”ì§€ ê´€ì°°í•˜ì„¸ìš”.
-ê³µê¸° íŒí”„ë¥¼ ê¾¹ ëˆŒëŸ¬ë³´ì•„ìš”!","Buoyancy
+Please lighter people sit on the small chair, and heavier people sit on the large chair.",,ÀÚµ¿ ¹æ½ÄÀ¸·Î º¯°æµÊ ¼ö½Ã Á¡°Ë,,,
+Å½±¸-10,,ÆĞ³Î,ÅØ½ºÆ®,"ºÎ·Â
+Buoyancy","ºÎ·Â Buoyancy
+°ø±â³ª ¹°¼Ó¿¡ ÀÖ´Â ¹°Ã¼¸¦ À§·Î ¶°¿À¸£°Ô ÇÏ´Â ÈûÀ» ¸»ÇØ¿ä.
+¹«°Å¿î ¹è°¡ ¹°¿¡ ¶ß´Â ÀÌÀ¯µµ ºÎ·Â ¶§¹®ÀÌ¿¡¿ä.
+°ø±â ÆßÇÁ¸¦ ´­·¯ ¹®¾î°¡ ¾î¶»°Ô ¿òÁ÷ÀÌ´ÂÁö °üÂûÇÏ¼¼¿ä.
+°ø±â ÆßÇÁ¸¦ ²Ú ´­·¯º¸¾Æ¿ä!","Buoyancy
 Buoyancy is the superpower that makes things float up in the air or water!
 It is the same power that keeps heavy ships floating on the sea.
 Press the air pump and see how the octopus moves!
-Push the air pump hard!","ë¬¸ì–´ëŠ” ì™œ ë‚´ë ¤ê°”ë‹¤ ì˜¬ë¼ê°”ë‹¤ í• ê¹Œìš”?
-ê³µê¸° íŒí”„ë¥¼ ëˆŒë €ì„ ë•Œ
-ê³µê¸°: ê³µê°„ì´ ì¤„ì–´ë“¤ì—ˆì–´.
-ë¬¼ì´ ì•ˆìœ¼ë¡œ ë“¤ì–´ê°€ìš”.
-ë¶€ë ¥ì´ ì•½í•´ì ¸ì„œ ê°€ë¼ë‚ì•„ìš”.
+Push the air pump hard!","¹®¾î´Â ¿Ö ³»·Á°¬´Ù ¿Ã¶ó°¬´Ù ÇÒ±î¿ä?
+°ø±â ÆßÇÁ¸¦ ´­·¶À» ¶§
+°ø±â: °ø°£ÀÌ ÁÙ¾îµé¾ú¾î.
+¹°ÀÌ ¾ÈÀ¸·Î µé¾î°¡¿ä.
+ºÎ·ÂÀÌ ¾àÇØÁ®¼­ °¡¶ó…û¾Æ¿ä.
 
-ê³µê¸° íŒí”„ë¥¼ ë†“ì•˜ì„ ë•Œ
-ê³µê¸°: ë¬¼ì´ ë‚˜ê°€ë‹ˆê¹Œ ê³µê°„ì´ ëŠ˜ì–´ë‚¬ì–´.
-ë¶€ë ¥ì´ ì»¤ì ¸ì„œ ì˜¬ë¼ê°€ìš”.","Why does the octopus go up and down?
+°ø±â ÆßÇÁ¸¦ ³õ¾ÒÀ» ¶§
+°ø±â: ¹°ÀÌ ³ª°¡´Ï±î °ø°£ÀÌ ´Ã¾î³µ¾î.
+ºÎ·ÂÀÌ Ä¿Á®¼­ ¿Ã¶ó°¡¿ä.","Why does the octopus go up and down?
 When you press the air pump:
 Air: Oh, my space is shrinking!
 Water rushes inside the octopus.
@@ -192,71 +193,65 @@ Its buoyancy gets weak, so it sinks down!
 
 When you let go of the air pump:
 Air: The water went out, so I have more room!
-Its buoyancy gets strong, so it floats back up!",,ã„±' ìŠ¤í‹°ì»¤ ë–¨ì–´ì§,,,
-,,ì²´í—˜,ì‘ë™í˜•,"ì²´í—˜ë°©ë²•
-Try it","ì²´í—˜ ê¿€íŒ!
-1. ê³µê¸°íŒí”„ë¥¼ ê¾¹ ëˆ„ë¥¸ë‹¤
+Its buoyancy gets strong, so it floats back up!",,¤¡' ½ºÆ¼Ä¿ ¶³¾îÁü,,,
+,,Ã¼Çè,ÀÛµ¿Çü,ºÎ·Â - Ã¼Çè,"1. °ø±âÆßÇÁ¸¦ ²Ú ´©¸¥´Ù
 Press the aur pump 
-2. ì†ì„ ë–¼ì§€ ì•Šê³  3ì´ˆ ê¸°ë‹¤ë¦°ë‹¤
+2. ¼ÕÀ» ¶¼Áö ¾Ê°í 3ÃÊ ±â´Ù¸°´Ù
 Keep your hand on it and wait for 3 seconds
-3. ë¬¸ì–´ê°€ ë‚´ë ¤ê°€ëŠ” ê²ƒì„ ê´€ì°°í•œë‹¤. 
+3. ¹®¾î°¡ ³»·Á°¡´Â °ÍÀ» °üÂûÇÑ´Ù. 
 Observe the octopus going down","Try it!
 1. Press the aur pump 
 2. Keep your hand on it and wait for 3 seconds
 3. Observe the octopus going down",,,,,,,
-íƒêµ¬-11,ê¸°ê³„ Machine,íŒ¨ë„,í…ìŠ¤íŠ¸,"ìë™ì°¨
-Automobile","ìë™ì°¨
+Å½±¸-11,±â°è Machine,ÆĞ³Î,ÅØ½ºÆ®,"ÀÚµ¿Â÷
+Automobile","ÀÚµ¿Â÷
 Automobile
-ìë™ì°¨ëŠ” ì‚¬ëŒê³¼ ë¬¼ê±´ì„ ì˜®ê¸°ê¸° ìœ„í•´ ê¸°ê³„ì˜ í˜ìœ¼ë¡œ ë°”í€´ë¥¼ êµ´ë ¤ ë•… ìœ„ë¥¼ ì›€ì§ì¼ ìˆ˜ ìˆë„ë¡ ë§Œë“  ìš´ì†¡ìˆ˜ë‹¨ì„ ë§í•´ìš”.
-ìë™ì°¨ëŠ” ì—¬ëŸ¬ ë¶€í’ˆìœ¼ë¡œ ì´ë£¨ì–´ì ¸ ìˆìœ¼ë©° ê° ë¶€ë¶„ì´ í•¨ê»˜ ì—°ê²°ë˜ì–´ ì›€ì§ì¸ë‹µë‹ˆë‹¤.
-ë¹„ì–´ ìˆëŠ” ë¶€í’ˆë“¤ì„ ë§ì¶°ë³´ë©° ìë™ì°¨ì˜ êµ¬ì¡°ë¥¼ ì‚´í´ë³´ì•„ìš”.","Automobile
+ÀÚµ¿Â÷´Â »ç¶÷°ú ¹°°ÇÀ» ¿Å±â±â À§ÇØ ±â°èÀÇ ÈûÀ¸·Î ¹ÙÄû¸¦ ±¼·Á ¶¥ À§¸¦ ¿òÁ÷ÀÏ ¼ö ÀÖµµ·Ï ¸¸µç ¿î¼Û¼ö´ÜÀ» ¸»ÇØ¿ä.
+ÀÚµ¿Â÷´Â ¿©·¯ ºÎÇ°À¸·Î ÀÌ·ç¾îÁ® ÀÖÀ¸¸ç °¢ ºÎºĞÀÌ ÇÔ²² ¿¬°áµÇ¾î ¿òÁ÷ÀÎ´ä´Ï´Ù.
+ºñ¾î ÀÖ´Â ºÎÇ°µéÀ» ¸ÂÃçº¸¸ç ÀÚµ¿Â÷ÀÇ ±¸Á¶¸¦ »ìÆìº¸¾Æ¿ä.","Automobile
 A car is a moving machine that rolls on wheels to carry people and things on the ground!
 A car is made of many different parts, and they all work together to make it move.
 Let's match the missing parts and learn how a car is built!",,,,,,,
-íƒêµ¬-12,,ì‡¼ì¼€ì´ìŠ¤ íŒ¨ë„,í…ìŠ¤íŠ¸,"ë¸Œë ˆì´í¬
-Break","ë¸Œë ˆì´í¬ Break
-ë‹¬ë¦¬ê³  ìˆëŠ” ìë™ì°¨ì˜ ì†ë„ë¥¼ ì¤„ì´ê±°ë‚˜ ë©ˆì¶”ê²Œ í•˜ë ¤ë©´ ë¸Œë ˆì´í¬ í˜ë‹¬ì„ ë°Ÿì•„ìš”.
-í˜ë‹¬ê³¼ ì—°ê²°ëœ ê´€ ì†ì˜ ì˜¤ì¼ì„ í†µí•´ ì „í•´ì§„ ê°•í•œ í˜ìœ¼ë¡œ ë¸Œë ˆì´í¬ ìŠˆê°€ ë°”í€´ë¥¼ ê½‰ ì¡ì•„ ìë™ì°¨ë¥¼ ë©ˆì¶”ê²Œ í•´ìš”.","Brake
+Å½±¸-12,,¼îÄÉÀÌ½º ÆĞ³Î,ÅØ½ºÆ®,"ºê·¹ÀÌÅ©
+Break","ºê·¹ÀÌÅ© Break
+´Ş¸®°í ÀÖ´Â ÀÚµ¿Â÷ÀÇ ¼Óµµ¸¦ ÁÙÀÌ°Å³ª ¸ØÃß°Ô ÇÏ·Á¸é ºê·¹ÀÌÅ© Æä´ŞÀ» ¹â¾Æ¿ä.
+Æä´Ş°ú ¿¬°áµÈ °ü ¼ÓÀÇ ¿ÀÀÏÀ» ÅëÇØ ÀüÇØÁø °­ÇÑ ÈûÀ¸·Î ºê·¹ÀÌÅ© ½´°¡ ¹ÙÄû¸¦ ²Ë Àâ¾Æ ÀÚµ¿Â÷¸¦ ¸ØÃß°Ô ÇØ¿ä.","Brake
 To slow down or stop a moving car, you step on the brake pedal!
 The strong push travels through special oil in a tube, making the brake pads squeeze the wheels tightly to stop the car.",,,,,,,
-,,ì²´í—˜,ì‘ë™í˜•,"ì²´í—˜ë°©ë²•
-Try it","1. ì‹œì‘ ë²„íŠ¼ ëˆ„ë¥´ê¸°
-2. í˜ë‹¬ì„ ë°Ÿì•„ì£¼ì„¸ìš”.","1. Press the start button.
+,,Ã¼Çè,ÀÛµ¿Çü,ºê·¹ÀÌÅ© - Ã¼Çè,"1. ½ÃÀÛ ¹öÆ° ´©¸£±â
+2. Æä´ŞÀ» ¹â¾ÆÁÖ¼¼¿ä.","1. Press the start button.
 2. Step on the pedal!",,,,,,,
-íƒêµ¬-13,,ì‡¼ì¼€ì´ìŠ¤ íŒ¨ë„,í…ìŠ¤íŠ¸,"ë³€ì†ê¸°
-Transmission","ë³€ì†ê¸°
+Å½±¸-13,,¼îÄÉÀÌ½º ÆĞ³Î,ÅØ½ºÆ®,"º¯¼Ó±â
+Transmission","º¯¼Ó±â
 Transmission
-ë³€ì†ê¸°ëŠ” ë‹¤ì–‘í•œ í¬ê¸°ì˜ í†±ë‹ˆë°”í€´ë“¤ë¡œ ì´ë£¨ì–´ì ¸ ìˆì–´ìš”.
-ìœ„, ì•„ë˜ í¬ê¸°ê°€ ë‹¤ë¥¸ ë‘ ê°œì˜ í†±ë‹ˆë°”í€´ê°€ ì„œë¡œ ì—°ê²°ë˜ì–´ ëŒì•„ê°€ë©° ìë™ì°¨ë¥¼ ë¹ ë¥´ê²Œ ë˜ëŠ” ì²œì²œíˆ ë‹¬ë¦´ ìˆ˜ ìˆê²Œ í•´ìš”.","Transmission
+º¯¼Ó±â´Â ´Ù¾çÇÑ Å©±âÀÇ Åé´Ï¹ÙÄûµé·Î ÀÌ·ç¾îÁ® ÀÖ¾î¿ä.
+À§, ¾Æ·¡ Å©±â°¡ ´Ù¸¥ µÎ °³ÀÇ Åé´Ï¹ÙÄû°¡ ¼­·Î ¿¬°áµÇ¾î µ¹¾Æ°¡¸ç ÀÚµ¿Â÷¸¦ ºü¸£°Ô ¶Ç´Â ÃµÃµÈ÷ ´Ş¸± ¼ö ÀÖ°Ô ÇØ¿ä.","Transmission
 The transmission is made of gear wheels of all different sizes!
-When a big gear and a small gear connect and turn together, they help the car drive fast or slow.",ìë™ì°¨ê°€ ë¹ ë¥´ê²Œ ë‹¬ë¦¬ê³  ìˆì„ ë•Œ ë°”í€´ì™€ ì—°ê²°ëœ í†±ë‹ˆë°”í€´ì˜ í¬ê¸°ëŠ” í´ê¹Œìš”? ì‘ì„ê¹Œìš”? ì„œë¡œ ë§ë¬¼ë¦¬ëŠ” í†±ë‹ˆë°”í€´ì˜ í¬ê¸°ì— ë”°ë¼ ì†ë„ê°€ ë‹¬ë¼ì ¸ìš”.,"When a car is driving really fast, is the gear connected to the wheels big or small? The speed changes depending on the size of the connected gears!",,,,,
-,,ì²´í—˜,ì‘ë™í˜•,"ì²´í—˜ë°©ë²•
-Try it","ë¬¼ë ¤ìˆëŠ” ë„ê·¸ í´ëŸ¬ì¹˜ì™€ ê¸°ì–´ì˜ í¬ê¸°ì™€ ë°”í€´ì˜ ì†ë„ ì°¨ì´ë¥¼ í™•ì¸í•˜ì„¸ìš”!
-ì‹œì‘ë²„íŠ¼, ì €ì†ë²„íŠ¼, ê³ ì†ë²„íŠ¼","Look closely at how the connected clutch and gears change the speed of the wheels!
+When a big gear and a small gear connect and turn together, they help the car drive fast or slow.",ÀÚµ¿Â÷°¡ ºü¸£°Ô ´Ş¸®°í ÀÖÀ» ¶§ ¹ÙÄû¿Í ¿¬°áµÈ Åé´Ï¹ÙÄûÀÇ Å©±â´Â Å¬±î¿ä? ÀÛÀ»±î¿ä? ¼­·Î ¸Â¹°¸®´Â Åé´Ï¹ÙÄûÀÇ Å©±â¿¡ µû¶ó ¼Óµµ°¡ ´Ş¶óÁ®¿ä.,"When a car is driving really fast, is the gear connected to the wheels big or small? The speed changes depending on the size of the connected gears!",,,,,
+,,Ã¼Çè,ÀÛµ¿Çü,º¯¼Ó±â - Ã¼Çè,¹öÆ°À» ´­·¯ ¹°·ÁÀÖ´Â µµ±× Å¬·¯Ä¡¿Í ±â¾îÀÇ Å©±â¿Í ¹ÙÄûÀÇ ¼Óµµ Â÷ÀÌ¸¦ È®ÀÎÇÏ¼¼¿ä!,"Look closely at how the connected clutch and gears change the speed of the wheels!
 Start Button, Slow Button, Fast Button",,,,,,,
-íƒêµ¬-14,,ì‡¼ì¼€ì´ìŠ¤ íŒ¨ë„,í…ìŠ¤íŠ¸,"í´ëŸ¬ì¹˜
-Clutch","í´ëŸ¬ì¹˜ Clutch
-ìë™ì°¨ëŠ” ì—”ì§„ì˜ í˜ìœ¼ë¡œ ì›€ì§ì—¬ìš”.
-ì—”ì§„ì˜ í˜ì„ ë°”í€´ë¡œ ë³´ë‚¼ ìˆ˜ ìˆê²Œ ì´ì–´ì£¼ëŠ” ê¸°ê³„ë¥¼ í´ëŸ¬ì¹˜ë¼ê³  í•´ìš”.
-ìë™ì°¨ê°€ ì¶œë°œí•˜ê±°ë‚˜ ë©ˆì¶œ ë•Œ, ì†ë„ë¥¼ ë°”ê¿€ ë•ŒëŠ” í˜ë‹¬ì„ ë°Ÿì•„ì„œ ì—”ì§„ê³¼ ë°”í€´ì˜ ì—°ê²°ì„ ì ê¹ ëŠì–´ìš”.
-ì´ë ‡ê²Œ í•˜ë©´ ìë™ì°¨ë¥¼ ë¶€ë“œëŸ½ê²Œ ì›€ì§ì¼ ìˆ˜ ìˆì–´ìš”.","Clutch
+Å½±¸-14,,¼îÄÉÀÌ½º ÆĞ³Î,ÅØ½ºÆ®,"Å¬·¯Ä¡
+Clutch","Å¬·¯Ä¡ Clutch
+ÀÚµ¿Â÷´Â ¿£ÁøÀÇ ÈûÀ¸·Î ¿òÁ÷¿©¿ä.
+¿£ÁøÀÇ ÈûÀ» ¹ÙÄû·Î º¸³¾ ¼ö ÀÖ°Ô ÀÌ¾îÁÖ´Â ±â°è¸¦ Å¬·¯Ä¡¶ó°í ÇØ¿ä.
+ÀÚµ¿Â÷°¡ Ãâ¹ßÇÏ°Å³ª ¸ØÃâ ¶§, ¼Óµµ¸¦ ¹Ù²Ü ¶§´Â Æä´ŞÀ» ¹â¾Æ¼­ ¿£Áø°ú ¹ÙÄûÀÇ ¿¬°áÀ» Àá±ñ ²÷¾î¿ä.
+ÀÌ·¸°Ô ÇÏ¸é ÀÚµ¿Â÷¸¦ ºÎµå·´°Ô ¿òÁ÷ÀÏ ¼ö ÀÖ¾î¿ä.","Clutch
 A car moves using the power of its engine!
 The machine that connects the engine's power to the wheels is called a clutch.
 When the car starts, stops, or changes speed, you step on the pedal to quickly disconnect the engine from the wheels.
-This helps the car move very smoothly!","ì—”ì§„ì´ë€ íœ˜ë°œìœ , ê²½ìœ  ê°™ì€ ì—°ë£Œë¥¼ íƒœì›Œ ìë™ì°¨ê°€ ì›€ì§ì¼ ìˆ˜ ìˆëŠ” í˜ì„ ë§Œë“¤ì–´ ë‚´ëŠ” ê¸°ê³„ë¥¼ ë§í•´ìš”.",An engine is a machine that burns fuel like gas or diesel to make the power that moves a car!,,,,,
-,,ì²´í—˜,ì‘ë™í˜•,"ì²´í—˜ë°©ë²•
-Try it","1. ì‹œì‘ ë²„íŠ¼ ëˆ„ë¥´ê¸°
-2. í˜ë‹¬ì„ ë°Ÿì•„ì£¼ì„¸ìš”.","1. Press the start button.
+This helps the car move very smoothly!","¿£ÁøÀÌ¶õ ÈÖ¹ßÀ¯, °æÀ¯ °°Àº ¿¬·á¸¦ ÅÂ¿ö ÀÚµ¿Â÷°¡ ¿òÁ÷ÀÏ ¼ö ÀÖ´Â ÈûÀ» ¸¸µé¾î ³»´Â ±â°è¸¦ ¸»ÇØ¿ä.",An engine is a machine that burns fuel like gas or diesel to make the power that moves a car!,,,,,
+,,Ã¼Çè,ÀÛµ¿Çü,Å¬·¯Ä¡ - Ã¼Çè,"1. ½ÃÀÛ ¹öÆ° ´©¸£±â
+2. Æä´ŞÀ» ¹â¾ÆÁÖ¼¼¿ä.","1. Press the start button.
 2. Step on the pedal!",,,,,,,
-íƒêµ¬-15,,íŒ¨ë„,í…ìŠ¤íŠ¸,"ë‚˜ë§Œì˜ ê¸°ê³„ë§Œë“¤ê¸°
-Creating My Own Machine","ë‚˜ë§Œì˜ ê¸°ê³„ë§Œë“¤ê¸° Creating My Own Machine
-ë³¼íŠ¸, ë„ˆíŠ¸, ë¸”ë¡ ë“± ë‹¤ì–‘í•œ êµêµ¬ë¥¼ ì´ìš©í•´ ë‚˜ë§Œì˜ ê¸°ê³„ë¥¼ ììœ ë¡­ê²Œ ë§Œë“¤ì–´ ë³´ì„¸ìš”.
-ëª¨ë‘ê°€ ì¦ê²ê²Œ ì´ìš©í•  ìˆ˜ ìˆëŠ” ë°©ë²•
-? 5ì„¸ ì´í•˜ ì–´ë¦°ì´ëŠ” ë³´í˜¸ìì™€ í•¨ê»˜ í•´ì£¼ì„¸ìš”.
-? ìŒì‹ë¬¼ì€ íœ´ê²Œì‹¤ì—ì„œ ì„­ì·¨í•´ ì£¼ì„¸ìš”.
-? ë‘ ê°€ì§€ êµêµ¬ê°€ ì„ì´ì§€ ì•Šê²Œ ì£¼ì˜í•´ì„œ ì²´í—˜í•´ ì£¼ì„¸ìš”.
-?'ì¤„'êµêµ¬ëŠ” ëª¸ì— ê°ê³  ë†€ì§€ ì•Šë„ë¡ ì£¼ì˜í•´ì„œ ì²´í—˜í•´ ì£¼ì„¸ìš”.
-? ë‹¤ë¥¸ ì¹œêµ¬ë¥¼ ìœ„í•´ ì‚¬ìš©í•œ êµêµ¬ëŠ” ì œìë¦¬ì— ì •ë¦¬í•´ ì£¼ì„¸ìš”.","Creating My Own Machine
+Å½±¸-15,,ÆĞ³Î,ÅØ½ºÆ®,"³ª¸¸ÀÇ ±â°è¸¸µé±â
+Creating My Own Machine - Ã¼Çè","³ª¸¸ÀÇ ±â°è¸¸µé±â Creating My Own Machine
+º¼Æ®, ³ÊÆ®, ºí·Ï µî ´Ù¾çÇÑ ±³±¸¸¦ ÀÌ¿ëÇØ ³ª¸¸ÀÇ ±â°è¸¦ ÀÚÀ¯·Ó°Ô ¸¸µé¾î º¸¼¼¿ä.
+¸ğµÎ°¡ Áñ°Ì°Ô ÀÌ¿ëÇÒ ¼ö ÀÖ´Â ¹æ¹ı
+? 5¼¼ ÀÌÇÏ ¾î¸°ÀÌ´Â º¸È£ÀÚ¿Í ÇÔ²² ÇØÁÖ¼¼¿ä.
+? À½½Ä¹°Àº ÈŞ°Ô½Ç¿¡¼­ ¼·ÃëÇØ ÁÖ¼¼¿ä.
+? µÎ °¡Áö ±³±¸°¡ ¼¯ÀÌÁö ¾Ê°Ô ÁÖÀÇÇØ¼­ Ã¼ÇèÇØ ÁÖ¼¼¿ä.
+?'ÁÙ'±³±¸´Â ¸ö¿¡ °¨°í ³îÁö ¾Êµµ·Ï ÁÖÀÇÇØ¼­ Ã¼ÇèÇØ ÁÖ¼¼¿ä.
+? ´Ù¸¥ Ä£±¸¸¦ À§ÇØ »ç¿ëÇÑ ±³±¸´Â Á¦ÀÚ¸®¿¡ Á¤¸®ÇØ ÁÖ¼¼¿ä.","Creating My Own Machine
 Use bolts, nuts, and blocks to build your very own machine!
 Rules for everyone to have fun!
 - Children under 5 should play with a grown-up.
@@ -264,54 +259,53 @@ Rules for everyone to have fun!
 - Be careful not to mix the two different types of toys!
 - Please do not wrap the string toys around your body.
 - Put the toys back in their place for the next friends!",,,,,,,
-,,ì²´í—˜,ì‰¼í„°,"ì•ˆë‚´ì‚¬í•­
-Information","ë‚˜ë§Œì˜ ê¸°ê³„ë§Œë“¤ê¸°
-- ìƒìƒë ¥ìœ¼ë¡œ ììœ ë¡­ê²Œ ê¸°ê³„ ì¥ì¹˜ë¥¼ ë§Œë“¤ë©´ì„œ ê³¼í•™ ì›ë¦¬ íƒêµ¬!
-- ì‹ ë°œì€ ì‹ ë°œì¥ì— ë„£ì–´ì£¼ì„¸ìš”!
-- ìš´ì˜ì‹œê°„: 09:30-17:00
-- ì´ìš© ì•ˆë‚´: ì²´í—˜ í›„ ì •ë¦¬í•˜ê¸°","Creating My Own Machine
+,,Ã¼Çè,½°ÅÍ,"³ª¸¸ÀÇ ±â°è ¸¸µé±â ¾È³»»çÇ×
+Information","³ª¸¸ÀÇ ±â°è¸¸µé±â
+- »ó»ó·ÂÀ¸·Î ÀÚÀ¯·Ó°Ô ±â°è ÀåÄ¡¸¦ ¸¸µé¸é¼­ °úÇĞ ¿ø¸® Å½±¸!
+- ½Å¹ßÀº ½Å¹ßÀå¿¡ ³Ö¾îÁÖ¼¼¿ä!
+- ¿î¿µ½Ã°£: 09:30-17:00
+- ÀÌ¿ë ¾È³»: Ã¼Çè ÈÄ Á¤¸®ÇÏ±â","Creating My Own Machine
 - Use your imagination to build machines and discover science!
 - Please put your shoes in the shoe rack.
 - Opening Hours: 09:30 - 17:00
-- Rule: Please clean up after playing!","ë‚˜ë§Œì˜ ê¸°ê³„ ë§Œë“¤ê¸°
-ë³¼íŠ¸ì™€ ë„ˆíŠ¸, ë¸”ëŸ­ì„ ì´ìš©í•´ ììœ ë¡­ê²Œ ê¸°ê³„ë¥¼ ë§Œë“¤ì–´ ë³´ì„¸ìš”. êµêµ¬ëŠ” 2ì¢…ë¥˜ê°€ ìˆì–´ìš”.
-ë‹¤ìŒ ì¹œêµ¬ë¥¼ ìœ„í•´ ì¡°ë¦½í–ˆë˜ êµêµ¬ëŠ” ë¶„ë¦¬í•´ì„œ
-ì •ë¦¬í•´ì£¼ì„¸ìš”.","Creating My Own Machine
+- Rule: Please clean up after playing!","³ª¸¸ÀÇ ±â°è ¸¸µé±â
+º¼Æ®¿Í ³ÊÆ®, ºí·°À» ÀÌ¿ëÇØ ÀÚÀ¯·Ó°Ô ±â°è¸¦ ¸¸µé¾î º¸¼¼¿ä. ±³±¸´Â 2Á¾·ù°¡ ÀÖ¾î¿ä.
+´ÙÀ½ Ä£±¸¸¦ À§ÇØ Á¶¸³Çß´ø ±³±¸´Â ºĞ¸®ÇØ¼­
+Á¤¸®ÇØÁÖ¼¼¿ä.","Creating My Own Machine
 Use bolts, nuts, and blocks to freely build your own machine! There are 2 types of toy sets.
-Please take apart what you built and put it away for the next friend!","ìŒì‹ë¬¼ ê¸ˆì§€
-2ì¸µ íœ´ê²Œì‹¤ì„ ì´ìš©í•´ì£¼ì„¸ìš”.
+Please take apart what you built and put it away for the next friend!","À½½Ä¹° ±İÁö
+2Ãş ÈŞ°Ô½ÇÀ» ÀÌ¿ëÇØÁÖ¼¼¿ä.
 No food or drinks here, please!
 Please enjoy your snacks in the resting area on the 2nd floor.",,,,
-íƒêµ¬-16,,ì²´í—˜,ì‘ë™í˜•,"ê°€ì¥ ë¹ ë¥¸ ê¸¸ì€?
-Cycloid","ê°€ì¥ ë¹ ë¥¸ ê¸¸ì€? Cycloid
-ë°”í€´ë¥¼ í‰í‰í•œ ë©´ì— êµ´ë ¸ì„ ë•Œ ë°”í€´ ìœ„ì˜ í•œ ì ì´ ê·¸ë¦¬ëŠ” ê³¡ì„ ì„ 'ì‚¬ì´í´ë¡œì´ë“œ ê³¡ì„ 'ì´ë¼ê³  í•´ìš” ì´ ê³¡ì„ ì„ ë”°ë¼ ë‚´ë ¤ì˜¤ëŠ” ê²ƒì´ ì§ì„ ë³´ë‹¤ ê°€ì†ë„ê°€ í¬ê¸° ë•Œë¬¸ì— ë¹ ë¥´ê²Œ ë‚´ë ¤ì˜¬ ìˆ˜ ìˆì–´ìš”","Which Path is the Fastest? Cycloid
-When a wheel rolls on a flat floor, the path drawn by one point on the wheel is called a Cycloid Curve. Rolling down this curvy path is actually faster than going down a straight line because it gives a big speed boost!",,,,ê³ ì¥,,,
-,,íŒ¨ë„,í…ìŠ¤íŠ¸,"ì²´í—˜ë°©ë²•
-Try it","ì´ë ‡ê²Œ í•´ë´ìš”
-1. ë ˆë²„ë¥¼ ìœ„ì•„ë˜ë¡œ ì¡°ì ˆí•´ ê¸¸ì„ ë§Œë“¤ì–´ë´ìš”.
-2 ê¼­ëŒ€ê¸°ì—ì„œ ë¬¼ì²´ë¥¼ ì¶œë°œì‹œì¼œìš”.
-3. ë‹¤ì–‘í•œ ê¸¸ì„ ë§Œë“¤ì–´ ì†ë„ë¥¼ ë¹„êµí•´ë´ìš”.","Try it like this!
+Å½±¸-16,,Ã¼Çè,ÀÛµ¿Çü,"°¡Àå ºü¸¥ ±æÀº?
+Cycloid","°¡Àå ºü¸¥ ±æÀº? Cycloid
+¹ÙÄû¸¦ ÆòÆòÇÑ ¸é¿¡ ±¼·ÈÀ» ¶§ ¹ÙÄû À§ÀÇ ÇÑ Á¡ÀÌ ±×¸®´Â °î¼±À» '»çÀÌÅ¬·ÎÀÌµå °î¼±'ÀÌ¶ó°í ÇØ¿ä ÀÌ °î¼±À» µû¶ó ³»·Á¿À´Â °ÍÀÌ Á÷¼±º¸´Ù °¡¼Óµµ°¡ Å©±â ¶§¹®¿¡ ºü¸£°Ô ³»·Á¿Ã ¼ö ÀÖ¾î¿ä","Which Path is the Fastest? Cycloid
+When a wheel rolls on a flat floor, the path drawn by one point on the wheel is called a Cycloid Curve. Rolling down this curvy path is actually faster than going down a straight line because it gives a big speed boost!",,,,°íÀå,,,
+,,ÆĞ³Î,ÅØ½ºÆ®,°¡Àå ºü¸¥ ±æÀº? - Ã¼Çè,"ÀÌ·¸°Ô ÇØºÁ¿ä
+1. ·¹¹ö¸¦ À§¾Æ·¡·Î Á¶ÀıÇØ ±æÀ» ¸¸µé¾îºÁ¿ä.
+2 ²À´ë±â¿¡¼­ ¹°Ã¼¸¦ Ãâ¹ß½ÃÄÑ¿ä.
+3. ´Ù¾çÇÑ ±æÀ» ¸¸µé¾î ¼Óµµ¸¦ ºñ±³ÇØºÁ¿ä.","Try it like this!
 1. Move the lever up and down to make a path.
 2. Let the object slide down from the top!
-3. Make different paths and see which one is the fastest!","ë ˆì¼ì„ ì†ìœ¼ë¡œ ì¡ìœ¼ë©´ ë‚´ë ¤ì˜¤ëŠ” ìë™ì°¨ì— ë‹¤ì¹  ìˆ˜ ìˆì–´ìš”.
-ìë™ì°¨ê°€ ë‚´ë ¤ì˜¬ ë•ŒëŠ” ë ˆì¼ì„ ì†ìœ¼ë¡œ ì¡ì§€ ë§ˆì„¸ìš”.","If you hold the track, the speeding car might hurt your hand!
-Please keep your hands away from the track when the car is rolling down.","ì†ë¼ì„ ì¡°ì‹¬
+3. Make different paths and see which one is the fastest!","·¹ÀÏÀ» ¼ÕÀ¸·Î ÀâÀ¸¸é ³»·Á¿À´Â ÀÚµ¿Â÷¿¡ ´ÙÄ¥ ¼ö ÀÖ¾î¿ä.
+ÀÚµ¿Â÷°¡ ³»·Á¿Ã ¶§´Â ·¹ÀÏÀ» ¼ÕÀ¸·Î ÀâÁö ¸¶¼¼¿ä.","If you hold the track, the speeding car might hurt your hand!
+Please keep your hands away from the track when the car is rolling down.","¼Õ³¢ÀÓ Á¶½É
 Watch your fingers!",,,,
-íƒêµ¬-17,,ì‡¼í˜ì´ìŠ¤ íŒ¨ë„,í…ìŠ¤íŠ¸,"ë‹¤ëˆ„ë¦¬í˜¸
-(KPLO, Korea Pathfinder Lunar Orbiter)","ë‹¤ëˆ„ë¦¬í˜¸(KPLO, Korea Pathfinder Lunar Orbiter)
-ë‹¤ëˆ„ë¦¬(KPLO)ì€ ê°€ë¡œ, ì„¸ë¡œ, ë†’ì´ ê°ê° 1.82m, 2.14m, 2.29m í¬ê¸°ì˜ ë³¸ì²´ì™€ 6ê°œ íƒ‘ì¬ì²´ë¡œ êµ¬ì„±ëœë‹¤. (ì „ì‹œëœ ëª¨í˜•ì€ ë‹¤ëˆ„ë¦¬í˜¸ì˜ 3ë¶„ì˜ 1ì‚¬ì´ì¦ˆë¡œ ì œì‘ë˜ì—ˆë‹¤.)
-íƒœì–‘ì „ìíŒ í¼ì³¤ì„ ë–„ ë„ˆë¹„: 6.3m, ì´ ë¬´ê²Œ: 678kg, ë°œì‚¬ì¼: 2022ë…„ 8ì›” 5ì¼, ë‹¬ì— ê°€ëŠ”ë° ê±¸ë¦° ì‹œê°„: ì•½ 4ê°œì›”, ë„ì°©ì¼: 2022ë…„ 12ì›” 26ì¼, ì„ë¬´ê¸°ê°„ -2025ë…„ 12ì›” 31ì¼
+Å½±¸-17,,¼îÆäÀÌ½º ÆĞ³Î,ÅØ½ºÆ®,"´Ù´©¸®È£
+(KPLO, Korea Pathfinder Lunar Orbiter)","´Ù´©¸®È£(KPLO, Korea Pathfinder Lunar Orbiter)
+´Ù´©¸®(KPLO)Àº °¡·Î, ¼¼·Î, ³ôÀÌ °¢°¢ 1.82m, 2.14m, 2.29m Å©±âÀÇ º»Ã¼¿Í 6°³ Å¾ÀçÃ¼·Î ±¸¼ºµÈ´Ù. (Àü½ÃµÈ ¸ğÇüÀº ´Ù´©¸®È£ÀÇ 3ºĞÀÇ 1»çÀÌÁî·Î Á¦ÀÛµÇ¾ú´Ù.)
+ÅÂ¾çÀüÀÚÆÇ ÆîÃÆÀ» ‹š ³Êºñ: 6.3m, ÃÑ ¹«°Ô: 678kg, ¹ß»çÀÏ: 2022³â 8¿ù 5ÀÏ, ´Ş¿¡ °¡´Âµ¥ °É¸° ½Ã°£: ¾à 4°³¿ù, µµÂøÀÏ: 2022³â 12¿ù 26ÀÏ, ÀÓ¹«±â°£ -2025³â 12¿ù 31ÀÏ
 
-ëŒ€í•œë¯¼êµ­ ì²« ë‹¬ íƒì‚¬ì„ ì¸ ë‹¤ëˆ„ë¦¬ëŠ” ë‹¬ 100km ê³ ë„ë¥¼ ë¹„í–‰í•˜ë©° ë‹¬ ê´€ì¸¡ ì„ë¬´ë¥¼ ìˆ˜í–‰í•˜ëŠ” ë¬´ì¸ íƒì‚¬ì„ ì´ë‹¤. í•œêµ­í•­ê³µìš°ì£¼ì—°êµ¬ì›ì´ ì‹œìŠ¤í…œ, ë³¸ì²´, ì§€ìƒêµ­ì„ ê´„í•˜ê³  êµ­ë‚´ ëŒ€í•™ê³¼ ì—°êµ¬ê¸°ê´€, ê·¸ë¦¬ê³  ë¯¸êµ­ì˜ NASAê°€ íƒ‘ì¬ì²´ì™€ ì‹¬ìš°ì£¼ í†µì‹ , í•­í–‰ ê¸°ìˆ ì„ ì§€ì›í•œë‹¤.
-'ë‹¤ëˆ„ë¦¬'ë¼ëŠ” ì´ë¦„ì€ ë‹¬ íƒì‚¬ì„  ëª…ì¹­ê³µëª¨ì „'ì„ í†µí•´ ì„ ì •ëœ ì´ë¦„ìœ¼ë¡œ ìˆœ ìš°ë¦¬ë§ì¸ 'ë‹¬'ê³¼ 'ëˆ„ë¦¬ë‹¤' ì˜ 'ëˆ„ë¦¬'ë¥¼ í•œì³ 'ë‹¬ì„ ë‚¨ê¹€ì—†ì´ ëª¨ë‘ ëˆ„ë¦¬ê³  ì˜¤ê¸¸ ë°”ë¼ëŠ” ë§ˆìŒ'ê³¼ 'ìµœì´ˆì˜ ë‹¬ íƒì‚¬ê°€ ì„±ê³µì ì´ê¸°ë¥¼ ê¸°ì›í•˜ëŠ” ì˜ë¯¸'ë¥¼ ë‹´ì•˜ë‹¤ê³  í•œë‹¤.
+´ëÇÑ¹Î±¹ Ã¹ ´Ş Å½»ç¼±ÀÎ ´Ù´©¸®´Â ´Ş 100km °íµµ¸¦ ºñÇàÇÏ¸ç ´Ş °üÃø ÀÓ¹«¸¦ ¼öÇàÇÏ´Â ¹«ÀÎ Å½»ç¼±ÀÌ´Ù. ÇÑ±¹Ç×°ø¿ìÁÖ¿¬±¸¿øÀÌ ½Ã½ºÅÛ, º»Ã¼, Áö»ó±¹À» °ıÇÏ°í ±¹³» ´ëÇĞ°ú ¿¬±¸±â°ü, ±×¸®°í ¹Ì±¹ÀÇ NASA°¡ Å¾ÀçÃ¼¿Í ½É¿ìÁÖ Åë½Å, Ç×Çà ±â¼úÀ» Áö¿øÇÑ´Ù.
+'´Ù´©¸®'¶ó´Â ÀÌ¸§Àº ´Ş Å½»ç¼± ¸íÄª°ø¸ğÀü'À» ÅëÇØ ¼±Á¤µÈ ÀÌ¸§À¸·Î ¼ø ¿ì¸®¸»ÀÎ '´Ş'°ú '´©¸®´Ù' ÀÇ '´©¸®'¸¦ ÇÑÃÄ '´ŞÀ» ³²±è¾øÀÌ ¸ğµÎ ´©¸®°í ¿À±æ ¹Ù¶ó´Â ¸¶À½'°ú 'ÃÖÃÊÀÇ ´Ş Å½»ç°¡ ¼º°øÀûÀÌ±â¸¦ ±â¿øÇÏ´Â ÀÇ¹Ì'¸¦ ´ã¾Ò´Ù°í ÇÑ´Ù.
 
-< íƒ‘ì¬ì²´ ì†Œê°œ >
-ê³ í•´ìƒë„ì¹´ë©”ë¼ : ë‹¬ í‘œë©´ ê´€ì¸¡ ë° ì£¼ìš” ì°©ë¥™ í›„ë³´ì§€ ê´‘í•™ ì´¬ì˜
-? ìê¸°ì¥ì¸¡ì •ê¸° : ë‹¬ í‘œë©´ ë° ì£¼ìœ„ì˜ ìê¸°ì¥ ì„¸ê¸° ì¸¡ì •
-? ê°ë§ˆì„ ë¶„ê´‘ê¸°: ë‹¬ ìì› íƒì‚¬ë¥¼ ìœ„í•œ ê°ë§ˆì„  ë¶„ìŸ ì¸¡ì •
-? ê´‘ì‹œì•¼í¸ê´‘ì¹´ë©”ë¼ : ì„¸ê³„ ìµœì´ˆë¡œ ë‹¬ í‘œë©´ í¸ê´‘ì§€ë„ ì œì‘
-? ìš°ì£¼ì¸í„°ë„·íƒ‘ì¬ì²´ : ì§€êµ¬ì™€ ë‹¬ ê¶¤ë„ì„  ê°„ ìš°ì£¼ì¸í„°ë„· í†µì‹  ê¸°ìˆ  ê²€ì¦
-? ì˜êµ¬ìŒì˜ì§€ì—­ì¹´ë©”ë¼ : ì–¼ìŒì´ ìˆì„ ê²ƒìœ¼ë¡œ ì¶”ì •ë˜ëŠ” ë‹¬ êµ­ì§€ì—­ ì´¬ì˜","Danuri (KPLO)
+< Å¾ÀçÃ¼ ¼Ò°³ >
+°íÇØ»óµµÄ«¸Ş¶ó : ´Ş Ç¥¸é °üÃø ¹× ÁÖ¿ä Âø·ú ÈÄº¸Áö ±¤ÇĞ ÃÔ¿µ
+? ÀÚ±âÀåÃøÁ¤±â : ´Ş Ç¥¸é ¹× ÁÖÀ§ÀÇ ÀÚ±âÀå ¼¼±â ÃøÁ¤
+? °¨¸¶¼±ºĞ±¤±â: ´Ş ÀÚ¿ø Å½»ç¸¦ À§ÇÑ °¨¸¶¼± ºĞÀï ÃøÁ¤
+? ±¤½Ã¾ßÆí±¤Ä«¸Ş¶ó : ¼¼°è ÃÖÃÊ·Î ´Ş Ç¥¸é Æí±¤Áöµµ Á¦ÀÛ
+? ¿ìÁÖÀÎÅÍ³İÅ¾ÀçÃ¼ : Áö±¸¿Í ´Ş ±Ëµµ¼± °£ ¿ìÁÖÀÎÅÍ³İ Åë½Å ±â¼ú °ËÁõ
+? ¿µ±¸À½¿µÁö¿ªÄ«¸Ş¶ó : ¾óÀ½ÀÌ ÀÖÀ» °ÍÀ¸·Î ÃßÁ¤µÇ´Â ´Ş ±¹Áö¿ª ÃÔ¿µ","Danuri (KPLO)
 Danuri's main body is 1.82m wide, 2.14m long, and 2.29m tall, and it carries 6 special tools! (The model you see here is one-third the size of the real Danuri.)
 Width with solar panels open: 6.3m, Total weight: 678kg, Launch date: August 5, 2022, Time to reach the moon: about 4 months, Arrival date: December 26, 2022, Mission time: until December 31, 2025.
 
@@ -324,5 +318,5 @@ The name Danuri was chosen by people! It mixes the Korean words for Moon and Enj
 ? Gamma-Ray Spectrometer: Looks for hidden treasures and resources on the moon.
 ? Polarimetric Camera: Makes the world's very first special light map of the moon!
 ? Space Internet Tool: Tests if we can use the internet between Earth and the moon!
-? Shadow Camera: Takes pictures of the super dark parts of the moon where ice might be hiding.",,,"ì†ìœ¼ë¡œ ë°€ë©´ ""ìœ„í—˜""í•´ìš”!
-Pushing with your hands is dangerous!",ì¢Œì¸¡ ì‘ë™ ì´ìƒ,,,
+? Shadow Camera: Takes pictures of the super dark parts of the moon where ice might be hiding.",,,"¼ÕÀ¸·Î ¹Ğ¸é ""À§Çè""ÇØ¿ä!
+Pushing with your hands is dangerous!",ÁÂÃø ÀÛµ¿ ÀÌ»ó,,,
