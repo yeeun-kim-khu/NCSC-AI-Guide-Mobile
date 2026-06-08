@@ -5753,7 +5753,14 @@ def search_exhibit_info(zone_name: str) -> str:
                 exhibit_text += f"  상세: {detail}\n"
             exhibits.append(exhibit_text)
 
-        result = f"**{zone_name} 전시물 목록**\n\n" + "\n".join(exhibits)
+        MAX_EXHIBITS = 5
+        if len(exhibits) > MAX_EXHIBITS:
+            exhibits = exhibits[:MAX_EXHIBITS]
+            suffix = f"\n*(외 더 많은 전시물이 있습니다)*"
+        else:
+            suffix = ""
+
+        result = f"✨ **{zone_name} 대표 전시물 소개해드릴게요!**\n\n" + "\n".join(exhibits) + suffix
         return result
     except Exception as e:
         return f"전시물 검색 오류: {e}"
@@ -5912,6 +5919,7 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - 검색 결과에는 전시물 제목, 설명, 상세 정보가 포함되어 있습니다. 이 정보를 바탕으로 친절하고 상세하게 답변하세요.
 - 전시물 제목이 한국어와 영어 두 줄로 표기된 경우(예: "지구가 아파요\nThe Earth Hurts"), 현재 대화 언어에 맞는 제목만 사용하세요. 한국어 대화 시 한국어 제목만, 영어 대화 시 영어 제목만 사용하세요.
 - 전시물 데이터에 유형(🖐 직접 체험, 📺 터치 디스플레이, 📋 패널 등)과 체험방법이 포함된 경우 전시물 소개 시 함께 안내하세요.
+- **도구 결과를 그대로 복사하지 마세요.** 검색 결과를 참고하여 방문객에게 말하듯 자연스럽고 친근한 문체로 재구성해서 안내하세요. 어린이 모드에서는 특히 쉽고 흥미롭게 소개하세요.
 
 === ⚠️ 층별 정보 포함 필수 ===
 시설/전시물 위치를 안내할 때는 반드시 층 정보를 포함하세요:
@@ -6202,6 +6210,9 @@ def load_zone_rows_from_csv(zone_name: str):
             rename_map[cols_lower["분류"]] = "title"
         if "제목" in cols_lower:
             rename_map[cols_lower["제목"]] = "category"
+        for src, tgt in [("내용", "content"), ("세부 설명", "detail"), ("작동방식", "operation")]:
+            if src in cols_lower and cols_lower[src] not in rename_map.values():
+                rename_map[cols_lower[src]] = tgt
     else:
         synonyms = {
             "title": ["title", "전시물명", "전시물", "전시명", "제목", "명칭", "이름"],
