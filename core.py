@@ -5725,9 +5725,12 @@ def search_exhibit_info(zone_name: str, purpose: str = "list") -> str:
         OPERATION_LABELS = {
             "핸즈온": "🖐 직접 체험(핸즈온)",
             "미디어월": "📺 터치 디스플레이",
+            "터치 디스플레이": "📺 터치 디스플레이",
             "텍스트": "📋 패널",
             "패널": "📋 패널",
             "디지털": "💻 디지털 체험",
+            "작동형": "⚙️ 직접 작동 체험",
+            "실감형": "🎮 실감형 체험",
         }
         exhibits = []
         for r in rows:
@@ -5735,7 +5738,7 @@ def search_exhibit_info(zone_name: str, purpose: str = "list") -> str:
             content = r.get("content", "")
             detail = r.get("detail", "")
             category = r.get("category", "")
-            operation = str(r.get("operation", "")).strip()
+            operation = str(r.get("operation", "")).strip().split("\n")[0].strip()
 
             if operation in ("텍스트", "패널"):
                 continue
@@ -6261,8 +6264,11 @@ def load_zone_rows_from_csv(zone_name: str):
         if category and category != "nan":
             current_parent_category = category
         effective_category = category if (category and category != "nan") else current_parent_category
+        title_val = "" if pd.isna(r.get("title", "")) else str(r.get("title", ""))
+        if not title_val.strip() and "- 체험" in effective_category:
+            title_val = effective_category
         rows.append({
-            "title": "" if pd.isna(r.get("title", "")) else str(r.get("title", "")),
+            "title": title_val,
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
             "detail": "" if pd.isna(r.get("detail", "")) else str(r.get("detail", "")),
             "category": effective_category,
