@@ -5661,7 +5661,7 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
 
 
 @tool
-def search_exhibit_info(zone_name: str) -> str:
+def search_exhibit_info(zone_name: str, purpose: str = "list") -> str:
     """
     특정 놀이터의 전시물 정보를 CSV에서 검색하여 반환합니다.
     
@@ -5671,6 +5671,7 @@ def search_exhibit_info(zone_name: str) -> str:
     
     Args:
         zone_name: 놀이터 이름 (예: "행동놀이터", "생각놀이터", "AI놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터")
+        purpose: 호출 목적 - "list"(기본, 대표 5개만 반환), "detail"(퀴즈/질문/동화용, 전체 반환)
     
     Returns:
         전시물 목록 (제목, 내용, 상세 설명 포함)
@@ -5753,14 +5754,16 @@ def search_exhibit_info(zone_name: str) -> str:
                 exhibit_text += f"  상세: {detail}\n"
             exhibits.append(exhibit_text)
 
-        MAX_EXHIBITS = 5
-        if len(exhibits) > MAX_EXHIBITS:
-            exhibits = exhibits[:MAX_EXHIBITS]
-            suffix = f"\n*(외 더 많은 전시물이 있습니다)*"
+        if purpose == "list":
+            MAX_EXHIBITS = 5
+            if len(exhibits) > MAX_EXHIBITS:
+                exhibits = exhibits[:MAX_EXHIBITS]
+                suffix = f"\n*(외 더 많은 전시물이 있습니다)*"
+            else:
+                suffix = ""
+            result = f"✨ **{zone_name} 대표 전시물 소개해드릴게요!**\n\n" + "\n".join(exhibits) + suffix
         else:
-            suffix = ""
-
-        result = f"✨ **{zone_name} 대표 전시물 소개해드릴게요!**\n\n" + "\n".join(exhibits) + suffix
+            result = f"**{zone_name} 전시물 전체 목록**\n\n" + "\n".join(exhibits)
         return result
     except Exception as e:
         return f"전시물 검색 오류: {e}"
@@ -5916,6 +5919,8 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - 질문 예시: "행동놀이터에 어떤 전시물이 있어?", "생각놀이터 전시물 뭐야?", "AI놀이터 뭐가 있어?", "뭐가 있어?", "전시물 뭐야?"
 - **절대 도구 사용 없이 일반적인 답변을 하지 마세요.** 반드시 search_exhibit_info 도구를 먼저 호출하세요.
 - 도구 사용 방법: search_exhibit_info(zone_name="놀이터이름")
+- 전시물 목록 안내 시: search_exhibit_info(zone_name="...", purpose="list") — 대표 5개만 반환
+- 퀴즈 출제, 전시물 질문 답변, 과학동화 생성 시: search_exhibit_info(zone_name="...", purpose="detail") — 전체 반환
 - 검색 결과에는 전시물 제목, 설명, 상세 정보가 포함되어 있습니다. 이 정보를 바탕으로 친절하고 상세하게 답변하세요.
 - 전시물 제목이 한국어와 영어 두 줄로 표기된 경우(예: "지구가 아파요\nThe Earth Hurts"), 현재 대화 언어에 맞는 제목만 사용하세요. 한국어 대화 시 한국어 제목만, 영어 대화 시 영어 제목만 사용하세요.
 - 전시물 데이터에 유형(🖐 직접 체험, 📺 터치 디스플레이, 📋 패널 등)과 체험방법이 포함된 경우 전시물 소개 시 함께 안내하세요.
