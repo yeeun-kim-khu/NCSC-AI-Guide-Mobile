@@ -228,8 +228,8 @@ def route_intent(text: str) -> str:
     # 전시물 상세 질문 → LLM 에이전트로 전달
     _exhibit_zones = ["ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터"]
     _has_exhibit_zone = any(z in lowered_no_space for z in _exhibit_zones)
-    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거", "볼수", "볼게", "볼까", "뭐봐", "무엇을", "뭐를", "어떤걸", "어떤것을", "어떤걸볼", "어떤걸봐"])
-    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
+    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "전시", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거", "볼수", "볼게", "볼까", "뭐봐", "무엇을", "뭐를", "어떤걸", "체험", "해볼수", "할수있", "뭐해", "뭘해", "뭐볼", "즐길", "놀거리", "활동"])
+    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space or "놀이터" in lowered_no_space):
         return "llm_agent"
 
     # 맥락 의존 질문 → LLM 에이전트
@@ -475,8 +475,8 @@ def classify_basic_category(message: str) -> str:
     # 놀이터 이름 + 전시물 질문 조합 체크
     _exhibit_zones = ["ai놀이터", "행동놀이터", "생각놀이터", "빛놀이터", "탐구놀이터", "관찰놀이터"]
     _has_exhibit_zone = any(z in lowered_no_space for z in _exhibit_zones)
-    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거"])
-    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space):
+    _has_exhibit_question = any(k in lowered_no_space for k in ["전시물", "전시", "뭐있", "뭐가", "무엇이", "어떤게", "어떤것", "어떤", "구성", "목록", "뭐야", "있는것", "있는거", "체험", "해볼수", "할수있", "뭐해", "뭘해", "뭐볼", "즐길", "놀거리", "활동"])
+    if _has_exhibit_question and (_has_exhibit_zone or "전시물" in lowered_no_space or "놀이터" in lowered_no_space):
         return "llm_agent"
 
     # 빛놀이터 시간 → operating_hours (exhibit_guide보다 우선)
@@ -5751,7 +5751,7 @@ def search_exhibit_info(zone_name: str, purpose: str = "list") -> str:
                 label = "체험방법" if is_experience_sub else "설명"
                 exhibit_text += f"  {label}: {content}\n"
             if detail:
-                exhibit_text += f"  상세: {detail}\n"
+                exhibit_text += f"  체험방법: {detail}\n"
             exhibits.append(exhibit_text)
 
         if purpose == "list":
@@ -5925,7 +5925,8 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - 전시물 제목이 한국어와 영어 두 줄로 표기된 경우(예: "지구가 아파요\nThe Earth Hurts"), 현재 대화 언어에 맞는 제목만 사용하세요. 한국어 대화 시 한국어 제목만, 영어 대화 시 영어 제목만 사용하세요.
 - 전시물 데이터에 유형(🖐 직접 체험, 📺 터치 디스플레이, 📋 패널 등)과 체험방법이 포함된 경우 전시물 소개 시 함께 안내하세요.
 - **도구 결과를 그대로 복사하지 마세요.** 검색 결과를 참고하여 방문객에게 말하듯 자연스럽고 친근한 문체로 재구성해서 안내하세요. 어린이 모드에서는 특히 쉽고 흥미롭게 소개하세요.
-- **전시물 안내의 핵심은 "무엇을 할 수 있는가"입니다.** 과학 개념 정의보다 "직접 해볼 수 있는 체험"을 중심으로 소개하세요. "~를 직접 해볼 수 있어요", "~을 체험해보세요", "몸으로 느껴보세요" 같은 행동 중심 문체를 사용하세요. 개념 설명이 필요하면 체험 소개 후 짧게 덧붙이세요.
+- **전시물 안내의 핵심은 "무엇을 할 수 있는가"입니다.** 검색 결과에 "체험방법" 항목이 있으면 반드시 이를 중심으로 소개하세요. "설명" 항목의 개념 정의보다 "체험방법" 항목을 우선 안내하세요. "~를 직접 해볼 수 있어요", "~을 체험해보세요", "몸으로 느껴보세요" 같은 행동 중심 문체를 사용하세요.
+- 전시물 목록 안내 시 반드시 **"✨ [놀이터명] 대표 전시물 소개해드릴게요!"** 로 시작하세요.
 
 === ⚠️ 층별 정보 포함 필수 ===
 시설/전시물 위치를 안내할 때는 반드시 층 정보를 포함하세요:
