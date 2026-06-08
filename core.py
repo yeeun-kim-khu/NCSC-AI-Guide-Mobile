@@ -5736,7 +5736,7 @@ def search_exhibit_info(zone_name: str) -> str:
             category = r.get("category", "")
             operation = str(r.get("operation", "")).strip()
 
-            if operation == "텍스트":
+            if operation in ("텍스트", "패널"):
                 continue
 
             is_experience_sub = title.strip().endswith("- 체험")
