@@ -5721,16 +5721,31 @@ def search_exhibit_info(zone_name: str) -> str:
         if not rows:
             return f"{zone_name}의 전시물 정보를 찾을 수 없습니다."
         
+        OPERATION_LABELS = {
+            "핸즈온": "🖐 직접 체험(핸즈온)",
+            "미디어월": "📺 터치 디스플레이",
+            "텍스트": "📋 패널",
+            "패널": "📋 패널",
+            "디지털": "💻 디지털 체험",
+        }
         exhibits = []
         for r in rows:
             title = r.get("title", "")
             content = r.get("content", "")
             detail = r.get("detail", "")
             category = r.get("category", "")
-            
-            exhibit_text = f"- **{title}** ({category})\n"
+            operation = str(r.get("operation", "")).strip()
+
+            is_experience_sub = title.strip().endswith("- 체험")
+            display_title = title.strip()[:-len("- 체험")].strip() if is_experience_sub else title
+
+            exhibit_text = f"- **{display_title}** ({category})\n"
+            if operation and operation not in ("nan", ""):
+                op_label = OPERATION_LABELS.get(operation, operation)
+                exhibit_text += f"  유형: {op_label}\n"
             if content:
-                exhibit_text += f"  설명: {content}\n"
+                label = "체험방법" if is_experience_sub else "설명"
+                exhibit_text += f"  {label}: {content}\n"
             if detail:
                 exhibit_text += f"  상세: {detail}\n"
             exhibits.append(exhibit_text)
@@ -5893,6 +5908,7 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
 - 도구 사용 방법: search_exhibit_info(zone_name="놀이터이름")
 - 검색 결과에는 전시물 제목, 설명, 상세 정보가 포함되어 있습니다. 이 정보를 바탕으로 친절하고 상세하게 답변하세요.
 - 전시물 제목이 한국어와 영어 두 줄로 표기된 경우(예: "지구가 아파요\nThe Earth Hurts"), 현재 대화 언어에 맞는 제목만 사용하세요. 한국어 대화 시 한국어 제목만, 영어 대화 시 영어 제목만 사용하세요.
+- 전시물 데이터에 유형(🖐 직접 체험, 📺 터치 디스플레이, 📋 패널 등)과 체험방법이 포함된 경우 전시물 소개 시 함께 안내하세요.
 
 === ⚠️ 층별 정보 포함 필수 ===
 시설/전시물 위치를 안내할 때는 반드시 층 정보를 포함하세요:
@@ -6189,6 +6205,7 @@ def load_zone_rows_from_csv(zone_name: str):
             "content": ["content", "내용", "설명", "전시내용", "본문"],
             "detail": ["detail", "세부 설명", "세부설명", "상세", "상세설명"],
             "category": ["category", "분류", "카테고리", "구분"],
+            "operation": ["operation", "작동방식", "작동 방식"],
         }
         cols_lower = {str(c).strip().lower(): str(c).strip() for c in df.columns}
         for target, candidates in synonyms.items():
