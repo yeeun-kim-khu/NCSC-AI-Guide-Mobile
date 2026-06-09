@@ -608,7 +608,7 @@ def classify_basic_category(message: str) -> str:
         ("operating_hours", ["운영시간", "운영", "휴관", "휴무", "몇시", "마감", "언제열", "언제닫", "여는시간", "닫는시간", "개관", "폐관", "여나요", "여나"]),
     ]
     for category, keywords in rules:
-        if any(keyword in lowered_no_space for keyword in keywords):
+        if any(keyword.replace(" ", "") in lowered_no_space for keyword in keywords):
             return category
     return "operating_hours"
 
@@ -3179,7 +3179,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
                     )
 
             science_show_type = "사이언스랩" if month in [1, 3, 5, 7, 9, 11] else "로봇쇼"
-            explanation_type = "헬로 다이노!" if month in [1, 3, 5, 7, 9, 11] else "짹짹 새 탐험대"
+            explanation_type = "스폿해설" if month in [1, 3, 5, 7, 9, 11] else "전시톡톡해설"
 
             # 사이언스랩 월별 테마
             science_lab_theme = {
@@ -3364,30 +3364,25 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 
             science_show_times = ["11:30", "13:30"]
 
-            # 5-6월 기준 전시해설/로봇순회 시간표
-            if month == 5:
-                if is_weekend:
-                    explanation_times = ["10:30", "14:30", "15:30"]  # 스폿해설
-                    robot_tour_times = []  # 주말에는 로봇순회 없음
-                else:
-                    explanation_times = ["10:30", "14:30", "15:30"]  # 스폿해설
-                    robot_tour_times = ["14:30"]  # 화~금 로봇순회
-            elif month == 6:
-                if is_weekend:
-                    explanation_times = ["10:30", "14:30", "15:30"]  # 전시톡톡해설
-                    robot_tour_times = []  # 주말에는 로봇순회 없음
-                else:
-                    explanation_times = ["10:30", "14:30", "15:30"]  # 전시톡톡해설
-                    robot_tour_times = ["14:30"]  # 화~금 로봇순회
-            elif month in [1, 2, 8]:
-                explanation_times = ["14:30", "15:30"]
+            # 전시해설/로봇순회 시간표 (평일/주말 구분, 공휴일=주말 동일)
+            is_vacation = month in [1, 2, 8]  # 방학기간
+            if is_vacation:
+                explanation_type = "해설(공룡/새)"
+                explanation_times = ["14:30", "15:30"]  # 방학기간 평일/주말 동일
                 robot_tour_times = []
+                explanation_note = "자유 관람"
+            elif is_weekend:
+                # 개학기간 주말/공휴일
+                explanation_type = "스폿해설" if month in [1, 3, 5, 7, 9, 11] else "전시톡톡해설"
+                explanation_times = ["10:30", "14:30", "15:30"]
+                robot_tour_times = []
+                explanation_note = "자유 관람"
             else:
-                if is_weekend:
-                    explanation_times = ["10:30", "14:30", "15:30"]
-                else:
-                    explanation_times = ["10:30", "14:30", "15:30"]
-                robot_tour_times = []
+                # 개학기간 평일 (화~금)
+                explanation_type = "단체해설 「북적북적 과학관」"
+                explanation_times = ["10:40"]
+                robot_tour_times = ["14:30"] if month in [5, 6] else []
+                explanation_note = "단체 예약 프로그램 (신청콕으로 예약) — 일반 관람객 자유 참여 불가"
 
             planetarium_rows = [
                 ("10:00-10:40", "별자리 해설 + 코코몽 우주탐험"),
@@ -3421,7 +3416,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### 전시해설
 - 오늘 프로그램: **{explanation_type}** ({month_label} 기준)
 - 시간: {", ".join(explanation_times)}
-- 참여: 선착순 입장 및 관람(짹짹 새 탐험대는 25분부터 입장/29분 59초 마감), 헬로 다이노!는 자유 관람
+- 참여: {explanation_note}
 {robot_tour_section}
 
 #### 천체투영관 (시간/프로그램)
@@ -3451,7 +3446,7 @@ SW공학교실은 AI 기술을 활용한 코딩 교육 프로그램이에요. �
 #### 전시해설
 - 오늘 프로그램: **{explanation_type}** ({month_label} 기준)
 - 시간: {", ".join(explanation_times)}
-- 참여: 선착순 입장 및 관람(짹짹 새 탐험대는 25분부터 입장/29분 59초 마감), 헬로 다이노!는 자유 관람
+- 참여: {explanation_note}
 {robot_tour_section}
 
 #### 천체투영관 (시간/프로그램)

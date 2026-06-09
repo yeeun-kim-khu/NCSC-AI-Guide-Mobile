@@ -404,6 +404,8 @@ def main():
             "debug_section": "🧪 디버그",
             "debug_show_ko": "한국어 원문 보기(디버그)",
             "debug_backtranslate": "역번역 결과 보기(디버그)",
+            "footer_issue": "🛠️ 앱 사용 중 문제가 생기면 알려주세요!",
+            "footer_contact": "💬 카카오톡 문의",
         },
         "English": {
             "page_title": "NCSC AI Guide",
@@ -456,6 +458,8 @@ def main():
             "debug_section": "🧪 Debug",
             "debug_show_ko": "Show Korean original (debug)",
             "debug_backtranslate": "Show back-translation (debug)",
+            "footer_issue": "🛠️ If you have any issues with the app, please let us know!",
+            "footer_contact": "💬 Contact via KakaoTalk",
         },
         "日本語": {
             "page_title": "国立子ども科学館 AIガイド",
@@ -508,6 +512,8 @@ def main():
             "debug_section": "🧪 デバッグ",
             "debug_show_ko": "韓国語の原文を表示（デバッグ）",
             "debug_backtranslate": "逆翻訳を表示（デバッグ）",
+            "footer_issue": "🛠️ アプリに問題が生じた場合はお知らせください！",
+            "footer_contact": "💬 KakaoTalkでお問い合わせ",
         },
         "中文": {
             "page_title": "国立儿童科学馆 AI 导览",
@@ -560,6 +566,8 @@ def main():
             "debug_section": "🧪 调试",
             "debug_show_ko": "显示韩文原文（调试）",
             "debug_backtranslate": "显示回译结果（调试）",
+            "footer_issue": "🛠️ 如果使用应用时遇到问题，请告诉我们！",
+            "footer_contact": "💬 KakaoTalk联系",
         },
     }
 
@@ -571,6 +579,7 @@ def main():
         page_title=ui_text.get(st.session_state.get("language_mode"), ui_text["한국어"])["page_title"],
         page_icon="🐣",
         layout="centered",
+        initial_sidebar_state="collapsed",
     )
 
     st.markdown("""
@@ -1351,13 +1360,15 @@ setTimeout(function(){{
         )
     
     # Footer — 시범운영 기간 문의처 (작고 눈에 띄지 않게)
-    st.markdown("""
+    _footer_issue = t("footer_issue")
+    _footer_contact = t("footer_contact")
+    st.markdown(f"""
 <div style="text-align:center; padding:10px 0 12px; margin-top:12px;
             font-size:11px; color:#aaa; line-height:1.8;">
-  🛠️ 앱 사용 중 문제가 생기면 알려주세요!&nbsp;&nbsp;
+  {_footer_issue}&nbsp;&nbsp;
   <a href="https://open.kakao.com/o/gk8Bgjvi" target="_blank"
      style="color:#999; text-decoration:none; margin:0 6px;">
-    💬 카카오톡 문의
+    {_footer_contact}
   </a>
 </div>
 """, unsafe_allow_html=True)
