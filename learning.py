@@ -179,6 +179,19 @@ def _preload_all_zone_csv_rows():
                 data[zone] = []
     return data
 
+
+def _csv_fingerprint() -> str:
+    """data/ 폴더 CSV 파일들의 수정시간 합산 → 변경 감지용."""
+    import glob as _glob
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    total = 0
+    for p in sorted(_glob.glob(os.path.join(base, "*.csv"))):
+        try:
+            total += int(os.path.getmtime(p) * 1000)
+        except Exception:
+            pass
+    return str(total)
+
 # ============================================================================
 # 키워드 추출 및 렌더링
 # ============================================================================
@@ -1873,9 +1886,11 @@ def render_post_visit_learning(
     st.subheader(text["title"])
     st.markdown(text["subtitle"])
 
-    # Load CSV data once with session state persistence
-    if "all_zone_rows" not in st.session_state:
+    # Load CSV data once with session state persistence — CSV 변경 시 자동 재로드
+    _fp = _csv_fingerprint()
+    if "all_zone_rows" not in st.session_state or st.session_state.get("_csv_fp") != _fp:
         st.session_state.all_zone_rows = _preload_all_zone_csv_rows()
+        st.session_state["_csv_fp"] = _fp
     all_zone_rows = st.session_state.all_zone_rows
 
     if "learning_sub_tab" not in st.session_state:
