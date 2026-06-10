@@ -6260,6 +6260,13 @@ def load_zone_rows_from_csv(zone_name: str):
             current_parent_category = category
         effective_category = category if (category and category != "nan") else current_parent_category
         title_val = "" if pd.isna(r.get("title", "")) else str(r.get("title", ""))
+        # "한국어\n영문" 형식 title → 한국어 부분만 추출 (퀴즈 키워드 매칭 일치)
+        if title_val and re.search(r"[\r\n]", title_val):
+            _KOR_RE = re.compile(r"[\uac00-\ud7a3]")
+            _parts = [p.strip() for p in re.split(r"[\r\n]+", title_val) if p.strip()]
+            _kr = next((p for p in _parts if _KOR_RE.search(p)), None)
+            if _kr:
+                title_val = re.sub(r"\s+", " ", _kr).strip()
         rows.append({
             "title": title_val,
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),

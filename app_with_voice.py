@@ -1314,6 +1314,8 @@ setTimeout(function(){{
                 const p = window.parent;
                 if (!p) return;
                 setTimeout(function() {
+                    // 가이드 탭(채팅 입력창)이 없으면 스크롤 실행 안 함
+                    if (!p.document.querySelector('[data-testid="stChatInput"]')) return;
                     const candidates = [
                         p.document.querySelector('[data-testid="stAppViewBlockContainer"]'),
                         p.document.querySelector('section[data-testid="stMain"] > div'),
