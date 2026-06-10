@@ -6267,12 +6267,20 @@ def load_zone_rows_from_csv(zone_name: str):
             _kr = next((p for p in _parts if _KOR_RE.search(p)), None)
             if _kr:
                 title_val = re.sub(r"\s+", " ", _kr).strip()
+        # 전시형태 저장 (키워드 우선순위 판별용)
+        _zt_raw = r.get("전시형태", "") if "전시형태" in df.columns else ""
+        zone_type_val = "" if pd.isna(_zt_raw) else str(_zt_raw).strip()
+        # 키워드 컬럼 저장 (Y 표시된 행만 키워드 버튼으로 사용)
+        _kw_raw = r.get("키워드", "") if "키워드" in df.columns else ""
+        keyword_flag = str(_kw_raw).strip().upper() if not pd.isna(_kw_raw) else ""
         rows.append({
             "title": title_val,
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
             "detail": "" if pd.isna(r.get("detail", "")) else str(r.get("detail", "")),
             "category": effective_category,
             "operation": "" if pd.isna(r.get("operation", "")) else str(r.get("operation", "")),
+            "zone_type": zone_type_val,
+            "keyword_flag": keyword_flag,
         })
     rows = [x for x in rows if x.get("title")]
     return rows

@@ -228,14 +228,26 @@ def _split_title_ko_en(raw_title: str):
     return kr, en
 
 
-def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
+def _extract_zone_keywords_from_titles(zone_rows, top_n=20):
     """제목을 한/영 쌍으로 추출.
 
     반환: list of (kr, en) tuples — kr은 항상 채워져 있음, en은 비어있을 수 있음.
     """
+    # 키워드 컬럼(Y) 표시 행이 있으면 그것만 사용, 없으면 자동 파싱 fallback
+    _flagged = [r for r in (zone_rows or []) if r.get("keyword_flag") == "Y"]
+    if _flagged:
+        candidate_rows = _flagged
+    else:
+        # 체험/실감형 우선, 패널(개요/소개) 후순위 정렬
+        _PANEL_TYPES = {"패널", "도입부 패널", "패널 (게시판형)", "패널 (인터랙티브)"}
+        def _sort_key(r):
+            zt = str(r.get("zone_type", "")).strip()
+            return 0 if zt and zt not in _PANEL_TYPES else 1
+        candidate_rows = sorted(zone_rows or [], key=_sort_key)
+
     pairs = []
     seen_kr = set()
-    for r in (zone_rows or []):
+    for r in candidate_rows:
         raw = str(r.get("title", "")).strip()
         if not raw or len(raw) <= 1:
             continue
@@ -2042,21 +2054,25 @@ def render_post_visit_learning(
                             except Exception as e:
                                 print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
-                        # 선택된 키워드(전시물)의 세부설명 찾기 — content + detail 모두 포함
+                        # 선택된 키워드(전시물)의 세부설명 찾기 — 같은 title 행 전체 합산
                         quiz_detail = ""
                         _selected_category = ""
+                        _all_parts = []
+                        _total_len = 0
+                        _MAX_DETAIL = 1500
                         for r in zone_rows:
                             if r.get("title") == selected_kw:
+                                if not _selected_category:
+                                    _selected_category = r.get("category", "")
                                 _c = str(r.get("content", "") or "").strip()
                                 _d = str(r.get("detail", "") or "").strip()
-                                _selected_category = r.get("category", "")
-                                _parts = []
-                                if _c and _c.lower() != "nan":
-                                    _parts.append(f"[전시물 설명] {_c}")
-                                if _d and _d.lower() != "nan":
-                                    _parts.append(f"[체험 방법] {_d}")
-                                quiz_detail = "\n".join(_parts)
-                                break
+                                if _c and _c.lower() != "nan" and _total_len < _MAX_DETAIL:
+                                    _all_parts.append(f"[전시물 설명] {_c}")
+                                    _total_len += len(_c)
+                                if _d and _d.lower() != "nan" and _total_len < _MAX_DETAIL:
+                                    _all_parts.append(f"[체험 방법] {_d}")
+                                    _total_len += len(_d)
+                        quiz_detail = "\n".join(_all_parts)
 
                         # 데이터 부실(200자 미만) 시 같은 분류(category) 이웃 전시물로 자동 보충
                         if len(quiz_detail) < 200 and _selected_category:
