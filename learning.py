@@ -244,10 +244,14 @@ def _extract_zone_keywords_from_titles(zone_rows, top_n=12):
         kr, en = _split_title_ko_en(raw)
         if not kr or len(kr) <= 1:
             continue
-        if kr in seen_kr:
+        # "- 체험", "- 체험방법" 등 접미사 제거하여 중복 방지
+        kr_normalized = re.sub(r"\s*[-–]\s*체험\S*$", "", kr).strip()
+        if not kr_normalized:
+            kr_normalized = kr
+        if kr_normalized in seen_kr:
             continue
-        seen_kr.add(kr)
-        pairs.append((kr, en))
+        seen_kr.add(kr_normalized)
+        pairs.append((kr_normalized, en))
     return pairs[:top_n]
 
 
