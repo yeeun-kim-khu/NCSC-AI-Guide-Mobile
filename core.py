@@ -6260,8 +6260,6 @@ def load_zone_rows_from_csv(zone_name: str):
             current_parent_category = category
         effective_category = category if (category and category != "nan") else current_parent_category
         title_val = "" if pd.isna(r.get("title", "")) else str(r.get("title", ""))
-        if not title_val.strip() and "- 체험" in effective_category:
-            title_val = effective_category
         rows.append({
             "title": title_val,
             "content": "" if pd.isna(r.get("content", "")) else str(r.get("content", "")),
