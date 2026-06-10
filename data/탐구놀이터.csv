@@ -1,4 +1,4 @@
-ID,분류,전시형태,작동방식,제목,내용,영문 내용,세부 설명,영문 세부 설명,비고 및 주의사항,상태,영문,사진1,사진2
+ID,분류,전시형태,작동방식,제목,내용,영문 내용,세부 설명,영문 세부 설명,비고 및 주의사항,상태,영문,키워드
 탐구-1," 도구
 Simple machine",도입부 패널,텍스트," 도구
 Simple machine","도구 Simple machine
@@ -7,7 +7,7 @@ Tools are things that make our work much easier! Among many tools, the ones that
 약 250만 년 전 돌, 나무, 동물 뼈 등을 이용해 간단한 도구를 만들기 시작했어요.
 시간이 지나 단단한 금속을 발견하면서 더 튼튼하고 오래가는 도구를 만들 수 있게 되었답니다.","People have been looking for ways to make hard work easier for a long, long time!
 About 2.5 million years ago, they started making simple tools out of stones, wood, and animal bones.
-Later, they discovered strong metals and learned how to make even stronger tools that last a long time!",,정상,없음,,
+Later, they discovered strong metals and learned how to make even stronger tools that last a long time!",,정상,없음,
 탐구-2,,체험,핸즈온,"도르래
 Pulley - 체험","바퀴에 줄을 걸어 무거운 물건을 쉽게 들어올리게 하는 도구예요. 힘을 쓰는 방향을 바꾸거나, 힘을 적게 쓰게 해요.
 고정도르래, 움직도르래
@@ -15,21 +15,21 @@ Pulley - 체험","바퀴에 줄을 걸어 무거운 물건을 쉽게 들어올리게 하는 도구예요. 힘
 It can change the direction you pull or make the load feel lighter.
 Fixed Pulley, Movable Pulley
 Which pulley makes the fruit box feel lighter?",,,"줄을 살살 놓아주세요.
-Please let go of the rope gently!",,,,
+Please let go of the rope gently!",,,y
 탐구-3,,체험,핸즈온,"빗면
 Slope","비스듬히 기울어진 면으로 무거운 물건을 밀거나 당겨서 더 쉽게 옮길 수 있게 하는 도구예요. 기울어진 각도가 작을수록 힘은 덜 들지만 더 많이 움직여야 해요.
 
-빗면에 있는 과일 상자와 똑바로 서있는 면에 있는 과일상자를 밀어보세요. 어떤 상자가 더 가볍게 느껴지나요?","It is a slanted surface that helps you push or pull heavy things much more easily. If the slope is gentle, it takes less strength, but you have to push it a longer distance!",상자를 들어보세요!,Lift the box!,,,,,
+빗면에 있는 과일 상자와 똑바로 서있는 면에 있는 과일상자를 밀어보세요. 어떤 상자가 더 가볍게 느껴지나요?","It is a slanted surface that helps you push or pull heavy things much more easily. If the slope is gentle, it takes less strength, but you have to push it a longer distance!",상자를 들어보세요!,Lift the box!,,,,y
 탐구-4,,체험,패널,"쐐기
-Wedge","쇠나 나무를 비스듬하게 깎아 만든 도구예요. 쐐기를 물건의 틈에 넣고 힘을 주면, 물건을 쉽게 들어 올리거나 쪼갤 수 있어요.","It is a tool made by cutting metal or wood at an angle. If you put a wedge into a crack and push, you can easily lift or split things apart!",,,,,,,
+Wedge","쇠나 나무를 비스듬하게 깎아 만든 도구예요. 쐐기를 물건의 틈에 넣고 힘을 주면, 물건을 쉽게 들어 올리거나 쪼갤 수 있어요.","It is a tool made by cutting metal or wood at an angle. If you put a wedge into a crack and push, you can easily lift or split things apart!",,,,,,y
 ,,,핸즈온,쐐기와 나사 - 체험,"쐐기와 나사
 빗면의 원리를 활용한 쐐기와 나사가 우리 생활에서 어떻게 사용되는지 체험해 보세요","Wedge and Screw
-Let's see how wedges and screws, which use the power of slopes, are used in our daily lives!",체험한 도구는 다음 친구를 위해 정리해주세요.,Please put the tools back for the next friend!,,,,,
-,,,핸즈온,쐐기 - 체험,칼 속에는 쐐기의 원리가 숨어 있어요. 칼날 각도가 다른 두개의 칼로 과일 모형을 잘라보며 힘의 세기를 비교해 보아요. 힘이 적게 들었던 칼은 어떤 칼인가요?,The secret of the wedge is hidden in a knife! Try cutting the toy fruit with two knives that have different angles and compare how hard you have to push. Which knife was easier to use?,,,,,,,
+Let's see how wedges and screws, which use the power of slopes, are used in our daily lives!",체험한 도구는 다음 친구를 위해 정리해주세요.,Please put the tools back for the next friend!,,,,
+,,,핸즈온,쐐기 - 체험,칼 속에는 쐐기의 원리가 숨어 있어요. 칼날 각도가 다른 두개의 칼로 과일 모형을 잘라보며 힘의 세기를 비교해 보아요. 힘이 적게 들었던 칼은 어떤 칼인가요?,The secret of the wedge is hidden in a knife! Try cutting the toy fruit with two knives that have different angles and compare how hard you have to push. Which knife was easier to use?,,,,,,
 ,,,패널,"나사
-Screw", 빗면이 소용돌이처럼 감겨 있는 모양의 도구예요. 수많은 나사의 홈 덕분에 작은 힘으로도 물건을 단단히 고정할 수 있어요.,"It is a tool that looks like a slope wrapped around like a whirlpool! Thanks to the many grooves on the screw, you can twist it with just a little bit of strength.",,,,,,,
+Screw", 빗면이 소용돌이처럼 감겨 있는 모양의 도구예요. 수많은 나사의 홈 덕분에 작은 힘으로도 물건을 단단히 고정할 수 있어요.,"It is a tool that looks like a slope wrapped around like a whirlpool! Thanks to the many grooves on the screw, you can twist it with just a little bit of strength.",,,,,,y
 ,,,핸즈온,나사 - 체험,병뚜껑 속에 나사의 원리가 숨어있어요. 모양이 다른 세 개의 병뚜껑을 돌려 보면서 어떤 병이 더 쉽게 열리는지 비교해 보아요. 가장 쉽게 열린 병의 나사산 모양은 어땠나요?,The secret of the screw is hidden in a bottle cap! Try twisting three different bottle caps and see which one opens the easiest. What did the screw threads look like on the easiest bottle?,,,"뚜껑은 세게 잡아당기지 마세요.
-Please do not pull the bottle cap too hard!",,,,
+Please do not pull the bottle cap too hard!",,,
 탐구-5,에너지와 기계 도입부,패널,텍스트,"에너지와 기계
 시작과 발전
 Energy & Machine
@@ -39,7 +39,7 @@ start & development","인류는 불을 발견하면서 처음으로 에너지를 사용하게 되었어요
 다양한 기계 덕분에 우리는 편리하게 살아가고 있어요.","People first started using energy when they discovered fire.
 As time passed, people used the power of nature, like water and wind, to do many things.
 They put small, simple tools together and used new energy to invent big, complex machines!
-Thanks to all these amazing machines, our lives are very comfortable today.",,,,,,,
+Thanks to all these amazing machines, our lives are very comfortable today.",,,,,,
 ,,패널,텍스트,"에너지와 기계
 Energy & Machine","에너지 Energy
 에너지란 물체가 일을 할 수 있는 능력을 말해요.
@@ -53,14 +53,14 @@ Energy comes in many different forms, and it can even change from one form to an
 
 Machines
 Machines are things that do the hard work for us, making it easier and faster!
-Among many machines, let's learn about and play with cars and machines that use propellers.",,,,,,,
+Among many machines, let's learn about and play with cars and machines that use propellers.",,,,,,
 탐구-6,"에너지 숲
 Energy Forest",패널,텍스트,"에너지 하베스팅 트리
 Energy Harvesting Tree - 체험","에너지 하베스팅이란 우리 주변에서 쓸모없이 버려지는 에너지를 모아 전기로 바꾸는 기술을 말해요. 우리가 걷거나 뛰면서 생기는 신체 에너지를 이용해 전기를 만들 수 있어요. 점프하며 에너지 나무를 반짝 반짝 빛내주세요.
 핸들은 천천히 돌려주세요
 손을 넣지 말아주세요. 안전이 최우선입니다.","Energy harvesting is a cool technology that collects wasted energy around us and turns it into electricity! We can even make electricity using the energy from our bodies when we walk or run. Move your body and make the Energy Tree shine bright!
 Please turn it slowly.
-Please do not put your hands inside. Safety first!",발판을 밟을수록 나무가 밝아져요,"The more you step on the pedals, the brighter the tree shines!",,,,,
+Please do not put your hands inside. Safety first!",발판을 밟을수록 나무가 밝아져요,"The more you step on the pedals, the brighter the tree shines!",,,,y
 ,,패널,텍스트,"에너지숲 패널
 Energy Forest Pannel","작품명 | 에너지 숲 2017 작가 | 김동원 Kim, Dongone
 이 전시물은 나무, 바람, 물 등 숲을 구성하는 요소들을 소재로
@@ -68,7 +68,7 @@ Energy Forest Pannel","작품명 | 에너지 숲 2017 작가 | 김동원 Kim, Dongone
 손으로 핸들을 돌려 기계를 움직이게 하는 체험을 통해 인간과 기계의 소통을 추구하였고, 공의 위치에너지가 운동에너지로 전환되는 과정을 볼 수 있도록 하였습니다.","Artwork | Energy Forest 2017 Artist | Kim, Dongone
 This artwork uses things from the forest like trees, wind, and water!
 Using six different kinds of balls, it shows how the rule of keeping energy works in many ways.
-By turning the handle to move the machine, you can see how humans and machines work together, and watch how the ball's high-up energy turns into moving energy!",,,,,,,
+By turning the handle to move the machine, you can see how humans and machines work together, and watch how the ball's high-up energy turns into moving energy!",,,,,,
 탐구-7,에너지 Energy,패널,텍스트,"열에너지
 Thermal energy - 체험","열에너지는 물체를 따뜻하게 만드는 에너지를 말해요.
 나무, 화석 연료를 태우면 나오는 열에너지를 이용해 물체를 움직이거나, 다른 에너지로 바꿀 수 있어요.
@@ -76,7 +76,7 @@ Thermal energy - 체험","열에너지는 물체를 따뜻하게 만드는 에너지를 말해요.
 버튼: 열팽창, 증기기관, 발전소, 자동차, 비행기, 로켓","Thermal energy is the energy that makes things warm!
 When we burn wood or fossil fuels, we get thermal energy. We can use this heat to move things or change it into other kinds of energy!
 Press the buttons below to see how thermal energy has changed the world!
-Buttons: Heat Expansion, Steam Engine, Power Plant, Car, Airplane, Rocket",아크릴 안에 손을 넣지 말아주세요.,Do not put your hands inside the clear plastic box.,,,,,
+Buttons: Heat Expansion, Steam Engine, Power Plant, Car, Airplane, Rocket",아크릴 안에 손을 넣지 말아주세요.,Do not put your hands inside the clear plastic box.,,,,
 탐구-8,,체험,"작동형
 (자석퍼즐)","에너지 퀴즈
 Energy Quiz - 체험","에너지는 우리 삶의 모든 곳에 존재합니다.
@@ -117,7 +117,8 @@ Q5. What new energies can we use instead of fossil fuels?
 Energy Harvesting to collect wasted energy, Renewable Energy that comes from nature and never runs out, and New Energy created with cool new ideas!
 
 Q6. How can we save energy?
-Unplug machines we are not using, keep the house at a steady temperature, and always recycle our trash!",,,,,
+Unplug machines we are not using, keep the house at a steady temperature, and always recycle our trash!",,,,"y
+"
 탐구-9,,패널,텍스트,"파스칼의 원리
 Pascal's Principle","파스칼의 원리 Pascal's Principle
 When you press on one side of a container filled with water or air, the force spreads evenly throughout the inside of the container.
@@ -126,7 +127,7 @@ Using this principle, you can lift a heavy object with a small amount of force."
 When you press on one side of a container filled with water or air, the force spreads evenly throughout the inside of the container.
 This is called Pascal's principle.
 Using this principle, you can lift a heavy object with a small amount of force.",,,,,"국문
-부재",,
+부재",
 ,,체험,"작동형
 (유압체험)",파스칼의 원리 - 체험,"첫 번째! 조심조심 - 앉아봅시다
 빨간불 일때 체험 가능 상태!
@@ -167,7 +168,7 @@ Please do not lean or sit here.
 No more than two adults can sit here. Hold the handles tightly!
 Only children can sit here. Hold the handles tightly!
 
-Please lighter people sit on the small chair, and heavier people sit on the large chair.",,자동 방식으로 변경됨 수시 점검,,,
+Please lighter people sit on the small chair, and heavier people sit on the large chair.",,자동 방식으로 변경됨 수시 점검,,
 탐구-10,,패널,텍스트,"부력
 Buoyancy","부력 Buoyancy
 공기나 물속에 있는 물체를 위로 떠오르게 하는 힘을 말해요.
@@ -193,7 +194,7 @@ Its buoyancy gets weak, so it sinks down!
 
 When you let go of the air pump:
 Air: The water went out, so I have more room!
-Its buoyancy gets strong, so it floats back up!",,ㄱ' 스티커 떨어짐,,,
+Its buoyancy gets strong, so it floats back up!",,ㄱ' 스티커 떨어짐,,y
 ,,체험,작동형,부력 - 체험,"1. 공기펌프를 꾹 누른다
 Press the aur pump 
 2. 손을 떼지 않고 3초 기다린다
@@ -202,7 +203,7 @@ Keep your hand on it and wait for 3 seconds
 Observe the octopus going down","Try it!
 1. Press the aur pump 
 2. Keep your hand on it and wait for 3 seconds
-3. Observe the octopus going down",,,,,,,
+3. Observe the octopus going down",,,,,,
 탐구-11,기계 Machine,패널,텍스트,"자동차
 Automobile","자동차
 Automobile
@@ -211,25 +212,25 @@ Automobile
 비어 있는 부품들을 맞춰보며 자동차의 구조를 살펴보아요.","Automobile
 A car is a moving machine that rolls on wheels to carry people and things on the ground!
 A car is made of many different parts, and they all work together to make it move.
-Let's match the missing parts and learn how a car is built!",,,,,,,
+Let's match the missing parts and learn how a car is built!",,,,,,y
 탐구-12,,쇼케이스 패널,텍스트,"브레이크
 Break","브레이크 Break
 달리고 있는 자동차의 속도를 줄이거나 멈추게 하려면 브레이크 페달을 밟아요.
 페달과 연결된 관 속의 오일을 통해 전해진 강한 힘으로 브레이크 슈가 바퀴를 꽉 잡아 자동차를 멈추게 해요.","Brake
 To slow down or stop a moving car, you step on the brake pedal!
-The strong push travels through special oil in a tube, making the brake pads squeeze the wheels tightly to stop the car.",,,,,,,
+The strong push travels through special oil in a tube, making the brake pads squeeze the wheels tightly to stop the car.",,,,,,y
 ,,체험,작동형,브레이크 - 체험,"1. 시작 버튼 누르기
 2. 페달을 밟아주세요.","1. Press the start button.
-2. Step on the pedal!",,,,,,,
+2. Step on the pedal!",,,,,,
 탐구-13,,쇼케이스 패널,텍스트,"변속기
 Transmission","변속기
 Transmission
 변속기는 다양한 크기의 톱니바퀴들로 이루어져 있어요.
 위, 아래 크기가 다른 두 개의 톱니바퀴가 서로 연결되어 돌아가며 자동차를 빠르게 또는 천천히 달릴 수 있게 해요.","Transmission
 The transmission is made of gear wheels of all different sizes!
-When a big gear and a small gear connect and turn together, they help the car drive fast or slow.",자동차가 빠르게 달리고 있을 때 바퀴와 연결된 톱니바퀴의 크기는 클까요? 작을까요? 서로 맞물리는 톱니바퀴의 크기에 따라 속도가 달라져요.,"When a car is driving really fast, is the gear connected to the wheels big or small? The speed changes depending on the size of the connected gears!",,,,,
+When a big gear and a small gear connect and turn together, they help the car drive fast or slow.",자동차가 빠르게 달리고 있을 때 바퀴와 연결된 톱니바퀴의 크기는 클까요? 작을까요? 서로 맞물리는 톱니바퀴의 크기에 따라 속도가 달라져요.,"When a car is driving really fast, is the gear connected to the wheels big or small? The speed changes depending on the size of the connected gears!",,,,
 ,,체험,작동형,변속기 - 체험,버튼을 눌러 물려있는 도그 클러치와 기어의 크기와 바퀴의 속도 차이를 확인하세요!,"Look closely at how the connected clutch and gears change the speed of the wheels!
-Start Button, Slow Button, Fast Button",,,,,,,
+Start Button, Slow Button, Fast Button",,,,,,
 탐구-14,,쇼케이스 패널,텍스트,"클러치
 Clutch","클러치 Clutch
 자동차는 엔진의 힘으로 움직여요.
@@ -239,10 +240,10 @@ Clutch","클러치 Clutch
 A car moves using the power of its engine!
 The machine that connects the engine's power to the wheels is called a clutch.
 When the car starts, stops, or changes speed, you step on the pedal to quickly disconnect the engine from the wheels.
-This helps the car move very smoothly!","엔진이란 휘발유, 경유 같은 연료를 태워 자동차가 움직일 수 있는 힘을 만들어 내는 기계를 말해요.",An engine is a machine that burns fuel like gas or diesel to make the power that moves a car!,,,,,
+This helps the car move very smoothly!","엔진이란 휘발유, 경유 같은 연료를 태워 자동차가 움직일 수 있는 힘을 만들어 내는 기계를 말해요.",An engine is a machine that burns fuel like gas or diesel to make the power that moves a car!,,,,
 ,,체험,작동형,클러치 - 체험,"1. 시작 버튼 누르기
 2. 페달을 밟아주세요.","1. Press the start button.
-2. Step on the pedal!",,,,,,,
+2. Step on the pedal!",,,,,,
 탐구-15,,패널,텍스트,"나만의 기계만들기
 Creating My Own Machine - 체험","나만의 기계만들기 Creating My Own Machine
 볼트, 너트, 블록 등 다양한 교구를 이용해 나만의 기계를 자유롭게 만들어 보세요.
@@ -258,7 +259,7 @@ Rules for everyone to have fun!
 - Please eat your snacks in the resting area.
 - Be careful not to mix the two different types of toys!
 - Please do not wrap the string toys around your body.
-- Put the toys back in their place for the next friends!",,,,,,,
+- Put the toys back in their place for the next friends!",,,,,,
 ,,체험,쉼터,"나만의 기계 만들기 안내사항
 Information","나만의 기계만들기
 - 상상력으로 자유롭게 기계 장치를 만들면서 과학 원리 탐구!
@@ -276,11 +277,11 @@ Use bolts, nuts, and blocks to freely build your own machine! There are 2 types 
 Please take apart what you built and put it away for the next friend!","음식물 금지
 2층 휴게실을 이용해주세요.
 No food or drinks here, please!
-Please enjoy your snacks in the resting area on the 2nd floor.",,,,
+Please enjoy your snacks in the resting area on the 2nd floor.",,,
 탐구-16,,체험,작동형,"가장 빠른 길은?
 Cycloid","가장 빠른 길은? Cycloid
 바퀴를 평평한 면에 굴렸을 때 바퀴 위의 한 점이 그리는 곡선을 '사이클로이드 곡선'이라고 해요 이 곡선을 따라 내려오는 것이 직선보다 가속도가 크기 때문에 빠르게 내려올 수 있어요","Which Path is the Fastest? Cycloid
-When a wheel rolls on a flat floor, the path drawn by one point on the wheel is called a Cycloid Curve. Rolling down this curvy path is actually faster than going down a straight line because it gives a big speed boost!",,,,고장,,,
+When a wheel rolls on a flat floor, the path drawn by one point on the wheel is called a Cycloid Curve. Rolling down this curvy path is actually faster than going down a straight line because it gives a big speed boost!",,,,고장,,
 ,,패널,텍스트,가장 빠른 길은? - 체험,"이렇게 해봐요
 1. 레버를 위아래로 조절해 길을 만들어봐요.
 2 꼭대기에서 물체를 출발시켜요.
@@ -290,7 +291,7 @@ When a wheel rolls on a flat floor, the path drawn by one point on the wheel is 
 3. Make different paths and see which one is the fastest!","레일을 손으로 잡으면 내려오는 자동차에 다칠 수 있어요.
 자동차가 내려올 때는 레일을 손으로 잡지 마세요.","If you hold the track, the speeding car might hurt your hand!
 Please keep your hands away from the track when the car is rolling down.","손끼임 조심
-Watch your fingers!",,,,
+Watch your fingers!",,,
 탐구-17,,쇼페이스 패널,텍스트,"다누리호
 (KPLO, Korea Pathfinder Lunar Orbiter)","다누리호(KPLO, Korea Pathfinder Lunar Orbiter)
 다누리(KPLO)은 가로, 세로, 높이 각각 1.82m, 2.14m, 2.29m 크기의 본체와 6개 탑재체로 구성된다. (전시된 모형은 다누리호의 3분의 1사이즈로 제작되었다.)
@@ -319,4 +320,4 @@ The name Danuri was chosen by people! It mixes the Korean words for Moon and Enj
 ? Polarimetric Camera: Makes the world's very first special light map of the moon!
 ? Space Internet Tool: Tests if we can use the internet between Earth and the moon!
 ? Shadow Camera: Takes pictures of the super dark parts of the moon where ice might be hiding.",,,"손으로 밀면 ""위험""해요!
-Pushing with your hands is dangerous!",좌측 작동 이상,,,
+Pushing with your hands is dangerous!",좌측 작동 이상,,

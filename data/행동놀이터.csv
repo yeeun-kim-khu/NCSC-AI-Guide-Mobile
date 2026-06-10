@@ -1,11 +1,11 @@
-ID,ºĞ·ù,Àü½ÃÇüÅÂ,ÀÛµ¿¹æ½Ä,Á¦¸ñ,³»¿ë,¿µ¹® ³»¿ë,¼¼ºÎ ¼³¸í,¿µ¹® ¼¼ºÎ ¼³¸í,ºñ°í ¹× ÁÖÀÇ»çÇ×,»óÅÂ,¿µ¹®,»çÁø1,»çÁø2
+ID,ºĞ·ù,Àü½ÃÇüÅÂ,ÀÛµ¿¹æ½Ä,Á¦¸ñ,³»¿ë,¿µ¹® ³»¿ë,¼¼ºÎ ¼³¸í,¿µ¹® ¼¼ºÎ ¼³¸í,ºñ°í ¹× ÁÖÀÇ»çÇ×,»óÅÂ,¿µ¹®,Å°¿öµå
 Çàµ¿-1,"Àçºü¸£°Ô! ³¯½ê°Ô!
 Check your speed!",Ã¼Çè,"ÅÍÄ¡ µğ½ºÇÃ·¹ÀÌ
 (½ÅÃ¼È°µ¿)","Àçºü¸£°Ô! ³¯½ê°Ô!
 Check your speed!","¹ÎÃ¸¼º
 AgilityÀº ÀÚ±Ø¿¡ ºü¸£°Ô ¹İÀÀÇÏ°Å³ª ¸öÀÇ À§Ä¡¿Í ¹æÇâÀ» Àçºü¸£°í Á¤È®ÇÏ°Ô ¹Ù²Ù´Â ´É·ÂÀÌ¿¡¿ä. ¹ÎÃ¸¼ºÀ» Å°¿ì¸é ¸öÀÇ ±ÙÀ°ÀÌ³ª »À°¡ ´ÙÄ¡´Â °ÍÀ» ¿¹¹æÇÒ ¼ö ÀÖ¾î¿ä.",Agility is the super power to react quickly and change your body's direction really fast! Being agile helps protect your muscles and bones from getting hurt while you play.,"°°ÀÌ Å» Ä¡Å¸¸¦ °ñ¶óÁÖ¼¼¿ä(Ã¼Çè ³ôÀÌ°¡ ´Ş¶óÁ®¿ä)
- Ä¡Ä¡¿Í ÇÏÀÌÆÄÀÌºê ÇØ¿ä!",Pick a cheetah to ride with! (The height will change.) Give Chee-Chee a high-five!,³¯½Úµ¹ÀÌ Ä¡Ä¡ CHEE-CHEE (Ä³¸¯ÅÍ),Á¤»ó,¾øÀ½,,
-,,,,Àçºü¸£°Ô ³¯½ê°Ô - Ã¼Çè,È­¸é¿¡ ³ª¿À´Â Ä¡Ä¡ÀÇ ¹ß¹Ù´Ú°ú ºü¸£°Ô ÇÏÀÌÆÄÀÌºê ÇØºÁ¿ä!,Give a super fast high-five to Chee-Chee's paws on the screen!,-,,,,,,
+ Ä¡Ä¡¿Í ÇÏÀÌÆÄÀÌºê ÇØ¿ä!",Pick a cheetah to ride with! (The height will change.) Give Chee-Chee a high-five!,³¯½Úµ¹ÀÌ Ä¡Ä¡ CHEE-CHEE (Ä³¸¯ÅÍ),Á¤»ó,¾øÀ½,y
+,,,,Àçºü¸£°Ô ³¯½ê°Ô - Ã¼Çè,È­¸é¿¡ ³ª¿À´Â Ä¡Ä¡ÀÇ ¹ß¹Ù´Ú°ú ºü¸£°Ô ÇÏÀÌÆÄÀÌºê ÇØºÁ¿ä!,Give a super fast high-five to Chee-Chee's paws on the screen!,-,,,,,
 Çàµ¿-2,"½ÉÀåÀÌ ÄôÄçÄôÄç!
 Check your heart health!",Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","½ÉÀåÀÌ ÄôÄçÄôÄç!
@@ -21,19 +21,19 @@ Maximum Heart Rate = 180 - your age
 ½ÉÀåÀÌ Æ°Æ°ÇÒ¼ö·Ï ³ô¾ÆÁø ½É¹Ú¼ö°¡ ºü¸£°Ô Á¦ÀÚ¸®·Î µ¹¾Æ¿É´Ï´Ù.
 ³ªÀÇ ½É¹Ú¼ö¸¦ ¾Ë¾Æº¼±î¿ä?
 ¼ÕÀâÀÌ¸¦ ÀâÀ¸¸é Ã¼ÇèÀ» ½ÃÀÛÇÕ´Ï´Ù.","When you exercise, your heart beats faster and faster! If your heart is strong, your fast heartbeat will quickly slow down to normal again. Shall we find out your heart rate? Grab the handles to start!","´À¸´´À¸´ Å¸Å¸ TATA
-(Ä³¸¯ÅÍ)",,,,
+(Ä³¸¯ÅÍ)",,,y
 ,,,,½ÉÀåÀÌ ÄôÄçÄôÄç!- Ã¼Çè,"1. ¼ÕÀâÀÌ¿¡ ÀÖ´Â ½É¹ÚÃøÁ¤±â¸¦ Àß Àâ°í ½É¹Ú¼ö°¡ Á¦´ë·Î ÃøÁ¤µÇ´ÂÁö È®ÀÎÇÏ¼¼¿ä.
 2. È­¸éÀÇ ¾È³»¿¡ µû¶ó Ã¼ÇèÀ» ÁøÇàÇØ ÁÖ¼¼¿ä.","1. Hold the handles tightly so it can feel your heartbeat! 
-2. Check the screen to make sure it's working.",,,,,,,
+2. Check the screen to make sure it's working.",,,,,,
 Çàµ¿-3,"À¸¶óÂ÷Â÷! Èû °Ü·ç±â
 Check your strength!",Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","À¸¶óÂ÷Â÷! Èû °Ü·ç±â
 Check your strength!",±Ù·ÂMuscular StrengthÀº ¿ì¸® ¸öÀÇ ±ÙÀ°ÀÌ ÇÑ ¹ø¿¡ ÃÖ´ë·Î ³»´Â ÈûÀÌ¿¡¿ä. ±Ù·ÂÀÌ ÁÁÀ»¼ö·Ï ¹«°Å¿î ¹°°ÇÀ» ½±°Ô µé ¼ö ÀÖ¾î¿ä. ²ÙÁØÇÏ°í ±ÔÄ¢ÀûÀÎ ¿îµ¿À» ÅëÇØ ±Ù·ÂÀ» Å°¿ï ¼ö ÀÖ¾î¿ä.,"It's the maximum super power your muscles can make all at once! The stronger your muscles are, the easier it is to lift heavy things. You can build your muscle power and get stronger by exercising regularly!",,,"ÃµÇÏÀå»ç CO-CO ÄÚÄÚ
 ÀÎ°£ VS ÄÚ³¢¸®
-(Ä³¸¯ÅÍ)",,,,
+(Ä³¸¯ÅÍ)",,,y
 ,,,,À¸¶óÂ÷Â÷! Èû °Ü·ç±â - Ã¼Çè,"1. ÄÚÄÚ¿Í ÇÔ²² ÁÙ´Ù¸®±â¸¦ ÇØº¸¾Æ¿ä.
 2. È­¸é ¼Ó ¼ıÀÚ¸¦ º¸°í ³» ±Ù·ÂÀ» È®ÀÎÇØ¿ä.","1. Let's play tug-of-war with Coco!
-2. Check the numbers on the screen to see your muscular strength!",,,,,,,
+2. Check the numbers on the screen to see your muscular strength!",,,,,,
 Çàµ¿-4,"³ôÀÌ ³ôÀÌ, ÆúÂ¦!
 Check your jump power!",Ã¼Çè,½ÅÃ¼È°µ¿,"³ôÀÌ ³ôÀÌ, ÆúÂ¦!
 Check your jump power!","¼ø¹ß·Â
@@ -41,32 +41,32 @@ PowerÀº ÂªÀº ½Ã°£ ³»¿¡ ¼ø°£ÀûÀ¸·Î °­ÇÑ ÈûÀ» ³»´Â ´É·ÂÀÌ¿¡¿ä. ¼ø¹ß·ÂÀ» Å°¿ì¸é »¡¸
 È­»ìÇ¥ ¹æÇâÀ¸·Î °¡¸é¼­ »ì»ì ÃÄÁÖ¼¼¿ä","120-180cm
 Follow the arrows and tap gently!","³ôÀÌ¶Ù±â ¼±¼ö ÇªÇª
 PUPU(Ä³¸¯ÅÍ)
-¡Ø °¡º®À» ¶§·Á °ñÀı»ç°í ¹ß»ı 2È¸ ¡æ °³¼± ÇÊ¿ä",,,,
-,,,,"³ôÀÌ³ôÀÌ, ÆúÂ¦!",ÇªÇªÃ³·³ Èû²¯ ¶Ù¾î¿Ã¶ó º®¿¡ ´Ş¸° °øÀ» ÃÄº¸¾Æ¿ä.,Jump up as high as you can like Pupu and hit the ball on the wall!,,,,,,,
+¡Ø °¡º®À» ¶§·Á °ñÀı»ç°í ¹ß»ı 2È¸ ¡æ °³¼± ÇÊ¿ä",,,y
+,,,,"³ôÀÌ³ôÀÌ, ÆúÂ¦!",ÇªÇªÃ³·³ Èû²¯ ¶Ù¾î¿Ã¶ó º®¿¡ ´Ş¸° °øÀ» ÃÄº¸¾Æ¿ä.,Jump up as high as you can like Pupu and hit the ball on the wall!,,,,,,
 Çàµ¿-5,"»ç»Ó»ç»Ó, ¿ì¾ÆÇÏ°Ô!
 Walk with balance!",Ã¼Çè,¹Ìµğ¾î¿ù,"»ç»Ó»ç»Ó, ¿ì¾ÆÇÏ°Ô!
 Walk with balance!","ÆòÇü¼º
 BalanceÀº ¸öÀÇ ±ÕÇüÀ» Àß Àâ´Â ´É·ÂÀ» ¸»ÇØ¿ä.
-ÆòÇü¼ºÀ» Å°¿ì¸é ³Ñ¾îÁöÁö ¾Ê°í ¾ÈÁ¤ÀûÀÎ ÀÚ¼¼·Î ¿òÁ÷ÀÏ ¼ö ÀÖ¾î¿ä. ¸Ï¿ËÀÌÃ³·³ ±ÕÇüÀ» Àâ°í ¿ì¾ÆÇÏ°Ô °É¾îº¼±î¿ä?","It means being able to keep your balance! If you have good balance, you can move smoothly without falling down. Shall we walk gracefully and balance like Meow-Meow?",,,,,,,
+ÆòÇü¼ºÀ» Å°¿ì¸é ³Ñ¾îÁöÁö ¾Ê°í ¾ÈÁ¤ÀûÀÎ ÀÚ¼¼·Î ¿òÁ÷ÀÏ ¼ö ÀÖ¾î¿ä. ¸Ï¿ËÀÌÃ³·³ ±ÕÇüÀ» Àâ°í ¿ì¾ÆÇÏ°Ô °É¾îº¼±î¿ä?","It means being able to keep your balance! If you have good balance, you can move smoothly without falling down. Shall we walk gracefully and balance like Meow-Meow?",,,,,,y
 ,,,,"»ç»Ó»ç»Ó, ¿ì¾ÆÇÏ°Ô! - Ã¼Çè",¹Ù´Ú¿¡ ÀÖ´Â µğµõµ¹ÀÌ³ª Æò±Õ´ë¸¦ µû¶ó ±ÕÇüÀ» Àß Àâ°í °É¾îº¸¾Æ¿ä.,Step on the stepping stones or walk along the balance beam without falling over!,,,"Ã¼Á¶¼±¼ö ¸Ï¿Ë Meow
-(Ä³¸¯ÅÍ)",,,,
+(Ä³¸¯ÅÍ)",,,
 Çàµ¿-6,"³ªÀÇ ¸öÀº?
 My Body",ÆĞ³Î,"°Å¿ï, ÅØ½ºÆ®","³ªÀÇ ¸öÀº? »ı°¢ÇØ¿ä
 Think","³ú´Â ¿ì¸®ÀÇ ¸ğµç Çàµ¿À» ¸í·ÉÇÏ°í Á¶ÀıÇÏ´Â ±â°üÀÌ¿¡¿ä.
 ³ú´Â ½ÇÃ³·³ °¡´À´Ù¶õ ½Å°æÀ¸·Î ¿ì¸® ¸öÀÇ ¸ğµç ºÎºĞ°ú ¿¬°áµÇ¾î ÀÖ°í Àü±â ½ÅÈ£¸¦ ÅëÇØ ¿ì¸® ¸ö¿¡ ¸í·ÉÀ» ³»·Á¿ä.
 ¿ì¸®°¡ »ÏÁ·ÇÑ ¹°Ã¼¸¦ ¹âÀ¸¸é ¹ßÀº ³ú·Î ½ÅÈ£¸¦ º¸³»°í, ³ú´Â À§ÇèÇÏ´Ï ¹ßÀ» ¶¼¶ó°í ½ÅÈ£¸¦ º¸³¾ °Å¿¹¿ä.
-ÀÌ¶§, ³ú¿Í ¹ßÀÌ ½ÅÈ£¸¦ ÁÖ°í¹Ş´Â ½Ã°£Àº 0.1ÃÊµµ ¾È °É¸± ¸¸Å­ »¡¶ó¿ä.","The brain is the boss of our body! It tells us what to do and controls our actions. The brain is connected to every part of our body by tiny threads called ""nerves,"" sending signals like electricity. If you step on something sharp, your foot sends a quick message to the brain, and the brain yells, ""Ouch, move your foot away!"" This chat between your foot and brain happens so fast, it takes less than 0.1 seconds!",,,,,,,
+ÀÌ¶§, ³ú¿Í ¹ßÀÌ ½ÅÈ£¸¦ ÁÖ°í¹Ş´Â ½Ã°£Àº 0.1ÃÊµµ ¾È °É¸± ¸¸Å­ »¡¶ó¿ä.","The brain is the boss of our body! It tells us what to do and controls our actions. The brain is connected to every part of our body by tiny threads called ""nerves,"" sending signals like electricity. If you step on something sharp, your foot sends a quick message to the brain, and the brain yells, ""Ouch, move your foot away!"" This chat between your foot and brain happens so fast, it takes less than 0.1 seconds!",,,,,,y
 ,,,,"³ªÀÇ ¸öÀº? ¼ûÀ» ½¬¾î¿ä
 Take a breath","»ı¸íÃ¼°¡ »ì¾Æ°¡±â À§ÇØ¼­´Â »ê¼Ò°¡ ²À ÇÊ¿äÇØ¿ä.
 ¿ì¸®°¡ ¼ûÀ» ½¯ ¶§ µéÀÌ¸¶½Å »ê¼Ò´Â Æó¿¡¼­ ÇÍ¼ÓÀ¸·Î ³ì¾Æµé¾î °©´Ï´Ù. »ê¼Ò°¡ °¡µæ ´ã±ä ÇÇ´Â Æó¿¡¼­ ½ÉÀåÀ¸·Î ÀÌµ¿ÇÏ°í ½ÉÀåÀº ÀÌ ÇÇ¸¦ ¿Â¸öÀ¸·Î º¸³»¿ä.
 ÇÇ´Â ¿ì¸® ¸ö °÷°÷¿¡ »ê¼Ò¸¦ ³ª´²ÁÖ°í ¸ö¼ÓÀÇ ÀÌ»êÈ­Åº¼Ò¸¦ ¹Ş¾Æ¼­ ´Ù½Ã Æó·Î °¡¿ä.
 Æó´Â ÇÍ¼ÓÀÇ ÀÌ»êÈ­Åº¼Ò¸¦ ¸ö ¹ÛÀ¸·Î ³»º¸³»°í ´Ù½Ã »ê¼Ò¸¦ Ã¤¿ö¼­ ½ÉÀåÀ¸·Î º¸³½´ä´Ï´Ù.","All living things need oxygen to live! When we breathe in, oxygen goes into our lungs and mixes into our blood. This oxygen-filled blood travels to the heart, and the heart pumps it all over our body. 
 The blood shares oxygen everywhere and picks up carbon dioxide to take back to the lungs. 
-Finally, the lungs push the carbon dioxide out when we breathe out, and fill up with fresh oxygen again!",,,,,,,
+Finally, the lungs push the carbon dioxide out when we breathe out, and fill up with fresh oxygen again!",,,,,,
 ,,,,"³ªÀÇ ¸öÀº? ¿òÁ÷¿©¿ä
 Move","¿ì¸® ¸öÀ» ÀÌ·ç´Â ±ÙÀ°¿¡´Â ¿òÁ÷ÀÌ°Å³ª ÀÚ¼¼¸¦ À¯ÁöÇÒ ¼ö ÀÖ°Ô ÇÏ´Â °ñ°İ±Ù, ½ÉÀåÀ» ÀÌ·ç´Â ½ÉÀå±Ù, À§ ? Àå µî ¸ö¼Ó ±â°üÀ» ÀÌ·ç´Â ³»Àå±ÙÀÌ ÀÖ¾î¿ä.
 ¼¼ Á¾·ùÀÇ ±ÙÀ° Áß ¿ì¸® ¸¶À½´ë·Î ¿òÁ÷ÀÏ ¼ö ÀÖ´Â ±ÙÀ°Àº °ñ°İ±Ù»ÓÀÌ¿¡¿ä.
-½ÅÃ¼ È°µ¿À» ²ÙÁØÈ÷ ÇØ¾ß ½ÉÀå±Ù°ú ³»Àå±Ùµµ Æ°Æ°ÇÏ°Ô À¯ÁöÇÒ ¼ö ÀÖ¾î¿ä.","There are three types of muscles in our body: ""skeletal muscles"" help us move and stand up, ""heart muscles"" make our heart beat, and ""visceral muscles"" make up our organs like the stomach. Out of these three, we can only control our skeletal muscles however we want! But if we exercise regularly, we can keep our heart and organ muscles super strong, too!",,,,,,,
+½ÅÃ¼ È°µ¿À» ²ÙÁØÈ÷ ÇØ¾ß ½ÉÀå±Ù°ú ³»Àå±Ùµµ Æ°Æ°ÇÏ°Ô À¯ÁöÇÒ ¼ö ÀÖ¾î¿ä.","There are three types of muscles in our body: ""skeletal muscles"" help us move and stand up, ""heart muscles"" make our heart beat, and ""visceral muscles"" make up our organs like the stomach. Out of these three, we can only control our skeletal muscles however we want! But if we exercise regularly, we can keep our heart and organ muscles super strong, too!",,,,,,
 Çàµ¿-7,"°Ç°­ÇÑ ¸öÀ» °¡Áö·Á¸é
 Healthy body",ÆĞ³Î,ÅØ½ºÆ®,"°Ç°­ÇÑ ¸öÀ» °¡Áö·Á¸é? Ã¼·ÂÀ» ±æ·¯¿ä
 Physical strength","Ã¼·ÂÀº ÀÏ»ó»ıÈ°ÀÌ³ª ½ÅÃ¼ È°µ¿À» ÇÒ ¶§ ¸öÀ» ¿òÁ÷ÀÏ ¼ö ÀÖ´Â ÈûÀ» ¸»ÇØ¿ä. Ã¼·Â¿¡´Â °Ç°­ Ã¼·Â°ú ¿îµ¿ Ã¼·ÂÀÌ ÀÖ¾î¿ä.
@@ -75,16 +75,16 @@ Physical strength","Ã¼·ÂÀº ÀÏ»ó»ıÈ°ÀÌ³ª ½ÅÃ¼ È°µ¿À» ÇÒ ¶§ ¸öÀ» ¿òÁ÷ÀÏ ¼ö ÀÖ´Â Èû
 ÀÌ·¸µí Ã¼·ÂÀº °Ç°­ÇÑ »ıÈ°À» ÇÏ±â À§ÇØ ²À ÇÊ¿äÇØ¿ä.
 ´Ù¾çÇÑ ½ÅÃ¼ È°µ¿À» ÅëÇØ Ã¼·ÂÀ» ±æ·¯º¸¾Æ¿ä.","Physical fitness is the energy we need to move and do things every day! It is divided into two types: Health fitness and Skill fitness. 'Health fitness' to keep us healthy, and 'skill fitness' to help us be good at sports. If you exercise and get fitter, you can play longer without getting tired. It also keeps you from getting sick and helps you beat stress! That's why being fit is so important. Let's build our fitness through fun activities!","¿îµ¿Ã¼·Â: ÆòÇü¼º, ¼ø¹ß·Â, ÇùÀÀ·Â, ¹ÎÃ¸¼º
 °Ç°­Ã¼·Â: ±Ù·Â, ±ÙÁö±¸·Â, À¯¿¬¼º, ½ÉÆóÁö±¸·Â","Skill Fitness: Balance, Explosive Power, Coordination, Agility
-Health Fitness: Muscle Strength, Muscle Endurance, Flexibility, Cardiovascular Endurance",,,,,
+Health Fitness: Muscle Strength, Muscle Endurance, Flexibility, Cardiovascular Endurance",,,,
 ,,ÆĞ³Î,ÅØ½ºÆ®,"°Ç°­ÇÑ ¸öÀ» °¡Áö·Á¸é? ÁÁÀº À½½ÄÀ» ¸Ô¾î¿ä
 Good foods","¿ì¸®´Â »ì¾Æ°¡±â À§ÇØ À½½ÄÀ» ²À ¸Ô¾î¾ß ÇØ¿ä.
 À½½Ä¿¡ ÀÖ´Â ´Ù¾çÇÑ ¿µ¾ç¼ÒµéÀº ¿ì¸® ¸öÀÌ Àß ÀÚ¶ó°Ô µµ¿ÍÁÖ°í ½ÅÃ¼È°µ¿¿¡ ÇÊ¿äÇÑ ¿¡³ÊÁö¸¦ ¸¸µé¾îÁà¿ä. ¿ì¸® ¸öÀº Åº¼öÈ­¹°, ´Ü¹éÁú, Áö¹æ, ¹«±âÁú µîÀÇ ¿µ¾ç¼Ò°¡ ÇÊ¿äÇØ¿ä.
 À½½Ä¸¶´Ù ´Ù¸¥ ¿µ¾ç¼Ò°¡ µé¾îÀÖ±â ¶§¹®¿¡ Àû´çÇÑ ¾çÀÇ À½½ÄÀ» °ñ°í·ç ¸Ô¾î¾ß ÇØ¿ä. ¸ÅÀÏ ½Å¼±ÇÑ Ã¤¼Ò, °úÀÏ°ú ÇÔ²² °î·ù, °í±â »ı¼± ? ´Ş°¿? Äá·ù, ¿ìÀ¯ ? À¯Á¦Ç°·ù µîÀ» ÇÊ¿äÇÑ ¸¸Å­ ±ÕÇü ÀÖ°Ô ¼·ÃëÇÏ°í ¹°À» ÃæºĞÈ÷ ¸¶½Ã´Â °Ô Áß¿äÇØ¿ä.","We need food to live! The different nutrients in food give us energy to play and help our bodies grow. We need things like carbohydrates, proteins, fats, and minerals.
 Since different foods have different nutrients, it's important to eat a little bit of everything. Make sure to eat fresh veggies, fruits, grains, meat, fish, eggs, beans, and dairy every day, and drink plenty of water!","½ÄÇ°±¸¼º ÀÚÀü°Å
-°í±â»ı¼±´Ş°¥Äá·ù, Ã¤¼Ò·ù, °úÀÏ·ù, ¿ìÀ¯À¯Á¦Ç°·ù, À¯Áö´ç·ù, °î·ù","Food Bicycle: Meat/Fish/Eggs/Beans, Vegetables, Fruits, Milk/Dairy, Fats/Sugars, Grains",,,,,
+°í±â»ı¼±´Ş°¥Äá·ù, Ã¤¼Ò·ù, °úÀÏ·ù, ¿ìÀ¯À¯Á¦Ç°·ù, À¯Áö´ç·ù, °î·ù","Food Bicycle: Meat/Fish/Eggs/Beans, Vegetables, Fruits, Milk/Dairy, Fats/Sugars, Grains",,,,
 ,,ÆĞ³Î,ÅØ½ºÆ®,"Â°±ïÂ°±ï!
 °Ç°­ÇÑ ÇÏ·ç ½À°ü
-Tick-Tock! My Healthy Daily Habits - Ã¼Çè",¾Æ·¡ÀÇ Ä¸½¶À» ´­·¯º¸¼¼¿ä.,Press the capsules below!,,,,,,,
+Tick-Tock! My Healthy Daily Habits - Ã¼Çè",¾Æ·¡ÀÇ Ä¸½¶À» ´­·¯º¸¼¼¿ä.,Press the capsules below!,,,,,,
 Çàµ¿-8,"¸é¿ªÅÍ³Î ¹ÙÀÌ·¯½º¸¦ ¹°¸®ÃÄ¿ä!
 Beat the Virus!
 ",Ã¼Çè,½ÅÃ¼È°µ¿,"¸é¿ªÅÍ³Î
@@ -101,19 +101,19 @@ Immunity Tunnel - Ã¼Çè","¾Æ·¡ ÅØ½ºÆ® ÆĞ³Î & ¸é¿ªÅÍ³Î ¾ÈÀü¼öÄ¢
 <Please Note!> This tunnel is best for young children (ages 5-7) and lower elementary students. Older students, please yield to the younger ones!","Experience guide
 Put on your shoes
 You can Experience this place until 10 years old
-parents, please watch your child",,,,,,
+parents, please watch your child",,,,,
 ,,ÆĞ³Î,ÅØ½ºÆ®,"¹éÇ÷±¸´Â ¹«½¼ ÀÏÀ» ÇÒ±î¿ä?
-What Do White Blood Cells Do?","¼¼±ÕÀÌ³ª ¹ÙÀÌ·¯½º´Â À½½ÄÀ» ¸Ô°Å³ª ¼ûÀ» ½¯ ¶§ ¿ì¸® ¸ö ¼ÓÀ¸·Î µé¾î¿Í¿ä. ÀÌ¶§ ¿ì¸® ¸ö ¼ÓÀÇ ¹éÇ÷±¸´Â ¸é¿ª°è ¼¼Æ÷·Î¼­ ÀÌµéÀ» Àâ¾Æ¸ÔÀ¸¸ç ¿ì¸® ¸öÀ» °Ç°­ÇÏ°Ô ÁöÄÑÁÖ´Â ¿ªÇÒÀ» ÇØ¿ä. ÅÍ³Î·Î µé¾î°¡ ³»°¡ ¹éÇ÷±¸°¡ µÈ °ÍÃ³·³ ¼¼±Õ, ¹ÙÀÌ·¯½º¿Í ½Î¿ö ¹°¸®ÃÄº¸¾Æ¿ä.","Germs and viruses can enter our body when we eat or breathe. But don't worry! White blood cells act like our body's superhero guards, eating up the bad germs to keep us healthy. Step into the tunnel, become a superhero white blood cell, and fight off the germs and viruses!",,,,,,,
+What Do White Blood Cells Do?","¼¼±ÕÀÌ³ª ¹ÙÀÌ·¯½º´Â À½½ÄÀ» ¸Ô°Å³ª ¼ûÀ» ½¯ ¶§ ¿ì¸® ¸ö ¼ÓÀ¸·Î µé¾î¿Í¿ä. ÀÌ¶§ ¿ì¸® ¸ö ¼ÓÀÇ ¹éÇ÷±¸´Â ¸é¿ª°è ¼¼Æ÷·Î¼­ ÀÌµéÀ» Àâ¾Æ¸ÔÀ¸¸ç ¿ì¸® ¸öÀ» °Ç°­ÇÏ°Ô ÁöÄÑÁÖ´Â ¿ªÇÒÀ» ÇØ¿ä. ÅÍ³Î·Î µé¾î°¡ ³»°¡ ¹éÇ÷±¸°¡ µÈ °ÍÃ³·³ ¼¼±Õ, ¹ÙÀÌ·¯½º¿Í ½Î¿ö ¹°¸®ÃÄº¸¾Æ¿ä.","Germs and viruses can enter our body when we eat or breathe. But don't worry! White blood cells act like our body's superhero guards, eating up the bad germs to keep us healthy. Step into the tunnel, become a superhero white blood cell, and fight off the germs and viruses!",,,,,,y
 ,,,,"¹ÙÀÌ·¯½º¸¦ Àâ¾Æ¿ä
 Catch the Viruses!","±×¹°¿¡ °É·ÁÀÖ´Â ¹ÙÀÌ·¯½º¸¦ Àâ¾Æ º¸¾Æ¿ä.
-(ÇöÀç Ã¼Çè ºÒ°¡)",Catch the viruses stuck in the net!,,,,,,,
+(ÇöÀç Ã¼Çè ºÒ°¡)",Catch the viruses stuck in the net!,,,,,,
 ,,,,"¼¼±ÕÀ» Áö¿ö¿ä
-Wipe Away the Germs!",¹éÇ÷±¸·Î ¼¼±ÕÀ» °¡·Á¼­ ±ú²ıÇÏ°Ô ¸¸µé¾î¿ä. (ÇöÀç Ã¼Çè ºÒ°¡),Cover the germs as a white blood cell and clean them up!,,,,,,,
+Wipe Away the Germs!",¹éÇ÷±¸·Î ¼¼±ÕÀ» °¡·Á¼­ ±ú²ıÇÏ°Ô ¸¸µé¾î¿ä. (ÇöÀç Ã¼Çè ºÒ°¡),Cover the germs as a white blood cell and clean them up!,,,,,,
 ,,,,"¹éÇ÷±¸¸¦ Æ°Æ°ÇÏ°Ô!
 Super Strong White Blood Cells!","¿µ»óÀ» º¸¸é¼­
-Æ°Æ°ÇÑ ¸öÀ» °®´Â ¹æ¹ıÀ» ¾Ë¾Æº¸¾Æ¿ä.",Watch the video to learn how to build a strong and healthy body!,,,,,,,
+Æ°Æ°ÇÑ ¸öÀ» °®´Â ¹æ¹ıÀ» ¾Ë¾Æº¸¾Æ¿ä.",Watch the video to learn how to build a strong and healthy body!,,,,,,
 ,,,,"¼¼±ÕÀ» ¹°¸®ÃÄ¿ä
-Defeat the Germs! - Ã¼Çè",¹Ù´Ú¿¡ ÀÖ´Â ¼¼±ÕÀ» Èû²¯ ¹â¾Æ º¸¾Æ¿ä.,Stomp on the germs on the floor as hard as you can!,,,,,,,
+Defeat the Germs! - Ã¼Çè",¹Ù´Ú¿¡ ÀÖ´Â ¼¼±ÕÀ» Èû²¯ ¹â¾Æ º¸¾Æ¿ä.,Stomp on the germs on the floor as hard as you can!,,,,,,
 ,,,µğÁöÅĞ µğ½ºÇÃ·¹ÀÌ,"°Ç°­À» ÁöÅ°·Á¸é ¼ÕºÎÅÍ Àß ¾Ä¾î¿ä!
 Wash Your Hands to Stay Healthy!","1. ¼Õ¹Ù´Ú: ¼Õ¹Ù´ÚÀ» ¸¶ÁÖ´ë°í ¹®Áö¸£±â
 2. ¼Õµî: (¼Õ)µî°ú ¼Õ¹Ù´ÚÀ» ´ë°í ¹®Áö¸£±â
@@ -125,15 +125,15 @@ Wash Your Hands to Stay Healthy!","1. ¼Õ¹Ù´Ú: ¼Õ¹Ù´ÚÀ» ¸¶ÁÖ´ë°í ¹®Áö¸£±â
 3. Between fingers: Interlock your fingers and scrub between them.
 4. Cupped hands: Hook your fingers together and rub.
 5. Thumbs: Hold your thumb and twist to wash it.
-6. Under fingernails: Rub the tips of your fingers on your palm to finish!",,,,,,,
+6. Under fingernails: Rub the tips of your fingers on your palm to finish!",,,,,,
 Çàµ¿-9,"±×¸²
 Art",Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","°øÀ¸·Î ±×¸®´Â ±×¸²
-Ball art - Ã¼Çè","Á¡'µéÀÌ ¿¬¼ÓµÇ¾î ÀÖÀ¸¸é '¼±'ÀÌ µÇ°í, ¼±µéÀÌ ¿©·¯ °³ ¸ğÀÌ¸é '¸é'ÀÌ µÇÁö¿ä. ¹İ¹İ¾¿ ´Ù¸¥ »öÀÌ Ä¥ÇØÁø °øÀ» µ¹·Á¼­, Àç¹ÌÀÖ´Â ±×¸²À» ¸¸µé¾î º¸¼¼¿ä.","When 'dots' line up, they become a 'line,' and when many lines come together, they make a 'shape'! Spin the ball painted in two different colors to make fun and surprising pictures!",,,,,,,
+Ball art - Ã¼Çè","Á¡'µéÀÌ ¿¬¼ÓµÇ¾î ÀÖÀ¸¸é '¼±'ÀÌ µÇ°í, ¼±µéÀÌ ¿©·¯ °³ ¸ğÀÌ¸é '¸é'ÀÌ µÇÁö¿ä. ¹İ¹İ¾¿ ´Ù¸¥ »öÀÌ Ä¥ÇØÁø °øÀ» µ¹·Á¼­, Àç¹ÌÀÖ´Â ±×¸²À» ¸¸µé¾î º¸¼¼¿ä.","When 'dots' line up, they become a 'line,' and when many lines come together, they make a 'shape'! Spin the ball painted in two different colors to make fun and surprising pictures!",,,,,,
 ,,Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","ÀÏ°ö °³ÀÇ Á¶°¢ Ä¥±³
 Tangram - Ã¼Çè","Ä¥±³´Â Å« Á¤»ç°¢ÇüÀ» ÀÏ°ö °³ÀÇ Á¶°¢À¸·Î ³ª´« °ÍÀÌ¿¡¿ä.
-ÀÌ Á¶°¢µéÀº Á¤»ç°¢Çü, ÀÌµîº¯»ï°¢Çü, ÆòÇà»çº¯Çü µîÀ¸·Î ÀÌ·ç¾îÁ® ÀÖ¾î¿ä. ÀÏ°ö °³ÀÇ Á¶°¢µéÀ» »ç¿ëÇØ¼­ ´Ù¾çÇÑ ¸ğ¾çÀ» ¸¸µé¾îº¸¼¼¿ä.","Tangram is a big square cut into seven pieces! These pieces include squares, triangles, and parallelograms. Use the seven pieces to create all kinds of fun shapes!",,,,,,,
+ÀÌ Á¶°¢µéÀº Á¤»ç°¢Çü, ÀÌµîº¯»ï°¢Çü, ÆòÇà»çº¯Çü µîÀ¸·Î ÀÌ·ç¾îÁ® ÀÖ¾î¿ä. ÀÏ°ö °³ÀÇ Á¶°¢µéÀ» »ç¿ëÇØ¼­ ´Ù¾çÇÑ ¸ğ¾çÀ» ¸¸µé¾îº¸¼¼¿ä.","Tangram is a big square cut into seven pieces! These pieces include squares, triangles, and parallelograms. Use the seven pieces to create all kinds of fun shapes!",,,,,,
 ,"Âø°¢?
 Illusion",Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","´«ÀÇ Âø°¢
@@ -155,7 +155,7 @@ When you look at a picture, your brain remembers it for a split second. If you s
 1. Pick a picture board you want to see and place it on the table.
 2. Put the mirror stick in the center hole.
 3. Look at the reflection in the mirror stick to see what the picture is!
-4. Spin the board to enjoy the moving picture!",,,,,
+4. Spin the board to enjoy the moving picture!",,,,
 ,,Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","¼ÕÀÇ Âø°¢
 Illusion of Hands - Ã¼Çè","¾ç¼ÕÀ» ¸Â´ë°í ¹®Áú·¯ºÁ¿ä
@@ -167,7 +167,7 @@ Place your hands on both sides of the net and move them up and down. Does it fee
 3. Ä£±¸¿Í ÇÑ ¼Õ¾¿ ¸Â´ë¾î ¿òÁ÷¿© º¸¼¼¿ä.","Try it like this!
 1. Place your hands on both sides of two different nets.
 2. Move your hands at different speeds and see how it feels!
-3. Try it with a friend, each using one hand!",,,,,
+3. Try it with a friend, each using one hand!",,,,
 ,"¿òÁ÷ÀÌ´Â °øÀÛ¼Ò
 Automata",Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","³ª¹«¸¦ ¿Å°Ü¿ä
@@ -175,21 +175,21 @@ Gear / Linkage","±â¾î: µÎ °³ ÀÌ»óÀÇ Åé´Ï¹ÙÄû°¡ ¼­·Î ¸Â¹°·Á µ¹¾Æ°¡¸ç µ¿·ÂÀ» Àü´ŞÇ
 
 ¸µÅ°Áö: ±ä ¸·´ë¸¦ ±³Â÷ÇÏµí ÀÌ¾î¼­ ±â¾îÀÇ ¿ø¿îµ¿À» Á÷¼±¿îµ¿À¸·Î ¹Ù²ãÁà¿ä","Gear: Two or more toothed wheels lock together and turn to pass on power!
 
-Linkage: Connecting long rods in a crisscross pattern changes a gear's spinning motion into a straight, push-and-pull motion!",,,,,,,
+Linkage: Connecting long rods in a crisscross pattern changes a gear's spinning motion into a straight, push-and-pull motion!",,,,,,
 ,,Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","»ç´Ù¸®¸¦ ¿Ã·Á¿ä
 Ratchet / Crank","·¡Ä©: Åé´Ï¹ÙÄû¸¦ ÇÑ ÂÊ ¹æÇâÀ¸·Î¸¸ ¿òÁ÷ÀÌ°Ô ÇÏ´Â ÀåÄ¡¿¹¿ä.
 
 Å©·©Å©: È¸Àü¿îµ¿°ú ¿Õº¹¿îµ¿À¸·Î ¼­·Î ¹Ù²Ù´Âµ¥ ¾²ÀÌ´Â Á¤Ä¡¿¹¿ä.","Ratchet: This special tool makes the gear wheel turn in only one direction!
 
-Crank: It's a tool that changes spinning motions into back-and-forth motions!",,,,,,,
+Crank: It's a tool that changes spinning motions into back-and-forth motions!",,,,,,
 ,,Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","¸ÁÄ¡ÁúÀ» ÇØ¿ä
 Cam / Lever","Ä·: È¸Àü¿îµ¿À» »óÇÏ ¿Õº¹¿îµ¿À¸·Î ¹Ù²Ù¾îÁÖ´Â ¿ªÇÒ·Î ¸ÁÄ¡ÀÇ ¿òÁ÷ÀÓÀ» ¸¸µé¾î³»¿ä
 
 Áö·¹: ¸·´ëÀÇ ÇÑ Á¡À» ±âÁØÀ¸·Î ¸·´ë ±æÀÌ¿¡ µû¶ó ÈûÀÇ Å©±â³ª ÀÌµ¿°Å¸®¸¦ ¹Ù²ã ¹°Ã¼¸¦ ¿òÁ÷ÀÏ ¼ö ÀÖ¾î¿ä","Cam: It changes a spinning motion into an up-and-down motion, just like a hammering movement!
 
-Lever: By using a resting point on a bar, you can change how much strength you need to move a heavy object!",,,,,,,
+Lever: By using a resting point on a bar, you can change how much strength you need to move a heavy object!",,,,,,
 ,,Ã¼Çè,"ÀÛµ¿Çü
 (½ÅÃ¼È°µ¿)","ÆäÀÎÆ®Ä¥À» ÇØ¿ä
-Crank",Å©·©Å©: ¹ÙÄû¿¡ ºÙ¾îÀÖ´Â ¿¬°áÇÉÀÌ 'L'ÀÚ ¸ğ¾çÀÇ ¸µÅ© È¨À» µû¶ó ¿òÁ÷ÀÌ¸ç È¸Àü¿îµ¿À» ¿Õº¹ ¿îµ¿À¸·Î º¯È¯½ÃÄÑ¿ä,"Crank: A connecting pin on the wheel moves along an L-shaped groove, changing a spinning motion into a back-and-forth motion!",,,,,,,
+Crank",Å©·©Å©: ¹ÙÄû¿¡ ºÙ¾îÀÖ´Â ¿¬°áÇÉÀÌ 'L'ÀÚ ¸ğ¾çÀÇ ¸µÅ© È¨À» µû¶ó ¿òÁ÷ÀÌ¸ç È¸Àü¿îµ¿À» ¿Õº¹ ¿îµ¿À¸·Î º¯È¯½ÃÄÑ¿ä,"Crank: A connecting pin on the wheel moves along an L-shaped groove, changing a spinning motion into a back-and-forth motion!",,,,,,

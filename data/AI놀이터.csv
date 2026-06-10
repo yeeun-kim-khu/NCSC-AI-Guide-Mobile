@@ -1,4 +1,4 @@
-ID,분류,전시형태,작동방식,제목,내용,영문 내용,세부 설명,영문 세부 설명,비고 및 주의사항,상태,영문,사진1,사진2
+ID,분류,전시형태,작동방식,제목,내용,영문 내용,세부 설명,영문 세부 설명,비고 및 주의사항,상태,영문,키워드
 AI-0,개요,패널,텍스트,"인공지능 조이와 함께 지구를 지켜요.
 Protect Our Planet with AI Joy","인간 활동이 만들어 낸 기후 위기로 인해 지구에 많은 변화가 일어나고 있습니다.
 우리 어린이들의 한 걸음은 어떤 미래를 만들어 낼까요? 우리 주변의 환경과 생명을 보듬으며 건강하게 성장하는 어린이와, 어린이가 잘 가르쳐서 우리의 이로운 동반자로 함께 성장하는 인공지능.
@@ -6,21 +6,21 @@ Protect Our Planet with AI Joy","인간 활동이 만들어 낸 기후 위기로 인해 지구에 �
 What kind of future will your small, precious steps create?
 
 This is a story about children who grow up healthy while caring for nature and all living things. It is also about AI, which becomes a helpful friend as it learns from you.
-Come and see how children and AI help each other build a wonderful future together!",,,,정상,없음,,
+Come and see how children and AI help each other build a wonderful future together!",,,,정상,없음,
 ,,패널,텍스트,"내 동생 인공지능, 조이!!
 My AI Friend, Joy!!","국립어린이과학관의 마스코트 조이를 소개합니다!
 조이는 인공지능으로, 태어난 지 얼마 되지 않아서 알고 있는 것이 거의 없어요.
 어린이들이 인공지능 조이를 잘 가르쳐 주면, 조이는 훌륭한 조력자가 될 수 있어요.
-조이에게 지구를 구하는 방법을 가르쳐주세요!","Meet Joy, the mascot of the National Children’s Science Center! Joy is an AI, and since he was just born, he still has a lot to learn. If you help teach Joy, he will become a wonderful helper. Let’s teach Joy how we can save our Earth together!",,,,,,,
+조이에게 지구를 구하는 방법을 가르쳐주세요!","Meet Joy, the mascot of the National Children’s Science Center! Joy is an AI, and since he was just born, he still has a lot to learn. If you help teach Joy, he will become a wonderful helper. Let’s teach Joy how we can save our Earth together!",,,,,,
 AI-1,"지구가
 아파요",패널,텍스트,"지구가 아파요
 The Earth Hurts","컴퓨터, 스마트폰, 자동차, 비행기 등 우리 생활은 점점 더 편리해지고 있지만 그만큼 많은 에너지를 쓰고 있어요.
 우리가 쓰는 에너지 대부분은 화석연료로 만들어지는데 이 때 온실가스가 배출되면서 지구는 점점 뜨거워집니다.
-이렇게 계속해서 지구가 뜨거워지면 어떤 일이 일어날까요?","Computers, phones, cars, and planes make our lives easy, but they use a lot of energy! Most of this energy comes from things like coal and oil, which release ""greenhouse gases"" that make the Earth hotter and hotter. What will happen if the Earth keeps getting warmer?",,,,,,,
+이렇게 계속해서 지구가 뜨거워지면 어떤 일이 일어날까요?","Computers, phones, cars, and planes make our lives easy, but they use a lot of energy! Most of this energy comes from things like coal and oil, which release ""greenhouse gases"" that make the Earth hotter and hotter. What will happen if the Earth keeps getting warmer?",,,,,,
 ,"지구가
-아파요",체험,미디어월,지구가 아파요 - 체험,평균 기온이 올라갈 수록 지구의 모습이 어떻게 달라지는지 버튼을 눌러 확인해보아요., Press the buttons to see how our planet changes as the temperature goes up!,,,,,,,
+아파요",체험,미디어월,지구가 아파요 - 체험,평균 기온이 올라갈 수록 지구의 모습이 어떻게 달라지는지 버튼을 눌러 확인해보아요., Press the buttons to see how our planet changes as the temperature goes up!,,,,,,
 AI-2,사라지는 동물들,패널,텍스트,"사라지는 동물들
-Endangered Animals","우리의 편리해진 활동 때문에 지구의 평균 기온이 빠르게 올라가고 있어요. 그러면서 환경도 변하게 되고 동물들이 살 수 있는 곳도 점점 줄어들고 있어요 가뭄과 산불, 폭우와 홍수 등 사나운 날씨와 환경이 동물들을 괴롭히고 있지요. 기후변화가 동물들의 서식지를 어떻게 바꿔놓고 있을까요?","Because of the things we do, the Earth is heating up very fast. This makes it harder for animals to find homes. Wild weather like droughts, fires, and floods are making life tough for them. How is climate change changing where animals live?",,,,,,,
+Endangered Animals","우리의 편리해진 활동 때문에 지구의 평균 기온이 빠르게 올라가고 있어요. 그러면서 환경도 변하게 되고 동물들이 살 수 있는 곳도 점점 줄어들고 있어요 가뭄과 산불, 폭우와 홍수 등 사나운 날씨와 환경이 동물들을 괴롭히고 있지요. 기후변화가 동물들의 서식지를 어떻게 바꿔놓고 있을까요?","Because of the things we do, the Earth is heating up very fast. This makes it harder for animals to find homes. Wild weather like droughts, fires, and floods are making life tough for them. How is climate change changing where animals live?",,,,,,
 ,사라지는 동물들,체험,미디어월,사라지는 동물들 - 체험,"그림 속 손 모양에 손을 대 보세요.
 기후변화 때문에 동물들의 보금자리가 어떻게 변하는지 관찰해보아요.
 
@@ -31,27 +31,27 @@ Which animals are in trouble? Touch our animal friends to find out!","세계자연보
 세계자연보전연맹(IUCN)은 자연과 천연 자원을 보전하기 위해 설립된 국제기구입니다.
 적색 목록(Red List)을 만들어 생물종을 멸종 위험 순서대로 9개로 분류하여 등재하고 있습니다.
 ※ 9개 분류: 절멸(EX), 야생절멸(EW), 위급(CR), 위기(EN), 취약(VU), 준위협(NT), 관심대상(LC), 정보 부족(DD), 미평가(NE)","What is the IUCN Red List?
-The IUCN is a global group that works to protect nature. They created the ""Red List"" to show which animals and plants are in danger of disappearing. They use 9 categories to rank them, from ""Extinct"" (gone forever) to ""Least Concern"" (doing okay)",,,,,
+The IUCN is a global group that works to protect nature. They created the ""Red List"" to show which animals and plants are in danger of disappearing. They use 9 categories to rank them, from ""Extinct"" (gone forever) to ""Least Concern"" (doing okay)",,,,
 AI-3,지구를 구하려면,패널,텍스트,"지구를 구하려면
 To Save the Earth","지구를 구하는 것을 돕기 위해 인공지능 로봇 조이가 태어났어요! 인공지능은 사람처럼 생각하는 컴퓨터 프로그램이에요. 인공지능의 도움을 받으면 일을 훨씬 쉽게 할 수 있지요. 하지만 갓 태어난 조이는 아무것도 모르는 갓난아이와도 같아요.
 조이에게 지구를 구하는 방법을 가르쳐주세요!
-여러분들이 잘 가르쳐주어야 조이는 훌륭한 조력자로 자랄 수 있어요.","AI robot Joy was born to help save our planet! AI is like a computer program that can think like a person. With AI's help, we can do things much more easily. But right now, Joy is like a tiny baby who doesn't know much yet. Please teach Joy how to save the Earth! He needs your help to grow into a great helper.",,,,,,,
+여러분들이 잘 가르쳐주어야 조이는 훌륭한 조력자로 자랄 수 있어요.","AI robot Joy was born to help save our planet! AI is like a computer program that can think like a person. With AI's help, we can do things much more easily. But right now, Joy is like a tiny baby who doesn't know much yet. Please teach Joy how to save the Earth! He needs your help to grow into a great helper.",,,,,,
 ,지구를 구하려면,체험,터치 디스플레이,지구를 구하려면 - 체험,지구를 위한 행동 카드를 이용해서 조이에게 좋은 행동과 나쁜 행동을 가르쳐주세요. 잘못 가르쳐주었다면 다시 가르쳐주세요.,"Use the ""Action Cards"" to teach Joy what is good for the Earth and what is bad. If he makes a mistake, just teach him again!","인공지능 조이를 학습시켜주세요!
 인공지능은 어떻게 학습할까요?
 인공지능은 수많은 데이터 입력을 통해 학습합니다. 답이 정해진 데이터를 입력해서 학습시키는 방법을 지도학습이라고 하고, 데이터를 많이 입력해서 인공지능 스스로 분류할 수 있도록 반복해서 학습시키는 방법을 비지도학습이라고 하죠.
 조이는 지구를 위해 옳은 행동과 나쁜 행동이라는 정답이 있는 데이터로 배우기 때문에 지도학습의 방법으로 학습한다고 할 수 있습니다.","Let's teach AI JOY!
-How does AI learn? It learns by looking at lots of information called ""data."" When we give AI data that already has the right answers, it's called ""Supervised Learning."" If we give it lots of data and let it find patterns on its own, it's called ""Unsupervised Learning."" Since Joy is learning from cards that tell him exactly what is ""right"" or ""wrong,"" he is using Supervised Learning!",,,,,
+How does AI learn? It learns by looking at lots of information called ""data."" When we give AI data that already has the right answers, it's called ""Supervised Learning."" If we give it lots of data and let it find patterns on its own, it's called ""Unsupervised Learning."" Since Joy is learning from cards that tell him exactly what is ""right"" or ""wrong,"" he is using Supervised Learning!",,,,
 AI-4,A.I.와 지구 구조대,패널,텍스트,"A.l.와 지구 구조대
 A.l. and the Earth Rescue Squad","지구의 온도가 올라가면서 동물들이 살 곳을 잃어 사라지고 있어요. 인공지능 조이와 함께 지구의 온도가 더 올라가지 않도록 막아내어 동물들이 다시 돌아올 수 있게 도와주세요!
 동물들이 살기 좋은 지구는 인간들에게도 살기 좋을거에요!","As the Earth gets hotter, animals are losing their homes. Let’s work with Joy to stop the heat and bring our animal friends back! A happy Earth for animals is a happy Earth for us, too.","나와 함께 지구를 구할 동물을 골라
-멋지게 꾸미고 화면으로 전송해주세요 동물 친구와 함께 지구를 구해 보아요.","Pick an animal to be your partner, dress them up, and send them to the big screen! Let's save the Earth with your animal friend!",,,,,
+멋지게 꾸미고 화면으로 전송해주세요 동물 친구와 함께 지구를 구해 보아요.","Pick an animal to be your partner, dress them up, and send them to the big screen! Let's save the Earth with your animal friend!",,,,
 ,,체험,터치 디스플레이,"A.l.와 지구 구조대
 - 체험","조이와 함께 지구를 구해요!
 주의사항: 앞 친구의 체험이 끝날 때까지 잠깐만 기다려주세요!","Save the Earth with Joy!
-Note: Please wait just a moment for the friend in front of you to finish! ",나와 함께 할 동물 친구를 멋지게 꾸며주세요. 동물 친구가 화면 속에서 나를 따라 움직일거에요 지구에게 좋은 행동을 많이 전달하고 나쁜 행동은 막아서 지구의 온도가 올라가는 걸 막아주세요!,Dress up your animal friend nicely! Your friend will follow your moves on the screen. Help them do good things for the Earth and block the bad things to stop our planet from getting hotter!,앞 친구의 체험이 끝날 때까지 기다려주세요.,,,,
+Note: Please wait just a moment for the friend in front of you to finish! ",나와 함께 할 동물 친구를 멋지게 꾸며주세요. 동물 친구가 화면 속에서 나를 따라 움직일거에요 지구에게 좋은 행동을 많이 전달하고 나쁜 행동은 막아서 지구의 온도가 올라가는 걸 막아주세요!,Dress up your animal friend nicely! Your friend will follow your moves on the screen. Help them do good things for the Earth and block the bad things to stop our planet from getting hotter!,앞 친구의 체험이 끝날 때까지 기다려주세요.,,,
 ,,패널,텍스트,"인공지능은 어떻게 자세를 인식할까요?
 How does AI know how you’re moving?","자세 인식 A.I.는 카메라로 보이는 사람의 움직임, 주요 관절의 위치를 추정하는 기술로 목, 어깨, 팔꿈치 등의 위치를 측정하여 자세를 추정합니다.
-'스켈레톤 기법'이라고 부르기도 해요.","Pose Recognition AI uses a camera to guess how you are moving. By tracking where your neck, shoulders, and elbows are, it can figure out your pose! Some people call this the ""Skeleton Technique.""",,,,,,,
+'스켈레톤 기법'이라고 부르기도 해요.","Pose Recognition AI uses a camera to guess how you are moving. By tracking where your neck, shoulders, and elbows are, it can figure out your pose! Some people call this the ""Skeleton Technique.""",,,,,,y
 AI-5,수호천사가 될꺼야!,패널,텍스트,"수호천사가 될꺼야
 The Guardian Angel of Animals","지구에 사는 생물들은 모두 생태계를 유지하는 데 중요한 역할을 하고 있어요.
 어떤 동물들이 위험에 처했는지 알아보고 수호천사가 되어주세요!
@@ -59,32 +59,32 @@ The Guardian Angel of Animals","지구에 사는 생물들은 모두 생태계를 유지하는 데 �
 어떤 동물들이 위험에 처했는지 알아보고 수호천사가 되어주세요!","Every living thing on Earth has a special job to do to keep nature balanced. But because of human activities, many animals are losing their homes. Will you find out which animals are in danger and become their guardian angel?","먼저 동물 그림자를 선택해요.
 화면의 그림자 가이드를 따라 손으로 동물 모양을 만들어 보세요.
 어떤 동물이 나타났나요?","First, pick an animal shadow. Use your hands to match the animal shape on the screen. 
-What animal do you see now?",,,,,
+What animal do you see now?",,,,y
 ,,체험,터치 디스플레이,수호천사가 될꺼야 - 체험,"먼저 동물 그림자를 선택해요.
 화면의 그림자 가이드를 따라 손으로 동물 모양을 만들어 보세요.
 어떤 동물이 나타났나요?","First, pick an animal shadow. Use your hands to match the animal shape on the screen. What animal do you see now?","수호천사가 될거야!
 멸종위기 동물을 찾아보아요
 터치하면 체험을 시작합니다","I’ll Be a Guardian Angel! 
 Find Endangered Animals.
-Touch to start!",,,,,
+Touch to start!",,,,
 ,,패널,텍스트,"인공지능은 내 손을 어떻게 알아볼까요?
-How does AI recognize my hands?","사람의 눈은 사물의 형태와 색을 바로 알아보지만, 인공지능은 카메라로 인식한 이미지를 다른 이미지와 비교해서 학습해야 알 수 있습니다. 먼저 동물 이미지를 충분히 학습한 후, 우리가 만드는 손 모양과 비교해서 어떤 동물인지를 찾아준답니다.","Our eyes can see shapes and colors instantly, but AI has to compare what the camera sees with pictures it already knows. After studying many animal photos, it can look at your hand shape and figure out which animal it is!","벵갈 호랑이, 아프리카 코끼리, 독수리, 눈덧신 토끼, 여우 원숭이, 늑대, 순록, 거북이","Bengal Tiger, African Elephant, Eagle, Snowshoe Hare, Lemur, Wolf, Reindeer, Turtle",,,,,
+How does AI recognize my hands?","사람의 눈은 사물의 형태와 색을 바로 알아보지만, 인공지능은 카메라로 인식한 이미지를 다른 이미지와 비교해서 학습해야 알 수 있습니다. 먼저 동물 이미지를 충분히 학습한 후, 우리가 만드는 손 모양과 비교해서 어떤 동물인지를 찾아준답니다.","Our eyes can see shapes and colors instantly, but AI has to compare what the camera sees with pictures it already knows. After studying many animal photos, it can look at your hand shape and figure out which animal it is!","벵갈 호랑이, 아프리카 코끼리, 독수리, 눈덧신 토끼, 여우 원숭이, 늑대, 순록, 거북이","Bengal Tiger, African Elephant, Eagle, Snowshoe Hare, Lemur, Wolf, Reindeer, Turtle",,,,y
 AI-6,갯벌친구들,체험,실감형,"갯벌 친구들
-Tidal Flat Friends",갯벌에는 산소와 영양분이 많아서 다양한 생물들이 살고 있어요. 갯벌 생물들은 오염된 물질들을 분해해서 바다를 깨끗하게 만들어준답니다. 갯벌 안에 어떤 생물들이 사는지 찾아볼까요?,"Tidal Flats are full of oxygen and yummy nutrients, so lots of little creatures live there. These busy friends help clean the ocean by breaking down waste. Shall we go find who's living in the tidal flats?",,,,,,,
+Tidal Flat Friends",갯벌에는 산소와 영양분이 많아서 다양한 생물들이 살고 있어요. 갯벌 생물들은 오염된 물질들을 분해해서 바다를 깨끗하게 만들어준답니다. 갯벌 안에 어떤 생물들이 사는지 찾아볼까요?,"Tidal Flats are full of oxygen and yummy nutrients, so lots of little creatures live there. These busy friends help clean the ocean by breaking down waste. Shall we go find who's living in the tidal flats?",,,,,,
 AI-7,물방울의 여행?,체험,작동형,"물방울의 여행
 Water Drop Journey","물은 증발해서 하늘로 올라가 구름이 되고 다시 비나 눈이 되어 땅과 바다로 돌아와요.
 물은 이렇게 모습을 바꾸면서 끊임없이 지구의 곳곳을 여행합니다.
-이런 과정을 물의 순환이라고 해요.","Water goes up into the sky and becomes clouds! Then, it falls back to the land and ocean as rain or snow. Water is always traveling around the Earth, changing its shape. This never-ending journey is called the ""Water Cycle!""",,,,,,,
+이런 과정을 물의 순환이라고 해요.","Water goes up into the sky and becomes clouds! Then, it falls back to the land and ocean as rain or snow. Water is always traveling around the Earth, changing its shape. This never-ending journey is called the ""Water Cycle!""",,,,,,
 ,,체험,작동형,"물 발자국
-Water Footprint",사람에게 발자국이 있듯이 물에도 발자국이 있어요 물발자국이란 어떤 물건을 만들기 위해 사용되는 물의 양이에요. 우리가 생활하는 데 얼마나 많은 물이 필요할까요?,"Just like we leave footprints when we walk, water leaves footprints too! A ""Water Footprint"" is the amount of water used to make things we use every day. How much water do you think we need in our daily lives?",,,,,,,
+Water Footprint",사람에게 발자국이 있듯이 물에도 발자국이 있어요 물발자국이란 어떤 물건을 만들기 위해 사용되는 물의 양이에요. 우리가 생활하는 데 얼마나 많은 물이 필요할까요?,"Just like we leave footprints when we walk, water leaves footprints too! A ""Water Footprint"" is the amount of water used to make things we use every day. How much water do you think we need in our daily lives?",,,,,,
 ,,체험,작동형,"물의 불균형
 Water Imbalance","기후변화로 물의 순환도 달라지고 있어요.
 우리 나라에는 비가 더 많이 오고 어떤 나라는 가뭄이 들지요. 인간이 살아가는 데 깨끗하고 안전한 물은 아주 중요한데, 세계 인구의 40%가 깨끗한 물을 얻을 수 없다고 해요.
-기후변화는 인간의 삶도 위험하게 만들 수 있습니다.","Climate change is changing how water travels. Some places get too much rain, while other places get no rain at all and dry up. Clean and safe water is super important for us to live, but did you know that 40% of people in the world don't have enough clean water? Climate change can make life difficult for people, too.",,,,,,,
+기후변화는 인간의 삶도 위험하게 만들 수 있습니다.","Climate change is changing how water travels. Some places get too much rain, while other places get no rain at all and dry up. Clean and safe water is super important for us to live, but did you know that 40% of people in the world don't have enough clean water? Climate change can make life difficult for people, too.",,,,,,
 ,,체험,작동형,"아래쪽 물을 위로 올려볼까?
 Bucket Conveyor / Archimedes Screw","버킷컨베이어: 컨베이어 체인에 달린 바구니가 아래쪽 물을 퍼올려 위쪽으로 물을 이동시켜요.
 아르키메데스 수차: 가늘고 긴 원통에 나선형 회전체가 돌면서 아래에 있는 물을 위쪽으로 옮겨 보내요.","Bucket Conveyor: The little buckets attached to the chain scoop up water from the bottom and carry it all the way to the top!
 Archimedes Screw: When the twisty screw inside the long tube turns, it pushes the water from the bottom up to the top!","펌프를 하면 물이 올라와요
 핸들을 돌려보세요.","Pump to make the water go up!
-Turn the handle!",,,,,
-,,체험,작동형,물의 순환,햇빛이 비치면 물은 수증기가 되어 하늘로 올라가 구름이 되었다가 비가 눈이 되어 다시 바다나 땅으로 되돌아와요. 이렇게 변화되는 과정을 '물의 순환'이라고 한답니다.,"When the sun shines, water turns into vapor and floats up into the sky to become clouds. Then, it comes back down to the ocean or land as rain or snow! This changing journey is called the ""Water Cycle.""",,,,,,,
+Turn the handle!",,,,
+,,체험,작동형,물의 순환,햇빛이 비치면 물은 수증기가 되어 하늘로 올라가 구름이 되었다가 비가 눈이 되어 다시 바다나 땅으로 되돌아와요. 이렇게 변화되는 과정을 '물의 순환'이라고 한답니다.,"When the sun shines, water turns into vapor and floats up into the sky to become clouds. Then, it comes back down to the ocean or land as rain or snow! This changing journey is called the ""Water Cycle.""",,,,,,y
