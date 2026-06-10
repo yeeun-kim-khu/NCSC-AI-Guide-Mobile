@@ -246,37 +246,55 @@ def _extract_zone_keywords_from_titles(zone_rows, top_n=20):
 
     반환: list of (kr, en) tuples — kr은 항상 채워져 있음, en은 비어있을 수 있음.
     """
-    # 키워드 컬럼(Y) 표시 행이 있으면 그것만 사용, 없으면 자동 파싱 fallback
-    _flagged = [r for r in (zone_rows or []) if r.get("keyword_flag") == "Y"]
-    if _flagged:
-        candidate_rows = _flagged
+    # 키워드 컬럼 값 분류: Y=제목 그대로, 그룹명=묶음, 빈칸=제외
+    _has_any_flag = any(r.get("keyword_flag", "") for r in (zone_rows or []))
+
+    pairs = []
+    seen_kr = set()
+
+    if _has_any_flag:
+        # Y 행: 제목을 키워드로
+        for r in (zone_rows or []):
+            if r.get("keyword_flag", "") != "Y":
+                continue
+            raw = str(r.get("title", "")).strip()
+            if not raw or len(raw) <= 1 or "체험방법" in raw:
+                continue
+            kr, en = _split_title_ko_en(raw)
+            if not kr or len(kr) <= 1:
+                continue
+            kr_normalized = re.sub(r"\s*[-–]\s*체험\S*$", "", kr).strip() or kr
+            if kr_normalized in seen_kr:
+                continue
+            seen_kr.add(kr_normalized)
+            pairs.append((kr_normalized, en))
+        # 그룹명 행: keyword_flag 값 자체를 키워드로
+        for r in (zone_rows or []):
+            flag = r.get("keyword_flag", "").strip()
+            if not flag or flag == "Y":
+                continue
+            if flag in seen_kr:
+                continue
+            seen_kr.add(flag)
+            pairs.append((flag, ""))
     else:
-        # 체험/실감형 우선, 패널(개요/소개) 후순위 정렬
+        # 자동 파싱 fallback: 체험/실감형 우선, 패널 후순위
         _PANEL_TYPES = {"패널", "도입부 패널", "패널 (게시판형)", "패널 (인터랙티브)"}
         def _sort_key(r):
             zt = str(r.get("zone_type", "")).strip()
             return 0 if zt and zt not in _PANEL_TYPES else 1
-        candidate_rows = sorted(zone_rows or [], key=_sort_key)
-
-    pairs = []
-    seen_kr = set()
-    for r in candidate_rows:
-        raw = str(r.get("title", "")).strip()
-        if not raw or len(raw) <= 1:
-            continue
-        if "체험방법" in raw:
-            continue
-        kr, en = _split_title_ko_en(raw)
-        if not kr or len(kr) <= 1:
-            continue
-        # "- 체험", "- 체험방법" 등 접미사 제거하여 중복 방지
-        kr_normalized = re.sub(r"\s*[-–]\s*체험\S*$", "", kr).strip()
-        if not kr_normalized:
-            kr_normalized = kr
-        if kr_normalized in seen_kr:
-            continue
-        seen_kr.add(kr_normalized)
-        pairs.append((kr_normalized, en))
+        for r in sorted(zone_rows or [], key=_sort_key):
+            raw = str(r.get("title", "")).strip()
+            if not raw or len(raw) <= 1 or "체험방법" in raw:
+                continue
+            kr, en = _split_title_ko_en(raw)
+            if not kr or len(kr) <= 1:
+                continue
+            kr_normalized = re.sub(r"\s*[-–]\s*체험\S*$", "", kr).strip() or kr
+            if kr_normalized in seen_kr:
+                continue
+            seen_kr.add(kr_normalized)
+            pairs.append((kr_normalized, en))
     return pairs[:top_n]
 
 
@@ -878,7 +896,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
   "question": "초등 4~6학년이 이해할 수 있는 질문 (1문장)",
   "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
   "correct_index": 0,
-  "explanation": "왜 이 답이 맞는지 쉬운 말로 2~3문장. 오답이 왜 틀렸는지도 한 줄 언급."
+  "explanation": "① 핵심 개념 정의(예: '대뇌화지수란 뇌 크기를 몸 크기로 나눈 값이에요') → ② 정답인 이유 1~2문장 → ③ 오답 중 가장 헷갈리는 것 한 줄 교정. 총 3~4문장, 초등 4학년 수준."
 }}
 - correct_index 는 0~3 정수, options 배열에서 정답 위치.
 - options 는 정확히 4개.
@@ -905,7 +923,7 @@ Output a single JSON object with this schema. No code fences.
   "question": "Single, clear question for ages 10-12",
   "options": ["option 1", "option 2", "option 3", "option 4"],
   "correct_index": 0,
-  "explanation": "2-3 short sentences explaining why the answer is correct, plus one note on a common wrong choice."
+  "explanation": "① Define the key concept in plain words → ② 1-2 sentences on why the answer is correct → ③ One sentence correcting the most tempting wrong choice. 3-4 sentences total, upper-elementary level."
 }}
 - correct_index is an integer 0-3 indexing the options array.
 - Exactly 4 options.
@@ -2069,24 +2087,28 @@ def render_post_visit_learning(
                             except Exception as e:
                                 print(f"천투 영상 컨텍스트 조회 실패: {e}")
 
-                        # 선택된 키워드(전시물)의 세부설명 찾기 — 같은 title 행 전체 합산
+                        # 선택된 키워드(전시물)의 세부설명 찾기 — title 매칭 OR 그룹명(keyword_flag) 매칭
                         quiz_detail = ""
                         _selected_category = ""
                         _all_parts = []
                         _total_len = 0
-                        _MAX_DETAIL = 1500
+                        _MAX_DETAIL = 2000
                         for r in zone_rows:
-                            if r.get("title") == selected_kw:
-                                if not _selected_category:
-                                    _selected_category = r.get("category", "")
-                                _c = str(r.get("content", "") or "").strip()
-                                _d = str(r.get("detail", "") or "").strip()
-                                if _c and _c.lower() != "nan" and _total_len < _MAX_DETAIL:
-                                    _all_parts.append(f"[전시물 설명] {_c}")
-                                    _total_len += len(_c)
-                                if _d and _d.lower() != "nan" and _total_len < _MAX_DETAIL:
-                                    _all_parts.append(f"[체험 방법] {_d}")
-                                    _total_len += len(_d)
+                            _match = (r.get("title") == selected_kw) or (r.get("keyword_flag", "").strip() == selected_kw)
+                            if not _match:
+                                continue
+                            if not _selected_category:
+                                _selected_category = r.get("category", "")
+                            _t = str(r.get("title", "") or "").strip()
+                            _c = str(r.get("content", "") or "").strip()
+                            _d = str(r.get("detail", "") or "").strip()
+                            _label = f"[{_t}]" if _t and _t != selected_kw else "[전시물 설명]"
+                            if _c and _c.lower() != "nan" and _total_len < _MAX_DETAIL:
+                                _all_parts.append(f"{_label} {_c}")
+                                _total_len += len(_c)
+                            if _d and _d.lower() != "nan" and _total_len < _MAX_DETAIL:
+                                _all_parts.append(f"[체험 방법] {_d}")
+                                _total_len += len(_d)
                         quiz_detail = "\n".join(_all_parts)
 
                         # 데이터 부실(200자 미만) 시 같은 분류(category) 이웃 전시물로 자동 보충
