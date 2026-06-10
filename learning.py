@@ -2110,6 +2110,8 @@ def render_post_visit_learning(
                                 _all_parts.append(f"[체험 방법] {_d}")
                                 _total_len += len(_d)
                         quiz_detail = "\n".join(_all_parts)
+                        _matched_flags = [r.get("keyword_flag","") for r in zone_rows if (r.get("title")==selected_kw or r.get("keyword_flag","").strip()==selected_kw)]
+                        print(f"[QUIZ_DETAIL DEBUG] zone={zone}, kw={selected_kw!r}, matched_rows={len(_matched_flags)}, detail_len={len(quiz_detail)}, flags={_matched_flags[:5]}")
 
                         # 데이터 부실(200자 미만) 시 같은 분류(category) 이웃 전시물로 자동 보충
                         if len(quiz_detail) < 200 and _selected_category:
