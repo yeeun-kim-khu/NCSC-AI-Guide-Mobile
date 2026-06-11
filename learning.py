@@ -780,7 +780,7 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None, difficulty: str = "초등"):
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None, difficulty: str = "초등", quiz_count: int = 0):
     """과학원리 기반 4지선다 퀴즈 생성.
 
     LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
@@ -815,8 +815,8 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         "빈칸형: 문장의 (  ) 안에 들어갈 말을 고르는 형식",
         "시나리오형: 짧은 상황 설명(2~3문장) 뒤에 질문하는 형식",
     ]
-    angle = rng.choice(angles)
-    q_format = rng.choice(q_formats)
+    angle = angles[quiz_count % len(angles)]
+    q_format = q_formats[quiz_count % len(q_formats)]
 
     glossary_rules = _get_ui_glossary_rules(language)
 
@@ -870,9 +870,9 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
     prev_section_ko = ""
     prev_section_en = ""
     if prev_questions:
-        prev_list = "\n".join(f"- {q}" for q in prev_questions[-3:])
-        prev_section_ko = f"\n[이전에 생성된 문제 — 반드시 피할 것]\n{prev_list}\n위 문제들과 유사하거나 같은 질문·선택지를 만들지 마세요.\n"
-        prev_section_en = f"\n[Previously generated questions — MUST avoid]\n{prev_list}\nDo NOT create questions or options similar to the above.\n"
+        prev_list = "\n".join(f"- {q}" for q in prev_questions[-7:])
+        prev_section_ko = f"\n[이전에 생성된 문제 — 반드시 피할 것]\n{prev_list}\n위 문제들과 같거나 유사한 질문, 같은 과학 개념·정답·선택지를 절대 반복하지 마세요. 완전히 다른 측면에서 출제하세요.\n"
+        prev_section_en = f"\n[Previously generated questions — MUST avoid]\n{prev_list}\nDo NOT repeat the same question, concept, answer, or similar options. Choose a completely different angle.\n"
 
     language_prompts = {
         "한국어": f"""{output_lang_instruction}
@@ -2141,10 +2141,13 @@ def render_post_visit_learning(
                             if _extra_parts:
                                 quiz_detail = (quiz_detail + "\n" if quiz_detail else "") + "\n".join(_extra_parts)
 
-                        # 이전 문제 이력 키 (최대 3개 보관)
+                        # 이전 문제 이력 키 / 퀴즈 카운터
                         prev_q_key = f"quiz_prev_qs_{zone}_{selected_kw}"
+                        count_key = f"quiz_count_{zone}_{selected_kw}"
                         if prev_q_key not in st.session_state:
                             st.session_state[prev_q_key] = []
+                        if count_key not in st.session_state:
+                            st.session_state[count_key] = 0
 
                         if quiz_cache_key not in st.session_state:
                             _diff_labels = {
@@ -2165,18 +2168,21 @@ def render_post_visit_learning(
                             if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                                 _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                 with st.spinner(text["quiz_generating"]):
+                                    _qcount = st.session_state.get(count_key, 0)
                                     quiz = generate_quiz(
                                         zone, selected_kw, llm, language_mode,
                                         variation_seed=st.session_state[seed_key],
                                         exhibit_detail=quiz_detail,
                                         prev_questions=st.session_state[prev_q_key],
                                         difficulty=quiz_difficulty,
+                                        quiz_count=_qcount,
                                     )
                                     st.session_state[quiz_cache_key] = quiz or {}
                                     if quiz and quiz.get("question"):
                                         prev = st.session_state[prev_q_key]
                                         prev.append(quiz["question"])
-                                        st.session_state[prev_q_key] = prev[-3:]
+                                        st.session_state[prev_q_key] = prev[-10:]
+                                        st.session_state[count_key] = _qcount + 1
                                 st.rerun()
 
                         if quiz_cache_key in st.session_state:
@@ -2201,17 +2207,20 @@ def render_post_visit_learning(
                                     # 즉시 새 퀴즈 생성
                                     _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                     with st.spinner(text["quiz_generating"]):
+                                        _qcount = st.session_state.get(count_key, 0)
                                         quiz = generate_quiz(
                                             zone, selected_kw, llm, language_mode,
                                             variation_seed=st.session_state[seed_key],
                                             exhibit_detail=quiz_detail,
                                             prev_questions=st.session_state.get(prev_q_key, []),
+                                            quiz_count=_qcount,
                                         )
                                         st.session_state[quiz_cache_key] = quiz or {}
                                         if quiz and quiz.get("question"):
                                             prev = st.session_state.get(prev_q_key, [])
                                             prev.append(quiz["question"])
-                                            st.session_state[prev_q_key] = prev[-3:]
+                                            st.session_state[prev_q_key] = prev[-10:]
+                                            st.session_state[count_key] = _qcount + 1
                                     st.rerun()
                             else:
                                 quiz_fail_msg = {
