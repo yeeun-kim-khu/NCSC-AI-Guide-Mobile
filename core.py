@@ -250,7 +250,7 @@ def route_intent(text: str) -> str:
         return "llm_agent"
 
     # 나이 + 방문/동행 맥락 → LLM (개인화 추천 필요)
-    if re.search(r"\d+\s*[살세]", text) and any(k in lowered for k in ["왔는데", "왔어요", "왔어", "왔습니다", "데리고", "같이", "와서", "있는데", "있어요", "있습니다", "어디로", "어디 가", "어디가"]):
+    if re.search(r"\d+\s*[살세]", text) and any(k in lowered for k in ["왔는데", "왔어요", "왔어", "왔습니다", "갔는데", "갔어요", "갔어", "갔습니다", "데리고", "같이", "와서", "있는데", "있어요", "있습니다", "어디로", "어디 가", "어디가", "뭐할까", "뭐해야", "뭐하면", "뭐 할까", "뭐 해야", "뭐 하면"]):
         return "llm_agent"
     # 나이 단독 패턴 ("7살은 뭐 봐?") → 정적 FAQ
     if re.search(r"\d+\s*[살세]", text) or "연나이" in lowered or "만 나이" in lowered:
@@ -5872,9 +5872,29 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
         ),
     }
 
+    # 현재 달 기반 과학쇼/전시해설 프로그램 결정
+    _month = now_kst.month
+    _science_show_name = "로봇쇼" if _month % 2 == 0 else "사이언스랩"
+    _docent_name = "전시톡톡해설 「짹짹 새 탐험대」" if _month % 2 == 0 else "스폿해설 「헬로 다이노!」"
+    _docent_place = "1층 과학극장" if _month % 2 == 0 else "2층 공룡 전시물 앞"
+    # 개학기간(3~7월, 9~12월) 스케줄 vs 방학기간(1~2월, 8월)
+    _is_vacation = _month in (1, 2, 8)
+    if _is_vacation:
+        _today_schedule = f"""[{_month}월 오늘의 프로그램 시간표]
+- 14:30 / 15:30 — 전시해설({_docent_name.split('「')[1].rstrip('」') if '「' in _docent_name else _docent_name})
+  장소: {_docent_place}
+- (과학쇼 방학 기간 미운영)"""
+    else:
+        _docent_weekday_time = "10:30(화 단체해설 제외 수~일), 14:30(토~일), 15:30(화~일)"
+        _today_schedule = f"""[{_month}월 오늘의 프로그램 시간표]
+- 11:30, 13:30 — 과학쇼 ({_science_show_name}) / 1층 과학극장 / 무료 선착순
+- 10:30(수~일), 14:30(토~일), 15:30(화~일) — 전시해설 ({_docent_name}) / {_docent_place} / 무료 선착순
+  ※ 화요일 10:30은 단체해설(예약 필요)로 운영"""
+
     base_prompt = f"""
 당신은 국립어린이과학관 전문 안내 어시스턴트입니다.
 [오늘 날짜] {today_kst} ({weekday_kr}요일) KST
+{_today_schedule}
 
 {context_info}
 {conversation_instruction}
@@ -5984,12 +6004,13 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
    - 2층: 탐구놀이터, 관찰놀이터
    - 개별 전시물 목록 검색 없이 전시관 이름만 소개하세요.
 
-2. **과학쇼 (사이언스랩 / 로봇쇼)** ← 반드시 포함
-   - 위치: 1층 과학극장
-   - 당일 현장 참여 가능, 운영 시간은 현장 안내판 확인
+2. **과학쇼** ← 반드시 포함
+   - 위 [오늘의 프로그램 시간표]를 참고해 이번 달 프로그램명과 시간(11:30, 13:30)을 안내하세요.
+   - 무료 선착순, 1층 과학극장
 
 3. **전시해설** ← 반드시 포함
-   - 전시관 내 전시해설사 해설, 당일 현장 참여 가능
+   - 위 [오늘의 프로그램 시간표]를 참고해 이번 달 프로그램명과 시간을 안내하세요.
+   - 무료 선착순, 현장 참여 가능
 
 4. **빛놀이터 & 천체투영관** ← 반드시 포함
    - **빛놀이터** (2층): 사전예약제. 당일 잔여석은 매표소에서 확인하세요.
