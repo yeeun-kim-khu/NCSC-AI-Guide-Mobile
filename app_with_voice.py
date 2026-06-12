@@ -1190,9 +1190,11 @@ setTimeout(function(){{
                     _stream_messages = None
                     _stream_config = None
                     _llm_prep_error = False
+                    _full_text = ""
+                    _got_response = False
                     with st.spinner(ui_text.get(language_mode, ui_text["한국어"])['spinner_llm']):
-                      try:
-                        if st.session_state.get("directions_origin"):
+                        try:
+                            if st.session_state.get("directions_origin"):
                                 origin = st.session_state.get("directions_origin")
                                 del st.session_state["directions_origin"]
                                 user_input = (
@@ -1229,58 +1231,56 @@ setTimeout(function(){{
                             messages.append({"role": "user", "content": llm_user_input})
                             _stream_messages = messages
                             _stream_config = config
-                      except Exception as _prep_err:
-                        print(f"LLM prep error: {_prep_err}")
-                        answer = t("error_stream_fail")
-                        _llm_prep_error = True
+                        except Exception as _prep_err:
+                            print(f"LLM prep error: {_prep_err}")
+                            answer = t("error_stream_fail")
+                            _llm_prep_error = True
 
-                      log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000, error=_llm_prep_error)
-                      _track_ga_event("answer_delivered", {
-                          "intent": intent,
-                          "answer_type": "llm_rag",
-                          "language": language_mode,
-                          "user_mode": user_mode
-                      })
+                        log_monitoring(intent=intent, rule_based=False, latency_ms=(time.time()-_t0)*1000, error=_llm_prep_error)
+                        _track_ga_event("answer_delivered", {
+                            "intent": intent,
+                            "answer_type": "llm_rag",
+                            "language": language_mode,
+                            "user_mode": user_mode
+                        })
 
-                      # 스트리밍 출력 (st.write_stream — Streamlit 기본 스트리밍)
-                      if _stream_messages is not None:
-                        _full_text = ""
-                        _got_response = False
-                        try:
-                            def _token_gen():
-                                for _msg, _meta in agent.stream(
-                                    {"messages": _stream_messages},
-                                    config=_stream_config,
-                                    stream_mode="messages"
-                                ):
-                                    if (
-                                        hasattr(_msg, "content")
-                                        and isinstance(_msg.content, str)
-                                        and _msg.content
-                                        and _meta.get("langgraph_node") == "agent"
-                                        and not getattr(_msg, "tool_calls", None)
-                                    ):
-                                        yield _msg.content
-                            _streamed = st.write_stream(_token_gen())
-                            _full_text = _streamed if isinstance(_streamed, str) else "".join(_streamed)
-                            _got_response = bool(_full_text)
-                        except Exception as _e:
-                            print(f"Streaming error, fallback to invoke: {_e}")
+                        # 스트리밍 출력 (st.write_stream — Streamlit 기본 스트리밍)
+                        if _stream_messages is not None:
                             try:
-                                _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
-                                _full_text = _fb["messages"][-1].content
-                                st.markdown(_full_text)
-                                _got_response = True
-                            except Exception as _e2:
-                                print(f"Invoke fallback failed: {_e2}")
-                                _full_text = t("error_stream_fail")
-                                st.markdown(_full_text)
-                        if not _got_response:
-                            _no_resp = t("error_no_response")
-                            st.markdown(_no_resp)
-                            answer = _no_resp
-                        else:
-                            answer = _full_text
+                                def _token_gen():
+                                    for _msg, _meta in agent.stream(
+                                        {"messages": _stream_messages},
+                                        config=_stream_config,
+                                        stream_mode="messages"
+                                    ):
+                                        if (
+                                            hasattr(_msg, "content")
+                                            and isinstance(_msg.content, str)
+                                            and _msg.content
+                                            and _meta.get("langgraph_node") == "agent"
+                                            and not getattr(_msg, "tool_calls", None)
+                                        ):
+                                            yield _msg.content
+                                _streamed = st.write_stream(_token_gen())
+                                _full_text = _streamed if isinstance(_streamed, str) else "".join(_streamed)
+                                _got_response = bool(_full_text)
+                            except Exception as _e:
+                                print(f"Streaming error, fallback to invoke: {_e}")
+                                try:
+                                    _fb = agent.invoke({"messages": _stream_messages}, config=_stream_config)
+                                    _full_text = _fb["messages"][-1].content
+                                    st.markdown(_full_text)
+                                    _got_response = True
+                                except Exception as _e2:
+                                    print(f"Invoke fallback failed: {_e2}")
+                                    _full_text = t("error_stream_fail")
+                                    st.markdown(_full_text)
+                            if not _got_response:
+                                _no_resp = t("error_no_response")
+                                st.markdown(_no_resp)
+                                answer = _no_resp
+                            else:
+                                answer = _full_text
 
                 if _stream_messages is None:
                     st.markdown(answer)
