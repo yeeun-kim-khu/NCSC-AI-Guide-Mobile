@@ -249,7 +249,7 @@ def route_intent(text: str) -> str:
        (any(k in lowered for k in _standalone_followup) and not _has_wayfind_subject):
         return "llm_agent"
 
-    # 나이 + 방문/동행 맥락 → LLM (개인화 추천 필요)
+    # 나이 + 방문/활동 맥락 → LLM (개인화 추천 필요)
     if re.search(r"\d+\s*[살세]", text) and any(k in lowered for k in ["왔는데", "왔어요", "왔어", "왔습니다", "갔는데", "갔어요", "갔어", "갔습니다", "데리고", "같이", "와서", "있는데", "있어요", "있습니다", "어디로", "어디 가", "어디가", "뭐할까", "뭐해야", "뭐하면", "뭐 할까", "뭐 해야", "뭐 하면"]):
         return "llm_agent"
     # 나이 단독 패턴 ("7살은 뭐 봐?") → 정적 FAQ
@@ -411,8 +411,8 @@ def classify_basic_category(message: str) -> str:
     if any(k in lowered_no_space for k in ["연나이", "만나이", "몇년생", "나이계산"]):
         return "age_calculator"
 
-    # 우선순위 1: 나이 패턴 — "7살 뭐 봐?", "5세 추천" 류는 route_by_age 로 직행.
-    # 단, "6세 무료/요금/입장료" 처럼 가격 키워드가 함께 오면 admission_fee 로 양보.
+    # 우선순위 1: 나이 패턴 — "7살 뚭 봐?", "5세 추천" 류는 route_by_age 로 직행.
+    # 단, "6세 무료/요금/입장료" 첫럼 가격 키워드가 함께 오면 admission_fee 로 양보.
     age_hit = bool(re.search(r"\d+\s*[살세]", lowered))
     fee_hit = any(k in lowered_no_space for k in ["요금", "얼마", "입장료", "관람료", "유료", "무료", "할인", "티켓값", "표값", "비용"])
     if age_hit and not fee_hit:
@@ -5879,17 +5879,31 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
     _docent_place = "1층 과학극장" if _month % 2 == 0 else "2층 공룡 전시물 앞"
     # 개학기간(3~7월, 9~12월) 스케줄 vs 방학기간(1~2월, 8월)
     _is_vacation = _month in (1, 2, 8)
+    _weekday_idx = now_kst.weekday()  # 0=월,1=화,2=수,3=목,4=금,5=토,6=일
     if _is_vacation:
-        _today_schedule = f"""[{_month}월 오늘의 프로그램 시간표]
-- 14:30 / 15:30 — 전시해설({_docent_name.split('「')[1].rstrip('」') if '「' in _docent_name else _docent_name})
-  장소: {_docent_place}
-- (과학쇼 방학 기간 미운영)"""
+        if _weekday_idx in (5, 6):
+            _docent_today = "14:30, 15:30"
+        else:
+            _docent_today = "14:30, 15:30"
+        _today_schedule = f"""[{_month}월 오늘({weekday_kr}요일)의 프로그램 시간표]
+- 과학쇼: 방학 기간 미운영
+- 전시해설 ({_docent_name}) / {_docent_place}: {_docent_today} / 무료 선착순"""
     else:
-        _docent_weekday_time = "10:30(화 단체해설 제외 수~일), 14:30(토~일), 15:30(화~일)"
-        _today_schedule = f"""[{_month}월 오늘의 프로그램 시간표]
-- 11:30, 13:30 — 과학쇼 ({_science_show_name}) / 1층 과학극장 / 무료 선착순
-- 10:30(수~일), 14:30(토~일), 15:30(화~일) — 전시해설 ({_docent_name}) / {_docent_place} / 무료 선착순
-  ※ 화요일 10:30은 단체해설(예약 필요)로 운영"""
+        if _weekday_idx == 0:  # 월 (휴관)
+            _docent_today = "(월요일 휴관)"
+            _show_today = "(월요일 휴관)"
+        elif _weekday_idx == 1:  # 화
+            _docent_today = "15:30 (10:30은 단체해설 예약제)"
+            _show_today = "11:30, 13:30"
+        elif _weekday_idx in (2, 3, 4):  # 수~금
+            _docent_today = "10:30, 15:30"
+            _show_today = "11:30, 13:30"
+        else:  # 토~일
+            _docent_today = "10:30, 14:30, 15:30"
+            _show_today = "11:30, 13:30"
+        _today_schedule = f"""[{_month}월 오늘({weekday_kr}요일)의 프로그램 시간표]
+- 과학쇼 ({_science_show_name}) / 1층 과학극장: {_show_today} / 무료 선착순
+- 전시해설 ({_docent_name}) / {_docent_place}: {_docent_today} / 무료 선착순"""
 
     base_prompt = f"""
 당신은 국립어린이과학관 전문 안내 어시스턴트입니다.
@@ -6005,16 +6019,18 @@ def get_dynamic_prompt(mode: str, language: str = "한국어", last_rule_categor
    - 개별 전시물 목록 검색 없이 전시관 이름만 소개하세요.
 
 2. **과학쇼** ← 반드시 포함
-   - 위 [오늘의 프로그램 시간표]를 참고해 이번 달 프로그램명과 시간(11:30, 13:30)을 안내하세요.
-   - 무료 선착순, 1층 과학극장
+   - 위 [오늘의 프로그램 시간표]에 적힌 프로그램명과 시간을 **그대로 명시**하세요. "현장 안내판 확인"이라고 쓰지 마세요.
+   - 짝수월: 로봇쇼 (축구·댄스로봇 등 로봇 원리 체험) / 홀수월: 사이언스랩 (월별 과학 실험 테마)
+   - 소요 15분, 무료, 선착순 입장 (회차 시작 5분 전부터 입장, 진행 중 입퇴장 불가)
 
 3. **전시해설** ← 반드시 포함
-   - 위 [오늘의 프로그램 시간표]를 참고해 이번 달 프로그램명과 시간을 안내하세요.
-   - 무료 선착순, 현장 참여 가능
+   - 위 [오늘의 프로그램 시간표]에 적힌 프로그램명과 시간을 **그대로 명시**하세요.
+   - 짝수월: 전시톡톡해설 「짹짹 새 탐험대」(우리 주변 새 탐구, 퀴즈 참여형) / 홀수월: 스폿해설 「헬로 다이노!」(백악기 공룡 이야기)
+   - 소요 15분, 무료, 선착순 (회차 시작 5분 전부터 입장)
 
 4. **빛놀이터 & 천체투영관** ← 반드시 포함
-   - **빛놀이터** (2층): 사전예약제. 당일 잔여석은 매표소에서 확인하세요.
-   - **천체투영관** (1층): 사전예약제. 당일 잔여석은 매표소에서 확인하세요.
+   - **빛놀이터** (2층): '인터랙션으로 만나는 온대림' 테마의 몰입형 실감 미디어 체험관. 에코크리에이터가 되어 씨앗을 심고 숲을 키우는 체험. 사전예약제 — 당일 잔여석은 매표소에서 확인.
+   - **천체투영관** (1층): 반구형 돔 스크린에서 우주·별자리를 실감 나게 체험하는 영상관. 현재 상영 프로그램: 로봇쇼 월(짝수월)에는 코코몽·키츠 등 다양한 우주 영화 상영. 사전예약제 — 당일 잔여석은 매표소에서 확인.
 
 === 국립어린이과학관 위치 정보 (고정값) ===
 **주소**: 서울특별시 종로구 창경궁로 215 (와룡동 2-1)
