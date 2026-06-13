@@ -1625,6 +1625,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 
 ▶ 주인공: 호기심 많은 어린이 '{protagonist}'
 ▶ 동반자(주인공과 대화하는 단짝): {companion}
+   ※ 단순한 설명 도우미가 아닌 고유한 개성과 역할을 가진 캐릭터로 (예: 겁쟁이지만 냄새를 잘 맡는 여우, 말이 없지만 길을 잘 찾는 거북이).
 
 ▶ ★ 핵심 과학 도구(아래 전시물 2개를 과학 도구/비밀 장치로 변형해서만 사용. 다른 도구 발명 금지):
 {exhibit_summary}
@@ -1637,6 +1638,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 [개연성 규칙 — 매우 중요]
 1) **간결한 3막 구조 (총 6~8문단) — 과학 현상이 이야기의 굵직한 축**:
    - 1막(2문단): {protagonist}의 평범한 순간 → **'{principles_text}'와 직접 관련된 이상한 사건** 발생 → "왜 이런 일이?"라는 명확한 하나의 목표.
+     (갈등과 과학 원리는 시각적으로 연결된 물리적 상황으로 — 예: 무거운 돌이 굴러 내려온다 → 지레를 발견한다.)
    - 2막(3~4문단): [핵심 과학 도구]를 시도 → **현상이 작게 한 번 일어남** (감각 묘사) → 한 번 실패 → 동반자와 함께 같은 현상이 반복되는 걸 관찰하며 **"어? 항상 이렇게 되네?"라는 패턴을 발견**.
    - 3막(1~2문단): **★ 아하 순간**: 주인공이 큰 소리로 깨달음 — "아, 이게 바로 **{principles_text}**(이)구나!" 그 원리를 이용해 위기를 해결 → 1막의 수수께끼도 같은 원리로 설명 → 따뜻한 마무리.
 2) **인과 사슬**: 모든 장면은 "~ 때문에 → ~이 일어났다" 순서. 갑자기 새 도구·새 능력 등장 금지.
@@ -1647,6 +1649,8 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - **3막의 '아하 순간'에서 단 한 번** 원리명('{principles_text}')을 큰따옴표 대사로 명명할 것. 이때 한 줄짜리 쉬운 설명 추가 (예: "물건을 밀면 그 물건도 똑같은 힘으로 나를 밀어내는 거였어!").
    - 결말 부근에서 그 원리명을 **한 번 더 짧게 회상**하면서 위기를 해결 (총 명명 횟수: 2~3회).
    - 강의·백과사전 톤은 절대 금지. 동반자도 같이 깨닫는 친구.
+   - **Show, Don't Tell**: 과학 원리는 대사로 설명하지 말고 감각(소리/촉감/시각)으로 먼저 보여줄 것 (예: "힘이 세졌어"가 아니라 "쿵! 땅이 울렸어요").
+   - **과학 개념명 혼용 금지**: 같은 현상을 이야기 전체에서 하나의 이름으로만 부를 것 (예: '단순기계'와 '지레'를 섞어 쓰지 말고 하나만 선택).
 6) **★ 과학 활용 방식 (매우 중요)**:
    - ❌ 금지: 과학 원리가 마법처럼 물리 현상을 일으키는 것 (예: "민첩성 때문에 몸이 작아진다")
    - ✅ 허용: 그 원리를 이미 잘 쓰는 동물·자연을 보고, 주인공이 그 원리를 깨닫는 구조
@@ -1654,6 +1658,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - 의성어·의태어를 최소 3번 사용 (예: 폴짝폴짝, 윙윙, 반짝반짝, 살랑살랑, 또르르).
    - 짧은 문장 위주, 대사 비중 40% 이상.
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
+   - **받침 있는 이름 + 은/는**: 반드시 "이름+이+는" 형태로 (도윤이는, 민준이는, 하은이는). "도윤은", "민준은" 금지.
 8) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
 ⛔ **전시관 일탈 금지 (매우 중요)**: 위 [재료] 목록에 없는 전시물·과학 개념·현상을 새로 지어내지 말 것. 반드시 위 재료만 사용. 위 목록에 없는 과학 원리를 절대 설명하지 말 것.
 9) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
@@ -1681,6 +1686,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 
 ▶ Protagonist: a curious child named '{protagonist}'
 ▶ Companion (talks with the hero, NOT an encyclopedia): {companion}
+   ※ Must have a distinct personality and role — NOT just a helper who explains things (e.g., a cowardly fox with a keen nose; a quiet turtle who always finds the way).
 
 ▶ ★ Core science tools (use ONLY these two; transform them into science tools — DO NOT invent other tools):
 {exhibit_summary}
@@ -1693,6 +1699,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
 [Coherence Rules — CRITICAL]
 1) **Compact 3-act structure (6–8 paragraphs total) — the phenomenon is the BACKBONE of the plot**:
    - Act 1 (2 paragraphs): '{protagonist}'s ordinary moment → a strange event **directly tied to '{principles_text}'** → ONE clear goal ("I must find out why…").
+     (The conflict and the science principle must be linked through a visually concrete physical situation — e.g., a heavy boulder rolling down → the hero finds a lever.)
    - Act 2 (3–4 paragraphs): try the science tool → **the phenomenon happens in a small way** (sensory description) → fail once → observe the SAME phenomenon repeating with the companion → "Huh, it always happens this way!" — a clear PATTERN.
    - Act 3 (1–2 paragraphs): **★ Aha moment**: the hero exclaims aloud — "Oh! This is **{principles_text}**!" Use that idea to solve the crisis → the Act-1 mystery is explained by the same idea → warm wrap-up.
 2) **Cause-and-effect**: every scene "because of X → Y happened". No sudden new tools or powers.
@@ -1703,6 +1710,8 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    - **At the Act-3 aha moment, name '{principles_text}' EXACTLY ONCE in dialogue**, followed by a one-sentence kid-friendly explanation (e.g., "When you push something, it pushes you back just as hard!").
    - Mention the term ONE more time near the resolution as the hero applies it. (Total namings: 2–3.)
    - Never lecture. The companion discovers WITH the hero, not as a teacher.
+   - **Show, Don't Tell**: Never explain the principle through dialogue — show it first through senses (sound, touch, sight). ("The ground boomed" not "the force grew stronger").
+   - **No concept-name mixing**: Use only ONE name for the phenomenon throughout (e.g., don't alternate "lever" and "simple machine" — pick one and keep it).
 6) **★ How science must work (critical)**:
    - ❌ Forbidden: the science principle directly causing magical physical changes (e.g., "agility makes the body shrink")
    - ✅ Required: the hero observes an animal or natural phenomenon that ALREADY uses the principle → and learns from it
@@ -1736,6 +1745,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
 
 ▶ 主人公: 好奇心いっぱいの子ども『{protagonist}』
 ▶ 相棒（主人公と話す友だち。百科事典ではない）: {companion}
+   ※ 単なる説明役ではなく、固有の個性と役割を持つキャラクターとして描くこと（例：臆病だが鼻が利くキツネ、無口だが道を知っているカメ）。
 
 ▶ ★ 中心となる科学の道具（下の2点だけを科学の道具に変えて使う。他の道具は作らない）:
 {exhibit_summary}
@@ -1748,6 +1758,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
 [筋の通った物語ルール — 最重要]
 1) **コンパクトな3幕構成（全6〜8段落）— 科学現象が物語の太い背骨になる**:
    - 第1幕（2段落）: 『{protagonist}』のふつうの瞬間 → **『{principles_text}』に直接かかわる不思議な出来事** → 「どうして？」というひとつの明確な目的。
+     （事件と科学の原理は、視覚的に結びついた物理的な状況で設定すること — 例：重い岩が転がり落ちてくる → てこを発見する。）
    - 第2幕（3〜4段落）: 科学の道具を試す → **現象が小さく一度起きる**（五感で描写） → 一度失敗 → 相棒と一緒に同じ現象が繰り返されるのを観察 → 「あれ？いつもこうなる！」と **パターンに気づく**。
    - 第3幕（1〜2段落）: **★ アハ体験**: 主人公が声をあげて気づく — 「あっ、これって **{principles_text}** だ！」その考えで危機を解決 → 1幕の謎も同じ考えで説明 → あたたかい締めくくり。
 2) **因果のつながり**: すべての場面は「〜だから → 〜になった」の順。突然の新しい道具・能力は禁止。
@@ -1758,6 +1769,8 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
    - **第3幕のアハの瞬間でちょうど一度だけ** 用語『{principles_text}』をセリフで名づける。続けて子ども向けの一文説明（例：「ものを押すと、そのものも同じ強さで自分を押しかえすんだ！」）。
    - 結末近くでもう一度だけ、主人公がその用語を使って危機を解く（合計命名2〜3回）。
    - 講義・百科事典口調は厳禁。相棒は先生ではなく、いっしょに発見する友だち。
+   - **見せて、語るな**: 科学の原理をセリフで説明せず、まず感覚（音・触感・視覚）で見せること（例：「力が強くなった」ではなく「ドン！と地面が揺れた」）。
+   - **科学用語の混用禁止**: 同じ現象を物語全体で一つの名前だけで呼ぶこと（例：「単純機械」と「てこ」を混ぜて使わない——どちらか一方だけ）。
 6) **★ 科学の活用の仕方（重要）**:
    - ❌ 禁止: 科学の原理が魔法のように物理現象を引き起こすこと（例：「敏捷性のせいで体が小さくなる」）
    - ✅ 許可: その原理をすでに上手に使っている動物・自然を観察して、主人公が原理を学ぶ構成
@@ -1791,6 +1804,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
 
 ▶ 主人公: 好奇心旺盛的孩子『{protagonist}』
 ▶ 伙伴（与主人公对话的朋友，不是百科全书）: {companion}
+   ※ 必须有独特的个性和作用，不只是解说助手（例：胆小但嗅觉灵敏的狐狸；沉默寡言但总能找到路的乌龟）。
 
 ▶ ★ 核心科学道具（仅用以下两件展品改写成科学道具，不要发明其他道具）:
 {exhibit_summary}
@@ -1803,6 +1817,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
 [开展规则 — 至关重要]
 1) **紧凑的三幕结构（共6〜8段）— 科学现象是故事的主干脊梁**:
    - 第一幕（2段）: 『{protagonist}』的平凡时刻 → **直接与『{principles_text}』相关的奇怪事件** → 一个明确目标（"我要弄清楚为什么…"）。
+     （冲突与科学原理必须通过视觉上相连的物理情境来呈现 — 例：一块大石头滚下来 → 主人公发现了杠杆。）
    - 第二幕（3〜4段）: 摆弄科学道具 → **现象小小地发生一次**（用五感描写）→ 失败一次 → 与伙伴一起观察同一现象反复出现 → "咦？怎么每次都这样！"——发现 **规律**。
    - 第三幕（1〜2段）: **★ 顿悟时刻**: 主人公大声领悟——"啊，原来这就是 **{principles_text}**！"用这个原理化解危机 → 第一幕的谜团也用同一个原理解释 → 温馨收尾。
 2) **因果链条**: 所有情节按"因为……所以……"顺序推进。不可突然出现新道具或新能力。
@@ -1813,6 +1828,8 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
    - **第三幕的顿悟瞬间，恰好命名一次** 术语『{principles_text}』（用对话），紧跟一句儿童化解释（例："推一下东西，那东西也会用一样的力气把你推回来！"）。
    - 接近结尾再让主人公简短复述一次该术语来解决危机（合计命名2〜3次）。
    - 严禁讲课口吻或百科全书腔调。伙伴不是老师，是和主人公一起发现的朋友。
+   - **展示，不要解说**: 不要用对话解释科学原理，先用感官（声音/触感/视觉）展示它（例：不说"力气变大了"，而是"轰！地面震动了"）。
+   - **科学概念名称不混用**: 整个故事中同一现象只用一个名称（例：不能"简单机械"和"杠杆"混用——选一个）。
 6) **★ 科学的呈现方式（非常重要）**:
    - ❌ 禁止: 科学原理像魔法一样引发物理变化（例："因为敏捷性，身体变小了"）
    - ✅ 允许: 主人公观察已经善用该原理的动物或自然现象，从而领悟原理的结构
