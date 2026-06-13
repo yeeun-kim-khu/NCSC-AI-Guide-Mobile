@@ -5285,23 +5285,24 @@ def search_directions(origin: str, destination: str = "국립어린이과학관"
     - 지하철/버스 경로, 소요시간, 환승 정보
     """
     try:
-        result = f"""Observation: {origin}에서 {destination}까지의 경로 안내
+        result = f"""[search_directions 결과] {origin} → {destination}
 
-정확한 실시간 경로는 다음 방법으로 확인하세요:
-1. 네이버 지도 앱/웹사이트에서 '{origin}'에서 '{destination}' 검색
-2. 카카오맵에서 '{origin}'에서 '{destination}' 검색
-3. 대중교통 앱 (지하철, 버스) 이용
+⚠️ 실시간 경로 API 미연동 — {origin}에서의 구체적인 노선번호·환승역·소요시간을 임의로 추측하지 마세요.
+출발지별 정확한 경로는 아래 지도 앱 링크를 안내하는 것으로 대체하세요.
 
-일반적인 안내:
-- {destination} 주소: 서울특별시 종로구 창경궁로 215
-- 가까운 지하철역: 
-- 국립어린이과학관은 전용 주차장이 없으므로 대중교통 이용을 권장합니다.
+[목적지 고정 정보 — 정확]
+- 주소: 서울특별시 종로구 창경궁로 215
+- 가장 가까운 지하철역: 4호선 혜화역 4번 출구 (도보 약 7분)
+- 주차장 없음 → 대중교통 이용 필수
 
-※ 정확한 버스 노선, 소요시간, 환승 정보는 위 지도 앱에서 실시간으로 확인해주세요.
-※ 교통 상황에 따라 소요시간이 달라질 수 있습니다."""
+[사용자에게 반드시 안내할 지도 링크]
+- 네이버 지도: https://map.naver.com/v5/search/국립어린이과학관
+- 카카오맵: https://map.kakao.com/?q=국립어린이과학관
+
+위 링크에서 출발지를 '{origin}'으로 설정하면 정확한 경로를 확인할 수 있습니다."""
         return result
     except Exception as e:
-        return f"Observation: 경로 검색 중 오류가 발생했습니다: {str(e)}\n네이버 지도나 카카오맵에서 '{origin}'에서 '{destination}'을 직접 검색해주세요."
+        return f"[search_directions 오류] {str(e)}\n네이버 지도 또는 카카오맵에서 '{origin}'→'{destination}' 경로를 직접 검색해주세요."
 
 @tool
 def search_csc_live_info(keyword: str) -> str:
@@ -5775,6 +5776,7 @@ def get_tools():
         fetch_latest_notices,
         get_education_programs_by_date,
         search_exhibit_info,
+        search_directions,
     ]
 
 # ============================================================================
