@@ -1864,6 +1864,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
    - **받침 있는 이름 + 은/는**: 반드시 "이름+이+는" 형태로 (도윤이는, 민준이는, 하은이는). "도윤은", "민준은" 금지.
 8) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
+   - **전시물명 변형 필수**: 위 [핵심 과학 도구]에 있는 전시물명을 그대로 사용하지 말 것. 반드시 판타지적 이름으로 변형할 것 (예: "으라차차! 힘 겨루기" → "힘 겨루기의 숲", "재빠르게! 날쎄게!" → "날쎄한 치타의 숲").
 ⛔ **전시관 일탈 금지 (매우 중요)**: 위 [재료] 목록에 없는 전시물·과학 개념·현상을 새로 지어내지 말 것. 반드시 위 재료만 사용. 위 목록에 없는 과학 원리를 절대 설명하지 말 것.
 9) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
 
@@ -1924,6 +1925,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    - Short sentences, dialogue ≥ 40%.
    - At least 2 sensory details (sound, light, smell, texture).
 8) **Forbidden words**: "playground", "exhibit", "field trip", "museum" — write it as a true fantasy adventure.
+   - **Exhibit name transformation REQUIRED**: Do NOT use exhibit names from [Core science tools] verbatim. Transform them into fantasy names (e.g., "Power Struggle Arena" → "Forest of Strength", "Swift Agility" → "Forest of the Agile Cheetah").
 9) **Ending**: warm, hopeful, final line suitable for bedtime.
 
 [Output format]
@@ -1983,6 +1985,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
    - 短い文中心、会話の割合は40%以上。
    - 五感の描写（音・光・におい・感触）を2つ以上入れる。
 8) **禁句**: 「遊び場」「展示」「体験」「博物館」などは禁止。本物のファンタジー冒険として書く。
+   - **展示物名の変形必須**: [中心となる科学の道具]にある展示物名をそのまま使わないこと。必ずファンタジー的な名前に変形すること（例：「力比べのアリーナ」→「力の森」、「俊敏なチーター」→「俊敏なチーターの森」）。
 9) **結末**: あたたかく希望的、最後の一行は寝かしつけにふさわしいやさしい言葉。
 
 [出力形式]
@@ -2042,6 +2045,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
    - 以短句为主，对话占比≥40%。
    - 至少加入2处感官描写（声音、光、气味、触感）。
 8) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇妙冒险。
+   - **展品名称变形必填**: [核心科学道具]中的展品名称不得直接使用。必须变形为奇幻名称（例："力量竞技场"→"力量森林"，"敏捷猎豹"→"敏捷猎豹森林"）。
 9) **结尾**: 温暖且充满希望，最后一句是适合睡前读的温柔话语。
 
 [输出格式]
