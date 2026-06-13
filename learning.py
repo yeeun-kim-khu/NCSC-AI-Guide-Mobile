@@ -1755,26 +1755,27 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     _world_candidates = _zone_map.get(zone_name) or fallback_worlds.get(language, fallback_worlds["한국어"])
     world = random.choice(_world_candidates)
 
-    # ---- 1단계: 동화 씨앗 생성 (갈등 템플릿 우선, 없으면 LLM fallback) ----
+    # ---- 1단계: 동화 씨앗 생성 (LLM — 갈등 템플릿 있으면 참고 구조로 주입) ----
     _story_seed = ""
     _conflict_tmpl = _get_conflict_template(zone_name, principles_text)
+    _tmpl_section = ""
     if _conflict_tmpl:
-        _story_seed = (
-            f"발단 사건: {_conflict_tmpl['갈등']}\n"
-            f"실패 장면: {_conflict_tmpl['실패']}\n"
-            f"아하 힌트: {_conflict_tmpl['아하']}\n"
-            f"핵심 감각: {_conflict_tmpl['감각']}"
+        _tmpl_section = (
+            f"\n[참고할 갈등 구조 — 그대로 쓰지 말고 창의적으로 변형할 것]\n"
+            f"발단 사건 참고: {_conflict_tmpl['갈등']}\n"
+            f"실패 장면 참고: {_conflict_tmpl['실패']}\n"
+            f"아하 힌트 참고: {_conflict_tmpl['아하']}\n"
+            f"핵심 감각 참고: {_conflict_tmpl['감각']}\n"
         )
-        print(f"[과학동화 씨앗] 갈등 템플릿 매칭: {principles_text}\n{_story_seed}")
-    elif principles_descriptions_text:
+        print(f"[과학동화 씨앗] 갈등 템플릿 매칭: {principles_text}")
+    if principles_descriptions_text or _conflict_tmpl:
         _seed_prompt = f"""너는 초등 어린이 과학동화 편집자야.
 아래 전시관 과학 내용을 읽고, 자연스러운 어린이 과학동화(SF 아님, 일상·판타지 배경)에 쓸 '이야기 씨앗'을 정확히 3줄로 만들어줘.
 
 [전시관]: {zone_name}
 [핵심 과학 현상]: {principles_text}
 [전시관 과학 내용]:
-{principles_descriptions_text}
-
+{principles_descriptions_text}{_tmpl_section}
 규칙:
 - 주인공이 직접 겪는 구체적이고 감각적인 장면으로 쓸 것 (SF 장비·초능력·마법 장치 금지)
 - 원리 이름은 절대 쓰지 말 것 — 현상만 감각(소리/촉감/시각)으로 묘사
