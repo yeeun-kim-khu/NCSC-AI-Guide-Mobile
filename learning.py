@@ -780,7 +780,7 @@ def extract_principles_from_exhibits(exhibits, llm):
 # 퀴즈 생성
 # ============================================================================
 
-def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None, difficulty: str = "초등", quiz_count: int = 0):
+def generate_quiz(zone_name, principle, llm, language="한국어", variation_seed: int = 0, exhibit_detail: str = "", prev_questions: list = None, difficulty: str = "초등", quiz_count: int = 0, user_mode: str = "어린이"):
     """과학원리 기반 4지선다 퀴즈 생성.
 
     LLM에게는 JSON 형태(question, options, correct_index, explanation)를 받고,
@@ -874,6 +874,23 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
         prev_section_ko = f"\n[이전에 생성된 문제 — 반드시 피할 것]\n{prev_list}\n위 문제들과 같거나 유사한 질문, 같은 과학 개념·정답·선택지를 절대 반복하지 마세요. 완전히 다른 측면에서 출제하세요.\n"
         prev_section_en = f"\n[Previously generated questions — MUST avoid]\n{prev_list}\nDo NOT repeat the same question, concept, answer, or similar options. Choose a completely different angle.\n"
 
+    if user_mode == "어린이":
+        explanation_tone = (
+            "어린이 친구에게 설명하듯 따뜻하고 친절하게 3~4문장으로 작성:\n"
+            "• 핵심 과학 용어를 '~란 ~이에요!' 형식으로 먼저 정의\n"
+            "• 왜 이 답이 맞는지 쉽게 설명\n"
+            "• 헷갈리는 오답 1개 교정 ('~처럼 보이지만 사실은 ~이랍니다!')\n"
+            "말투: '~에요', '~이랍니다' 친근한 존댓말. 이모지 1~2개 포함."
+        )
+    else:
+        explanation_tone = (
+            "과학적으로 정확하고 간결하게 3~4문장으로 작성:\n"
+            "• 핵심 개념 정의 및 정답이 맞는 이유\n"
+            "• 관련 원리나 실생활 응용 예시 1가지\n"
+            "• 오답 중 가장 혼동하기 쉬운 선택지의 오류 설명\n"
+            "말투: 정중하고 명확한 존댓말 (~습니다, ~입니다). 이모지 없음."
+        )
+
     language_prompts = {
         "한국어": f"""{output_lang_instruction}
 
@@ -897,7 +914,7 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
   "question": "초등 4~6학년이 이해할 수 있는 질문 (1문장)",
   "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
   "correct_index": 0,
-  "explanation": "어린이 친구에게 설명하듯 따뜻하고 친절하게 3~4문장으로 작성:\n• 문제에 나온 핵심 과학 용어/개념을 '~란 ~이에요!' 형식으로 먼저 정의 (예: '광합성이란 식물이 햇빛으로 스스로 양분을 만드는 과정이에요!')\n• 왜 이 답이 맞는지 이유를 설명\n• '~처럼 생각할 수 있지만, 사실은 ~이랍니다!' 로 헷갈리는 오답 1개 교정\n말투: '~에요', '~이랍니다' 같은 친근한 존댓말. 어려운 용어는 바로 쉬운 말로 풀어줄 것. 이모지 1~2개 포함."
+  "explanation": "{explanation_tone}"
 }}
 - correct_index 는 0~3 정수, options 배열에서 정답 위치.
 - options 는 정확히 4개.
@@ -2149,22 +2166,24 @@ def render_post_visit_learning(
                         if count_key not in st.session_state:
                             st.session_state[count_key] = 0
 
+                        # 난이도 선택 — 항상 표시 (퀴즈 생성 후에도 변경 가능)
+                        _diff_labels = {
+                            "한국어": {"유아": "유치~초등 저학년", "초등": "초등 중·고학년 (3~6학년)"},
+                            "English": {"유아": "Preschool ~ Lower Elem.", "초등": "Upper Elem. (Gr.3-6)"},
+                            "日本語": {"유아": "幼児〜小低学년", "초등": "小中〜高学年（3〜6年）"},
+                            "中文": {"유아": "幼儿~小学低年级", "초등": "小学中高年级（3-6年级）"},
+                        }.get(language_mode, {"유아": "유치~초등 저학년", "초등": "초등 중·고학년"})
+                        _diff_title = {"한국어": "난이도", "English": "Difficulty",
+                                       "日本語": "レベル", "中文": "难度"}.get(language_mode, "난이도")
+                        quiz_difficulty = st.radio(
+                            _diff_title,
+                            options=["유아", "초등"],
+                            format_func=lambda x: _diff_labels[x],
+                            horizontal=True,
+                            key=f"diff_{zone}_{selected_kw}",
+                        )
+
                         if quiz_cache_key not in st.session_state:
-                            _diff_labels = {
-                                "한국어": {"유아": "유치~초등 저학년", "초등": "초등 중·고학년 (3~6학년)"},
-                                "English": {"유아": "Preschool ~ Lower Elem.", "초등": "Upper Elem. (Gr.3-6)"},
-                                "日本語": {"유아": "幼児〜小低学年", "초등": "小中〜高学年（3〜6年）"},
-                                "中文": {"유아": "幼儿~小学低年级", "초등": "小学中高年级（3-6年级）"},
-                            }.get(language_mode, {"유아": "유치~초등 저학년", "초등": "초등 중·고학년"})
-                            _diff_title = {"한국어": "난이도", "English": "Difficulty",
-                                           "日本語": "レベル", "中文": "难度"}.get(language_mode, "난이도")
-                            quiz_difficulty = st.radio(
-                                _diff_title,
-                                options=["유아", "초등"],
-                                format_func=lambda x: _diff_labels[x],
-                                horizontal=True,
-                                key=f"diff_{zone}_{selected_kw}",
-                            )
                             if st.button(text["make_quiz"], key=f"btn_make_quiz_{zone}_{selected_kw}"):
                                 _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                 with st.spinner(text["quiz_generating"]):
@@ -2176,6 +2195,7 @@ def render_post_visit_learning(
                                         prev_questions=st.session_state[prev_q_key],
                                         difficulty=quiz_difficulty,
                                         quiz_count=_qcount,
+                                        user_mode=user_mode,
                                     )
                                     st.session_state[quiz_cache_key] = quiz or {}
                                     if quiz and quiz.get("question"):
@@ -2204,16 +2224,18 @@ def render_post_visit_learning(
                                         if k.startswith(f"quiz_reveal_{zone}_{selected_kw}") or \
                                            k.startswith(f"quiz_audio_{zone}_{selected_kw}"):
                                             st.session_state.pop(k, None)
-                                    # 즉시 새 퀴즈 생성
                                     _queue_ga_event("quiz_generated", {"zone": zone, "language": language_mode})
                                     with st.spinner(text["quiz_generating"]):
                                         _qcount = st.session_state.get(count_key, 0)
+                                        _cur_diff = st.session_state.get(f"diff_{zone}_{selected_kw}", quiz_difficulty)
                                         quiz = generate_quiz(
                                             zone, selected_kw, llm, language_mode,
                                             variation_seed=st.session_state[seed_key],
                                             exhibit_detail=quiz_detail,
                                             prev_questions=st.session_state.get(prev_q_key, []),
+                                            difficulty=_cur_diff,
                                             quiz_count=_qcount,
+                                            user_mode=user_mode,
                                         )
                                         st.session_state[quiz_cache_key] = quiz or {}
                                         if quiz and quiz.get("question"):
