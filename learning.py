@@ -1395,6 +1395,13 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     _world_candidates = _zone_map.get(zone_name) or fallback_worlds.get(language, fallback_worlds["한국어"])
     world = random.choice(_world_candidates)
 
+    # 프롬프트 변수 실제 값 로그
+    print(f"[과학동화 프롬프트 변수] zone_name={zone_name}, world={world}")
+    print(f"[과학동화 프롬프트 변수] exhibit_summary={exhibit_summary[:200]}...")
+    print(f"[과학동화 프롬프트 변수] principles_text={principles_text}")
+    print(f"[과학동화 프롬프트 변수] atmosphere_summary={atmosphere_summary}")
+    print(f"[과학동화 프롬프트 변수] zone_identity_line={zone_identity_line[:200]}...")
+
     language_prompts = {
         "한국어": f"""너는 초등 4~6학년(10~12세) 어린이를 위한 감성적이고 재미있는 과학동화 작가야.
 
