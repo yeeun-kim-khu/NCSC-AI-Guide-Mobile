@@ -2190,8 +2190,11 @@ def text_to_audiobook(story_text, language="한국어", voice_override=None, spe
         if isinstance(speed_override, (int, float)):
             stability = max(0.1, min(0.9, 0.65 - (float(speed_override) - 1.0) * 0.2))
 
+        # 발음 수정: '하은'을 '하으은'으로 변환 (ElevenLabs 발음 오류 해결)
+        pronunciation_fix_text = story_text.replace("하은", "하으은")
+
         payload = {
-            "text": story_text,
+            "text": pronunciation_fix_text,
             "model_id": eleven_model_id,
             "voice_settings": {
                 "stability": stability,
