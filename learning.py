@@ -1643,13 +1643,16 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    - **3막의 '아하 순간'에서 단 한 번** 원리명('{principles_text}')을 큰따옴표 대사로 명명할 것. 이때 한 줄짜리 쉬운 설명 추가 (예: "물건을 밀면 그 물건도 똑같은 힘으로 나를 밀어내는 거였어!").
    - 결말 부근에서 그 원리명을 **한 번 더 짧게 회상**하면서 위기를 해결 (총 명명 횟수: 2~3회).
    - 강의·백과사전 톤은 절대 금지. 동반자도 같이 깨닫는 친구.
-6) **문체 (초등 4~6학년 톤)**:
+6) **★ 과학 활용 방식 (매우 중요)**:
+   - ❌ 금지: 과학 원리가 마법처럼 물리 현상을 일으키는 것 (예: "민첩성 때문에 몸이 작아진다")
+   - ✅ 허용: 그 원리를 이미 잘 쓰는 동물·자연을 보고, 주인공이 그 원리를 깨닫는 구조
+7) **문체 (초등 4~6학년 톤)**:
    - 의성어·의태어를 최소 3번 사용 (예: 폴짝폴짝, 윙윙, 반짝반짝, 살랑살랑, 또르르).
    - 짧은 문장 위주, 대사 비중 40% 이상.
    - 감각 묘사(소리/빛/냄새/촉감) 2개 이상 포함.
-7) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
+8) **금지 표현**: "놀이터", "전시물", "체험", "박물관" 같은 단어 절대 금지. 완전한 판타지 모험으로.
 ⛔ **전시관 일탈 금지 (매우 중요)**: 위 [재료] 목록에 없는 전시물·과학 개념·현상을 새로 지어내지 말 것. 반드시 위 재료만 사용. 위 목록에 없는 과학 원리를 절대 설명하지 말 것.
-8) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
+9) **결말**: 따뜻하고 희망적, 마지막 한 줄은 잠자리에 어울리는 다정한 인사.
 
 [출력 형식]
 - 첫 줄: 제목 (**굵게**)
@@ -1696,12 +1699,15 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    - **At the Act-3 aha moment, name '{principles_text}' EXACTLY ONCE in dialogue**, followed by a one-sentence kid-friendly explanation (e.g., "When you push something, it pushes you back just as hard!").
    - Mention the term ONE more time near the resolution as the hero applies it. (Total namings: 2–3.)
    - Never lecture. The companion discovers WITH the hero, not as a teacher.
-6) **Style (ages 10–12)**:
+6) **★ How science must work (critical)**:
+   - ❌ Forbidden: the science principle directly causing magical physical changes (e.g., "agility makes the body shrink")
+   - ✅ Required: the hero observes an animal or natural phenomenon that ALREADY uses the principle → and learns from it
+7) **Style (ages 10–12)**:
    - Use at least 3 onomatopoeia / mimetic words (whoosh, sparkle-sparkle, plip-plop, thump-thump).
    - Short sentences, dialogue ≥ 40%.
    - At least 2 sensory details (sound, light, smell, texture).
-7) **Forbidden words**: "playground", "exhibit", "field trip", "museum" — write it as a true fantasy adventure.
-8) **Ending**: warm, hopeful, final line suitable for bedtime.
+8) **Forbidden words**: "playground", "exhibit", "field trip", "museum" — write it as a true fantasy adventure.
+9) **Ending**: warm, hopeful, final line suitable for bedtime.
 
 [Output format]
 - Line 1: **Bold title**
@@ -1748,12 +1754,15 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
    - **第3幕のアハの瞬間でちょうど一度だけ** 用語『{principles_text}』をセリフで名づける。続けて子ども向けの一文説明（例：「ものを押すと、そのものも同じ強さで自分を押しかえすんだ！」）。
    - 結末近くでもう一度だけ、主人公がその用語を使って危機を解く（合計命名2〜3回）。
    - 講義・百科事典口調は厳禁。相棒は先生ではなく、いっしょに発見する友だち。
-6) **文体（小学4〜6年生向け）**:
+6) **★ 科学の活用の仕方（重要）**:
+   - ❌ 禁止: 科学の原理が魔法のように物理現象を引き起こすこと（例：「敏捷性のせいで体が小さくなる」）
+   - ✅ 許可: その原理をすでに上手に使っている動物・自然を観察して、主人公が原理を学ぶ構成
+7) **文体（小学4〜6年生向け）**:
    - 擬音語・擬態語を3回以上使う（ぴょんぴょん、ぴかぴか、ふわふわ、ころころ、ぽとんなど）。
    - 短い文中心、会話の割合は40%以上。
    - 五感の描写（音・光・におい・感触）を2つ以上入れる。
-7) **禁句**: 「遊び場」「展示」「体験」「博物館」などは禁止。本物のファンタジー冒険として書く。
-8) **結末**: あたたかく希望的、最後の一行は寝かしつけにふさわしいやさしい言葉。
+8) **禁句**: 「遊び場」「展示」「体験」「博物館」などは禁止。本物のファンタジー冒険として書く。
+9) **結末**: あたたかく希望的、最後の一行は寝かしつけにふさわしいやさしい言葉。
 
 [出力形式]
 - 1行目: **太字のタイトル**
@@ -1800,12 +1809,15 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
    - **第三幕的顿悟瞬间，恰好命名一次** 术语『{principles_text}』（用对话），紧跟一句儿童化解释（例："推一下东西，那东西也会用一样的力气把你推回来！"）。
    - 接近结尾再让主人公简短复述一次该术语来解决危机（合计命名2〜3次）。
    - 严禁讲课口吻或百科全书腔调。伙伴不是老师，是和主人公一起发现的朋友。
-6) **文体（6〜8岁口吻）**:
+6) **★ 科学的呈现方式（非常重要）**:
+   - ❌ 禁止: 科学原理像魔法一样引发物理变化（例："因为敏捷性，身体变小了"）
+   - ✅ 允许: 主人公观察已经善用该原理的动物或自然现象，从而领悟原理的结构
+7) **文体（6〜8岁口吻）**:
    - 至少使用3个拟声词或叠词（蹦蹦跳跳、闪闪、咕噜咕噜、扑通、轻飘飘）。
    - 以短句为主，对话占比≥40%。
    - 至少加入2处感官描写（声音、光、气味、触感）。
-7) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇妙冒险。
-8) **结尾**: 温暖且充满希望，最后一句是适合睡前读的温柔话语。
+8) **禁用词**: "游乐场""展品""体验""博物馆"等绝对不写。要写成真正的奇妙冒险。
+9) **结尾**: 温暖且充满希望，最后一句是适合睡前读的温柔话语。
 
 [输出格式]
 - 第1行: **加粗标题**
