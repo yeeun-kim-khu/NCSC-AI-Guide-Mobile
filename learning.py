@@ -78,6 +78,10 @@ ZONE_INFO = {
     }
 }
 
+STORY_ZONE_WHITELIST = {
+    "행동놀이터", "탐구놀이터", "관찰놀이터", "생각놀이터", "빛놀이터", "AI놀이터",
+}
+
 ZONE_GROUPS = {
     "1층놀이터(AI·행동·생각 놀이터)": ["AI놀이터", "행동놀이터", "생각놀이터"],
     "2층(관찰·탐구 놀이터)": ["관찰놀이터", "탐구놀이터"],
@@ -2210,7 +2214,7 @@ def render_post_visit_learning(
             st.session_state.learning_sub_tab = "story"
             st.rerun()
 
-    def _render_zone_selector(key_prefix: str):
+    def _render_zone_selector(key_prefix: str, whitelist: set | None = None):
         st.markdown(f"#### {text['select_zone']}")
 
         selected = []
@@ -2218,7 +2222,10 @@ def render_post_visit_learning(
         st.markdown(f"##### {text['floor1']}")
         col1, col2 = st.columns(2)
 
-        floor1_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "1층"]
+        floor1_zones = [
+            z for z, info in ZONE_INFO.items()
+            if info["floor"] == "1층" and (whitelist is None or z in whitelist)
+        ]
         for i, zone in enumerate(floor1_zones):
             col = col1 if i % 2 == 0 else col2
             with col:
@@ -2231,7 +2238,10 @@ def render_post_visit_learning(
         st.markdown(f"##### {text['floor2']}")
         col3, col4 = st.columns(2)
 
-        floor2_zones = [z for z, info in ZONE_INFO.items() if info["floor"] == "2층"]
+        floor2_zones = [
+            z for z, info in ZONE_INFO.items()
+            if info["floor"] == "2층" and (whitelist is None or z in whitelist)
+        ]
         for i, zone in enumerate(floor2_zones):
             col = col3 if i % 2 == 0 else col4
             with col:
@@ -2626,7 +2636,7 @@ def render_post_visit_learning(
         story_zones_key = "post_learning_story_zones"
         audio_state_key = "post_learning_story_audio"
         
-        selected_zones_story = _render_zone_selector("story")
+        selected_zones_story = _render_zone_selector("story", whitelist=STORY_ZONE_WHITELIST)
 
         if selected_zones_story and st.button(text["generate_story"]):
             _queue_ga_event("story_generated", {"zone_count": len(selected_zones_story), "language": language_mode})
