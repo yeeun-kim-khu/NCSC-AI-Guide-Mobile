@@ -3,6 +3,8 @@
 
 import streamlit as st
 from langchain_openai import ChatOpenAI
+from langchain.agents import AgentExecutor, create_react_agent, Tool
+from langchain.prompts import PromptTemplate
 from openai import OpenAI
 import os
 import random
@@ -740,6 +742,118 @@ def get_zone_exhibits_from_rag(zone_name, vector_db):
 
     return exhibits
 
+# ============================================================================
+# 궁금해요 ReAct 도구
+# ============================================================================
+
+def _get_question_tools(zone_name, zone_rows, vector_db):
+    """궁금해요 ReAct 에이전트용 도구 목록 반환"""
+    
+    def search_exhibits_rag(query: str) -> str:
+        """전시물 RAG 검색 도구"""
+        try:
+            if vector_db:
+                docs = vector_db.similarity_search(query, k=10)
+                results = []
+                for doc in docs:
+                    metadata = doc.metadata or {}
+                    title = metadata.get("title", "")
+                    content = doc.page_content or ""
+                    if title and content:
+                        results.append(f"[{title}] {content}")
+                return "\n\n".join(results[:5])
+            else:
+                # CSV fallback
+                results = []
+                for r in zone_rows[:5]:
+                    title = r.get("title", "")
+                    content = r.get("content", "")
+                    if title and content:
+                        results.append(f"[{title}] {content}")
+                return "\n\n".join(results)
+        except Exception as e:
+            return f"검색 오류: {e}"
+    
+    def get_exhibit_detail(title: str) -> str:
+        """특정 전시물 상세 정보 조회"""
+        try:
+            for r in zone_rows:
+                if title.lower() in r.get("title", "").lower():
+                    detail = r.get("detail", "")
+                    content = r.get("content", "")
+                    return f"[{r.get('title', '')}] {content}\n[세부 설명] {detail if detail else '없음'}"
+            return f"'{title}'에 해당하는 전시물을 찾을 수 없습니다."
+        except Exception as e:
+            return f"조회 오류: {e}"
+    
+    return [search_exhibits_rag, get_exhibit_detail]
+
+def _create_question_agent(llm, tools, language_mode, user_mode):
+    """궁금해요 ReAct 에이전트 생성"""
+    
+    # ReAct 프롬프트 템플릿
+    is_child = (user_mode == "어린이")
+    
+    if language_mode == "한국어":
+        if is_child:
+            answer_instruction = "초등 4~6학년(10~12세) 어린이가 이해할 수 있게, 쉬운 단어와 실생활 예시를 들어 한국어로 재미있게 설명해주세요. 3~4문장으로 마무리하고, 마지막에 '신기하지 않아?'처럼 호기심을 자극하는 한마디를 추가해주세요."
+        else:
+            answer_instruction = "과학적으로 정확하고 자세하게 한국어로 설명해주세요. 전시물과 관련된 원리 및 실생활 예시를 포함해 주세요."
+    elif language_mode == "English":
+        if is_child:
+            answer_instruction = "Please explain in clear English for upper elementary students (ages 10-12), using everyday examples and relatable comparisons. Keep it to 3-4 sentences and end with a curious 'Did you know?' hook!"
+        else:
+            answer_instruction = "Please answer in clear, accurate English with scientific detail and real-life examples related to the exhibit."
+    elif language_mode == "日本語":
+        if is_child:
+            answer_instruction = "小学4〜6年生（10〜12歳）にわかるように、身近な例えをつかって日本語で3〜4文で説明してください。最後に「不思議だと思わない？」など好奇心を刺激する一言を加えてください。"
+        else:
+            answer_instruction = "科学的に正確で詳しい日本語で、展示に関連した原理と実例を含めて説明してください。"
+    elif language_mode == "中文":
+        if is_child:
+            answer_instruction = "请用通俗易懂的中文为小学高年级学生（10-12岁）解释，使用贴近生活的比喻，用3-4句话说明，最后加一句激发好奇心的话，例如：你有没有想过这个问题？"
+        else:
+            answer_instruction = "请用科学准确、详细的中文说明，并结合展品相关的原理和实际例子。"
+    else:
+        answer_instruction = "어린이가 이해하기 쉽게 답변해주세요."
+    
+    prompt = PromptTemplate.from_template(
+        """너는 국립어린이과학관의 전시물에 대해 설명하는 친절한 안내원이야.
+
+사용자의 질문에 답변할 때, 아래 도구들을 사용하여 정확한 전시물 정보를 찾아주세요.
+
+도구:
+{tools}
+
+도구 이름: {tool_names}
+
+사용자 질문: {input}
+
+Thought: 사용자의 질문을 분석하고 필요한 도구를 선택하세요.
+Action: 도구 이름을 입력하세요.
+Action Input: 도구에 필요한 입력값을 입력하세요.
+Observation: 도구의 결과를 확인하세요.
+... (필요하면 반복) ...
+Thought: 이제 최종 답변을 구성할 수 있습니다.
+Final Answer: {answer_instruction}
+
+중요:
+- 반드시 도구를 사용하여 전시물 정보를 확인한 후 답변하세요.
+- 전시물과 관련 없는 내용을 지어내지 마세요.
+- 도구가 없는 정보는 "정보를 찾을 수 없습니다"라고 답변하세요."""
+    )
+    
+    agent = create_react_agent(llm, tools, prompt)
+    agent_executor = AgentExecutor(
+        agent=agent,
+        tools=tools,
+        verbose=True,
+        handle_parsing_errors=True,
+        max_iterations=5
+    )
+    
+    return agent_executor
+
 def extract_principles_from_exhibits(exhibits, llm):
     """전시물에서 과학원리 추출"""
     if not exhibits:
@@ -1279,6 +1393,14 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
             return (parts[1][:limit] + "…") if len(parts[1]) > limit else parts[1]
         return ""
 
+    # zone 정체성 한 줄 — exhibit_summary 폴백보다 먼저 계산
+    all_titles = []
+    for ex in exhibits[:10]:
+        t = ex.get("metadata", {}).get("title", "") or ""
+        if t:
+            all_titles.append(t)
+    zone_identity_line = ", ".join(all_titles[:8]) if all_titles else ""
+
     # 핵심 마법 아이템 2개 (제목 + 짧은 설명 + 세부설명) — 갈등을 해결하는 키
     core_lines = []
     for ex in exhibits[:2]:
@@ -1299,7 +1421,6 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
         elif t:
             core_lines.append(f"- {t}")
     exhibit_summary = "\n".join(core_lines)
-    # 폴백: core_lines가 비어있으면 all_titles 에서 채우기
     if not exhibit_summary.strip() and all_titles:
         for _t in all_titles[:2]:
             core_lines.append(f"- {_t}")
@@ -1313,15 +1434,51 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
             atmosphere_titles.append(t)
     atmosphere_summary = ", ".join(atmosphere_titles) if atmosphere_titles else ""
 
-    # zone 정체성 한 줄 — 모든 전시물 title을 모아 LLM이 분위기를 한눈에 파악하도록
-    all_titles = []
-    for ex in exhibits[:10]:
-        t = ex.get("metadata", {}).get("title", "") or ""
-        if t:
-            all_titles.append(t)
-    zone_identity_line = ", ".join(all_titles[:8]) if all_titles else ""
+    # ---- 텍스트 패널(title 없는 설명 행) 로드 ----
+    try:
+        from core import load_zone_rows_from_csv as _load_csv_all
+        _all_csv_rows = _load_csv_all(zone_name, include_text_panels=True)
+    except Exception:
+        _all_csv_rows = []
+    _text_panels = [
+        r for r in _all_csv_rows
+        if not r.get("title") and (
+            (r.get("content") and str(r.get("content")).strip().lower() not in ("", "nan")) or
+            (r.get("detail") and str(r.get("detail")).strip().lower() not in ("", "nan"))
+        )
+    ]
 
-    principles_text = ", ".join(principles[:1])  # 원리 1개 (갈등 해결용)
+    # ---- CSV content 컬럼 전체 설명 수집 (씨앗 생성 + 원리 보강용) ----
+    _content_descs = []
+    for ex in exhibits[:8]:
+        for line in ex.get("content", "").splitlines():
+            line = line.strip()
+            if line.lower().startswith("content:"):
+                desc = line.split(":", 1)[1].strip()
+                if desc and desc.lower() != "nan":
+                    _content_descs.append(desc)
+                    break
+    for r in _text_panels[:4]:
+        c = str(r.get("content", "")).strip()
+        d = str(r.get("detail", "")).strip()
+        panel_text = c if (c and c.lower() != "nan") else (d if (d and d.lower() != "nan") else "")
+        if panel_text:
+            _content_descs.append(f"[설명판] {panel_text[:150]}")
+    principles_descriptions_text = (
+        "\n".join(f"- {d}" for d in _content_descs[:8])
+        if _content_descs else ", ".join(principles[:3])
+    )
+
+    # principles_text: 원리 이름 (아하 순간 명명용) — 설명은 _principles_context 로 별도 제공
+    principles_text = principles[0] if principles else (all_titles[0] if all_titles else zone_name)
+    _principle_desc_first = next(
+        (d for d in _content_descs if not d.startswith("[설명판]")), ""
+    )
+    _principles_context = (
+        f"   (전시관 과학 설명 — LLM 참고용, 이야기 속 직접 인용 금지):\n"
+        + principles_descriptions_text
+        if principles_descriptions_text else ""
+    )
 
     glossary_rules = _get_ui_glossary_rules(language)
 
@@ -1395,12 +1552,60 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
     _world_candidates = _zone_map.get(zone_name) or fallback_worlds.get(language, fallback_worlds["한국어"])
     world = random.choice(_world_candidates)
 
+    # ---- 1단계: 동화 씨앗 생성 (사건/실패/아하 순간 개요) ----
+    _story_seed = ""
+    if principles_descriptions_text:
+        _seed_prompt = f"""너는 초등 어린이 과학동화 편집자야.
+아래 전시관 과학 내용을 읽고, 자연스러운 어린이 과학동화(SF 아님, 일상·판타지 배경)에 쓸 '이야기 씨앗'을 정확히 3줄로 만들어줘.
+
+[전시관]: {zone_name}
+[핵심 과학 현상]: {principles_text}
+[전시관 과학 내용]:
+{principles_descriptions_text}
+
+규칙:
+- 주인공이 직접 겪는 구체적이고 감각적인 장면으로 쓸 것 (SF 장비·초능력·마법 장치 금지)
+- 원리 이름은 절대 쓰지 말 것 — 현상만 감각(소리/촉감/시각)으로 묘사
+- 평범한 사물(돌멩이, 물, 나뭇잎, 빛 등)을 이용한 장면으로
+- 정확히 아래 형식 3줄로만 출력, 다른 말 없이
+
+발단 사건: (이 과학 현상이 일어나는 구체적이고 이상한 사건 1문장)
+실패 장면: (주인공이 이유를 모른 채 해결하려다 실패하는 1문장, 감각 묘사 포함)
+아하 힌트: (같은 현상이 반복되어 패턴이 보이는 순간 1문장, 원리명 없이)"""
+        try:
+            _seed_llm = ChatOpenAI(model="gpt-4o", temperature=0.9)
+            _seed_resp = _seed_llm.invoke(_seed_prompt)
+            _story_seed = _seed_resp.content.strip()
+            print(f"[과학동화 씨앗 생성]\n{_story_seed}")
+        except Exception as _se:
+            print(f"씨앗 생성 오류: {_se}")
+
+    _seed_inject = {
+        "한국어": (
+            f"\n▶ ★ 동화 씨앗 (아래 흐름을 이야기에 반드시 녹여낼 것. 그대로 베끼지 말고 장면으로 구체화할 것):\n{_story_seed}\n"
+            if _story_seed else ""
+        ),
+        "English": (
+            f"\n▶ ★ Story Seed (weave this arc into the story — do NOT copy verbatim, expand each moment into vivid scenes):\n{_story_seed}\n"
+            if _story_seed else ""
+        ),
+        "日本語": (
+            f"\n▶ ★ 物語の種 (この流れを必ず物語に溶け込ませること。そのまま写さず、場面として具体的に展開すること):\n{_story_seed}\n"
+            if _story_seed else ""
+        ),
+        "中文": (
+            f"\n▶ ★ 故事种子 (必须将以下流程融入故事中，不要照抄，要展开成具体的场景):\n{_story_seed}\n"
+            if _story_seed else ""
+        ),
+    }
+
     # 프롬프트 변수 실제 값 로그
     print(f"[과학동화 프롬프트 변수] zone_name={zone_name}, world={world}")
     print(f"[과학동화 프롬프트 변수] exhibit_summary={exhibit_summary[:200]}...")
     print(f"[과학동화 프롬프트 변수] principles_text={principles_text}")
     print(f"[과학동화 프롬프트 변수] atmosphere_summary={atmosphere_summary}")
     print(f"[과학동화 프롬프트 변수] zone_identity_line={zone_identity_line[:200]}...")
+    print(f"[과학동화 프롬프트 변수] text_panels={len(_text_panels)}개, content_descs={len(_content_descs)}개")
 
     language_prompts = {
         "한국어": f"""너는 초등 4~6학년(10~12세) 어린이를 위한 감성적이고 재미있는 과학동화 작가야.
@@ -1424,7 +1629,7 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
    {atmosphere_summary}
 
 ▶ 이야기의 갈등을 해결하는 단 하나의 과학 현상: {principles_text}
-
+{_principles_context}{_seed_inject["한국어"]}
 [개연성 규칙 — 매우 중요]
 1) **간결한 3막 구조 (총 6~8문단) — 과학 현상이 이야기의 굵직한 축**:
    - 1막(2문단): {protagonist}의 평범한 순간 → **'{principles_text}'와 직접 관련된 이상한 사건** 발생 → "왜 이런 일이?"라는 명확한 하나의 목표.
@@ -1477,7 +1682,7 @@ This story is inspired by a real exhibit zone ('{zone_name}'). Do not invent unr
    {atmosphere_summary}
 
 ▶ The single natural phenomenon that resolves the conflict: {principles_text}
-
+{_principles_context}{_seed_inject["English"]}
 [Coherence Rules — CRITICAL]
 1) **Compact 3-act structure (6–8 paragraphs total) — the phenomenon is the BACKBONE of the plot**:
    - Act 1 (2 paragraphs): '{protagonist}'s ordinary moment → a strange event **directly tied to '{principles_text}'** → ONE clear goal ("I must find out why…").
@@ -1529,7 +1734,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] — choose only on
    {atmosphere_summary}
 
 ▶ 物語の事件を解く、たったひとつの自然現象: {principles_text}
-
+{_principles_context}{_seed_inject["日本語"]}
 [筋の通った物語ルール — 最重要]
 1) **コンパクトな3幕構成（全6〜8段落）— 科学現象が物語の太い背骨になる**:
    - 第1幕（2段落）: 『{protagonist}』のふつうの瞬間 → **『{principles_text}』に直接かかわる不思議な出来事** → 「どうして？」というひとつの明確な目的。
@@ -1581,7 +1786,7 @@ MOOD_TAG: [wonder|adventure|mystery|cozy|exciting|melancholy] から一つだけ
    {atmosphere_summary}
 
 ▶ 推动并解决故事冲突的唯一自然现象: {principles_text}
-
+{_principles_context}{_seed_inject["中文"]}
 [开展规则 — 至关重要]
 1) **紧凑的三幕结构（共6〜8段）— 科学现象是故事的主干脊梁**:
    - 第一幕（2段）: 『{protagonist}』的平凡时刻 → **直接与『{principles_text}』相关的奇怪事件** → 一个明确目标（"我要弄清楚为什么…"）。
@@ -2333,59 +2538,22 @@ def render_post_visit_learning(
                             
                             # 답변이 이미 캐시되어 있으면 사용
                             if answer_cache_key not in st.session_state:
-                                # 전시물 정보 컨텍스트 구성
-                                context_parts = []
-                                for r in zone_rows[:10]:
-                                    title = r.get("title", "")
-                                    content = r.get("content", "")
-                                    detail = r.get("detail", "")
-                                    if title and content:
-                                        context_parts.append(f"[{title}] {content}")
-                                        if detail and str(detail).strip() and str(detail).strip().lower() != "nan":
-                                            context_parts.append(f"[세부 설명] {detail}")
-                                
-                                context = "\n\n".join(context_parts)
-                                if not context.strip():
-                                    st.warning(text.get("exhibits_not_found", "전시물 정보를 불러올 수 없습니다."))
-                                else:
-                                    # 사용자 모드·언어별 답변 지시
-                                    is_child = (user_mode == "어린이")
-                                    lang_instruction = {
-                                        "한국어": (
-                                            "초등 4~6학년(10~12세) 어린이가 이해할 수 있게, 쉬운 단어와 실생활 예시를 들어 한국어로 재미있게 설명해주세요. 3~4문장으로 마무리하고, 마지막에 '신기하지 않아?'처럼 호기심을 자극하는 한마디를 추가해주세요."
-                                            if is_child else
-                                            "과학적으로 정확하고 자세하게 한국어로 설명해주세요. 전시물과 관련된 원리 및 실생활 예시를 포함해 주세요."
-                                        ),
-                                        "English": (
-                                            "Please explain in clear English for upper elementary students (ages 10-12), using everyday examples and relatable comparisons. Keep it to 3-4 sentences and end with a curious 'Did you know?' hook!"
-                                            if is_child else
-                                            "Please answer in clear, accurate English with scientific detail and real-life examples related to the exhibit."
-                                        ),
-                                        "日本語": (
-                                            "小学4〜6年生（10〜12歳）にわかるように、身近な例えをつかって日本語で3〜4文で説明してください。最後に「不思議だと思わない？」など好奇心を刺激する一言を加えてください。"
-                                            if is_child else
-                                            "科学的に正確で詳しい日本語で、展示に関連した原理と実例を含めて説明してください。"
-                                        ),
-                                        "中文": (
-                                            "请用通俗易懂的中文为小学高年级学生（10-12岁）解释，使用贴近生活的比喻，用3-4句话说明，最后加一句激发好奇心的话，例如：你有没有想过这个问题？"
-                                            if is_child else
-                                            "请用科学准确、详细的中文说明，并结合展品相关的原理和实际例子。"
-                                        ),
-                                    }.get(language_mode, "어린이가 이해하기 쉽게 답변해주세요.")
-                                    prompt = f"""다음은 {_display_zone_name(zone)}의 {selected_disp} 정보입니다:
-{context}
-
-사용자 질문: {user_question}
-
-{lang_instruction}"""
-                                    try:
-                                        response = llm.invoke(prompt)
-                                        answer_text = response.content
+                                try:
+                                    # ReAct 에이전트 생성
+                                    tools = _get_question_tools(zone, zone_rows, vector_db)
+                                    agent_executor = _create_question_agent(llm, tools, language_mode, user_mode)
+                                    
+                                    # ReAct 에이전트 실행
+                                    with st.spinner(text.get("answer_generating", "답변 생성 중...")):
+                                        result = agent_executor.invoke({"input": user_question})
+                                        answer_text = result.get("output", "")
                                         st.session_state[answer_cache_key] = answer_text
                                         st.markdown(f"**{text['answer_prefix']}:** {answer_text}")
-                                    except Exception as e:
-                                        print(f"학습 질문 답변 오류: {e}")
-                                        st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
+                                except Exception as e:
+                                    print(f"학습 질문 ReAct 답변 오류: {e}")
+                                    import traceback
+                                    traceback.print_exc()
+                                    st.error(text.get("answer_error", "답변 생성 중 오류가 발생했습니다. 다시 시도해주세요."))
                             else:
                                 # 캐시된 답변 사용
                                 answer_text = st.session_state[answer_cache_key]

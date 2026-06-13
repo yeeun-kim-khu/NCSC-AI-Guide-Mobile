@@ -5549,14 +5549,37 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
     특정 날짜 또는 이번 주의 교육 프로그램 일정을 반환합니다.
 
     [언제 사용하는가]
-    - "오늘 교육프로그램 뭐야?", "이번 주 수업 있어?", "토요일 교육 알려줘" 같은 질문
+    - "오늘 교육프로그램 뭐야?", "이번 주 수업 있어?", "토요일 교육 알려줘", "7월 프로그램", "7월 15일" 같은 질문
 
     [입력]
-    - query_date: "오늘", "이번 주", "토요일", "5월 23일" 등
+    - query_date: "오늘", "이번 주", "토요일", "5월 23일", "7월", "7월 15일" 등
     """
     now_kst = datetime.now(timezone.utc) + timedelta(hours=9)
     today = now_kst.date()
     weekday_kr = ["월", "화", "수", "목", "금", "토", "일"][today.weekday()]
+
+    # query_date 파싱
+    import re
+    target_month = None
+    target_day = None
+
+    if query_date == "오늘":
+        target_month = today.month
+        target_day = today.day
+    elif query_date == "이번 주":
+        target_month = today.month
+        target_day = None  # 이번 주 전체
+    elif "월" in query_date:
+        month_match = re.search(r'(\d+)월', query_date)
+        if month_match:
+            target_month = int(month_match.group(1))
+            day_match = re.search(r'(\d+)일', query_date)
+            if day_match:
+                target_day = int(day_match.group(1))
+    else:
+        # 기본값: 오늘
+        target_month = today.month
+        target_day = today.day
 
     csv_path = os.path.join(os.path.dirname(__file__), "data", "교육프로그램.csv")
     if not os.path.exists(csv_path):
@@ -5574,23 +5597,25 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             return "교육프로그램 데이터를 읽을 수 없습니다."
         df.columns = [str(c).strip() for c in df.columns]
 
-        # 이번 주/다음 주 토요일/일요일 날짜 계산
-        days_to_sat = (5 - today.weekday()) % 7
-        days_to_sun = (6 - today.weekday()) % 7
-        this_sat = today + timedelta(days=days_to_sat)
-        this_sun = today + timedelta(days=days_to_sun)
-        next_sat = this_sat + timedelta(days=7)
-        next_sun = this_sun + timedelta(days=7)
-
         results = []
-        results.append(f"[오늘: {today.month}월 {today.day}일 ({weekday_kr}요일)]")
-        results.append(f"[이번 주 토요일: {this_sat.month}월 {this_sat.day}일 / 일요일: {this_sun.month}월 {this_sun.day}일]")
-        results.append(f"[다음 주 토요일: {next_sat.month}월 {next_sat.day}일 / 일요일: {next_sun.month}월 {next_sun.day}일]")
-        results.append("")
 
-        today_programs = []
-        this_week_programs = []
-        next_week_programs = []
+        if target_day is None:
+            # 월 전체 또는 이번 주 전체
+            if query_date == "이번 주":
+                # 이번 주 토/일 계산
+                days_to_sat = (5 - today.weekday()) % 7
+                days_to_sun = (6 - today.weekday()) % 7
+                this_sat = today + timedelta(days=days_to_sat)
+                this_sun = today + timedelta(days=days_to_sun)
+                results.append(f"[이번 주: {today.month}월 {today.day}일({weekday_kr}) ~ {this_sun.month}월 {this_sun.day}일(일)]")
+            else:
+                results.append(f"[{target_month}월 전체 교육 프로그램]")
+            results.append("")
+        else:
+            results.append(f"[{target_month}월 {target_day}일 교육 프로그램]")
+            results.append("")
+
+        matched_programs = []
 
         for _, row in df.iterrows():
             program = str(row.get("프로그램명", "")).strip()
@@ -5600,67 +5625,38 @@ def get_education_programs_by_date(query_date: str = "오늘") -> str:
             dates_str = str(row.get("교육일", "")).strip()
             weekday_str = str(row.get("수업요일", "")).strip()
             time_slot = str(row.get("수업시간", "")).strip().replace("~", "-")
-            target = str(row.get("교육대상", "")).strip()
+            target_audience = str(row.get("교육대상", "")).strip()
             fee = str(row.get("교육비", "")).strip()
             location = str(row.get("장소", "")).strip()
             apply_period = str(row.get("신청기간", "")).strip().replace("~", "-")
 
             title = program + (f" - {sub}" if sub and sub != "nan" else "")
 
-            def _date_in_schedule(date_obj, schedule_str):
-                """CSV 교육일 문자열에 특정 날짜가 포함되어 있는지 확인.
-                형식 예: '5월 9일/16일/23일/30일' 또는 '6월 6일/13일/20일/27일'"""
-                import re as _re
-                # "N월" 으로 월 확인
-                month_match = _re.search(r'(\d+)월', schedule_str)
-                if not month_match:
-                    return False
-                sched_month = int(month_match.group(1))
-                if sched_month != date_obj.month:
-                    return False
-                # 일자 목록 추출 (숫자+일 패턴)
-                days = [int(d) for d in _re.findall(r'(\d+)일', schedule_str)]
-                return date_obj.day in days
+            # 월 매칭 확인
+            month_match = re.search(r'(\d+)월', dates_str)
+            if not month_match:
+                continue
+            sched_month = int(month_match.group(1))
+            if sched_month != target_month:
+                continue
 
-            is_today = _date_in_schedule(today, dates_str)
-            is_this_sat = _date_in_schedule(this_sat, dates_str)
-            is_this_sun = _date_in_schedule(this_sun, dates_str)
-            is_next_sat = _date_in_schedule(next_sat, dates_str)
-            is_next_sun = _date_in_schedule(next_sun, dates_str)
+            # 일자 매칭 확인
+            if target_day is not None:
+                days = [int(d) for d in re.findall(r'(\d+)일', dates_str)]
+                if target_day not in days:
+                    continue
 
             loc_str = f" | 장소: {location}" if location and location != "nan" else ""
-            entry = f"- **{title}** | 대상: {target} | 시간: {time_slot}{loc_str} | 교육비: {fee} | 신청: {apply_period}"
+            entry = f"- **{title}** | 대상: {target_audience} | 시간: {time_slot}{loc_str} | 교육비: {fee} | 신청: {apply_period}"
+            matched_programs.append(entry)
 
-            if is_today:
-                today_programs.append(entry)
-            if is_this_sat:
-                this_week_programs.append(f"[토요일 {this_sat.month}월 {this_sat.day}일] {entry}")
-            if is_this_sun:
-                this_week_programs.append(f"[일요일 {this_sun.month}월 {this_sun.day}일] {entry}")
-            if is_next_sat:
-                next_week_programs.append(f"[다음 주 토요일 {next_sat.month}월 {next_sat.day}일] {entry}")
-            if is_next_sun:
-                next_week_programs.append(f"[다음 주 일요일 {next_sun.month}월 {next_sun.day}일] {entry}")
-
-        if today_programs:
-            results.append(f"✅ **오늘({weekday_kr}요일) 교육 프로그램:**")
-            results.extend(today_programs)
+        if matched_programs:
+            results.extend(matched_programs)
         else:
-            results.append(f"오늘({weekday_kr}요일)은 정기 교육 프로그램이 없습니다.")
-
-        results.append("")
-        if this_week_programs:
-            results.append("📅 **이번 주 예정 프로그램:**")
-            results.extend(this_week_programs)
-        else:
-            results.append("이번 주 예정된 프로그램 정보가 없습니다.")
-
-        results.append("")
-        if next_week_programs:
-            results.append("📅 **다음 주 예정 프로그램:**")
-            results.extend(next_week_programs)
-        else:
-            results.append("다음 주 예정된 프로그램 정보가 없습니다.")
+            if target_day is None:
+                results.append(f"{target_month}월 예정된 교육 프로그램이 없습니다.")
+            else:
+                results.append(f"{target_month}월 {target_day}일 예정된 교육 프로그램이 없습니다.")
 
         return "\n".join(results)
 
@@ -6229,7 +6225,7 @@ def _load_planetarium_videos():
     return rows
 
 
-def load_zone_rows_from_csv(zone_name: str):
+def load_zone_rows_from_csv(zone_name: str, include_text_panels: bool = False):
     # 천체투영관: 상영 영상을 전시물로 사용
     if zone_name == "천체투영관":
         return _load_planetarium_videos()
@@ -6349,7 +6345,8 @@ def load_zone_rows_from_csv(zone_name: str):
             "zone_type": zone_type_val,
             "keyword_flag": keyword_flag,
         })
-    rows = [x for x in rows if x.get("title")]
+    if not include_text_panels:
+        rows = [x for x in rows if x.get("title")]
     return rows
 
 
