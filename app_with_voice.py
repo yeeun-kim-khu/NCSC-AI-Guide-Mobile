@@ -626,6 +626,14 @@ def main():
         font-weight: 700 !important;
         border-radius: 12px !important;
     }
+    /* 사이드바 기본 숨김 - 시작 시 닫힌 상태 강제 */
+    [data-testid="stSidebar"] > div:first-child {
+        display: none !important;
+    }
+    /* 사이드바가 열려있을 때는 내용 표시 */
+    [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+        display: block !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -642,6 +650,16 @@ def main():
             // block-container 하단 패딩 제거
             p.document.querySelectorAll('.block-container').forEach(function(el) {
                 el.style.setProperty('padding-bottom', '0.5rem', 'important');
+            });
+            // 사이드바 토글 버튼 자동 클릭하여 닫기
+            p.document.querySelectorAll('[data-testid="stSidebar"]').forEach(function(el) {
+                if (el.style.display !== 'none') {
+                    // 사이드바가 열려있으면 토글 버튼 클릭
+                    var toggleBtn = p.document.querySelector('[data-testid="stSidebarHeader"]');
+                    if (toggleBtn) {
+                        toggleBtn.click();
+                    }
+                }
             });
         }
         hide();
