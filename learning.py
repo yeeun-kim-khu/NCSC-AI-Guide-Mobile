@@ -1434,12 +1434,15 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
             atmosphere_titles.append(t)
     atmosphere_summary = ", ".join(atmosphere_titles) if atmosphere_titles else ""
 
-    # ---- 텍스트 패널(title 없는 설명 행) 로드 ----
+    # ---- 텍스트 패널(title 없는 설명 행) 로드 — 다중 전시관 대응 ----
+    _all_csv_rows = []
     try:
         from core import load_zone_rows_from_csv as _load_csv_all
-        _all_csv_rows = _load_csv_all(zone_name, include_text_panels=True)
+        for _zn in [z.strip() for z in zone_name.split(",")]:
+            if _zn:
+                _all_csv_rows.extend(_load_csv_all(_zn, include_text_panels=True))
     except Exception:
-        _all_csv_rows = []
+        pass
     _text_panels = [
         r for r in _all_csv_rows
         if not r.get("title") and (
@@ -1471,9 +1474,6 @@ def generate_science_story(zone_name, exhibits, principles, language="한국어"
 
     # principles_text: 원리 이름 (아하 순간 명명용) — 설명은 _principles_context 로 별도 제공
     principles_text = principles[0] if principles else (all_titles[0] if all_titles else zone_name)
-    _principle_desc_first = next(
-        (d for d in _content_descs if not d.startswith("[설명판]")), ""
-    )
     _principles_context = (
         f"   (전시관 과학 설명 — LLM 참고용, 이야기 속 직접 인용 금지):\n"
         + principles_descriptions_text
