@@ -5287,19 +5287,18 @@ def search_directions(origin: str, destination: str = "국립어린이과학관"
     try:
         result = f"""[search_directions 결과] {origin} → {destination}
 
-⚠️ 실시간 경로 API 미연동 — {origin}에서의 구체적인 노선번호·환승역·소요시간을 임의로 추측하지 마세요.
-출발지별 정확한 경로는 아래 지도 앱 링크를 안내하는 것으로 대체하세요.
-
-[목적지 고정 정보 — 정확]
+[목적지 고정 정보]
 - 국립어린이과학관 위치: 서울특별시 종로구 창경궁로 215
 - 가장 가까운 지하철역: 혜화역 (도보 약 7분)
 - 주차장 없음 → 대중교통 이용 필수
 
-[사용자에게 반드시 안내할 지도 링크]
-- 네이버 지도: https://map.naver.com/v5/search/국립어린이과학관
-- 카카오맵: https://map.kakao.com/?q=국립어린이과학관
-
-위 링크에서 출발지를 '{origin}'으로 설정하면 정확한 경로를 확인할 수 있습니다."""
+[안내 방법]
+1. {origin}에서 혜화역까지의 개략적인 대중교통 경로를 LLM 지식 기반으로 먼저 안내하세요.
+   - 환승역, 노선 등을 포함한 참고용 경로를 자연스럽게 설명하세요.
+   - 단, "참고용 경로이며 실제 소요시간·배차간격은 달라질 수 있습니다"라는 안내를 포함하세요.
+2. 이후 정확한 실시간 경로 확인을 위해 아래 지도 링크를 안내하세요:
+   - 네이버 지도: https://map.naver.com/v5/search/국립어린이과학관
+   - 카카오맵: https://map.kakao.com/?q=국립어린이과학관"""
         return result
     except Exception as e:
         return f"[search_directions 오류] {str(e)}\n네이버 지도 또는 카카오맵에서 '{origin}'→'{destination}' 경로를 직접 검색해주세요."

@@ -882,6 +882,27 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
             "• 헷갈리는 오답 1개 교정 ('~처럼 보이지만 사실은 ~이랍니다!')\n"
             "말투: '~에요', '~이랍니다' 친근한 존댓말. 이모지 1~2개 포함."
         )
+        explanation_tone_en = (
+            "Write 3-4 warm, child-friendly sentences: "
+            "① Define the key concept simply ('___ is ___!') "
+            "② Explain why the answer is correct in easy words "
+            "③ Correct the most tempting wrong choice. "
+            "Tone: encouraging, simple vocabulary for ages 6-10. Include 1-2 emojis."
+        )
+        explanation_tone_ja = (
+            "子どもに話しかけるように温かく3〜4文で書いてください: "
+            "①「〜とは〜です！」の形で重要な用語を定義 "
+            "②なぜその答えが正しいかを簡単に説明 "
+            "③間違いやすい選択肢を「〜に見えますが、実は〜なんです！」で訂正。"
+            "口調：「〜だよ」「〜だね」など優しい口調。絵文字1〜2個。"
+        )
+        explanation_tone_zh = (
+            "用温暖、亲切的语气为儿童写3-4句话: "
+            "①先用'___就是___！'定义核心概念 "
+            "②解释为什么答案正确（简单易懂） "
+            "③纠正最容易混淆的错误选项。"
+            "语气：亲切活泼，适合6-10岁。包含1-2个表情符号。"
+        )
     else:
         explanation_tone = (
             "과학적으로 정확하고 간결하게 3~4문장으로 작성:\n"
@@ -889,6 +910,27 @@ def generate_quiz(zone_name, principle, llm, language="한국어", variation_see
             "• 관련 원리나 실생활 응용 예시 1가지\n"
             "• 오답 중 가장 혼동하기 쉬운 선택지의 오류 설명\n"
             "말투: 정중하고 명확한 존댓말 (~습니다, ~입니다). 이모지 없음."
+        )
+        explanation_tone_en = (
+            "Write 3-4 precise, informative sentences: "
+            "① Define the key concept accurately "
+            "② Explain the scientific reasoning behind the correct answer "
+            "③ Clarify why the most tempting wrong choice is incorrect. "
+            "Tone: clear, adult-appropriate. No emojis."
+        )
+        explanation_tone_ja = (
+            "科学的に正確で簡潔な3〜4文で書いてください: "
+            "①重要な概念を正確に定義 "
+            "②正解が正しい科学的理由を説明 "
+            "③最も間違えやすい選択肢の誤りを指摘。"
+            "口調：丁寧で明確な敬語（〜です、〜ます）。絵文字なし。"
+        )
+        explanation_tone_zh = (
+            "用准确、简洁的语气写3-4句话: "
+            "①准确定义核心概念 "
+            "②说明正确答案背后的科学原理 "
+            "③指出最容易混淆的错误选项的问题。"
+            "语气：正式、准确。不使用表情符号。"
         )
 
     language_prompts = {
@@ -941,7 +983,7 @@ Output a single JSON object with this schema. No code fences.
   "question": "Single, clear question for ages 10-12",
   "options": ["option 1", "option 2", "option 3", "option 4"],
   "correct_index": 0,
-  "explanation": "① Define the key concept in plain words → ② 1-2 sentences on why the answer is correct → ③ One sentence correcting the most tempting wrong choice. 3-4 sentences total, upper-elementary level."
+  "explanation": "{explanation_tone_en}"
 }}
 - correct_index is an integer 0-3 indexing the options array.
 - Exactly 4 options.
@@ -964,7 +1006,7 @@ Output a single JSON object with this schema. No code fences.
   "question": "10〜12歳の子どもが分かる1文の質問",
   "options": ["選択肢1", "選択肢2", "選択肢3", "選択肢4"],
   "correct_index": 0,
-  "explanation": "正解の理由を2-3文で。間違いやすい選択肢の理由も一言。"
+  "explanation": "{explanation_tone_ja}"
 }}
 """
     elif language == "中文":
@@ -982,7 +1024,7 @@ Output a single JSON object with this schema. No code fences.
   "question": "10-12岁儿童能理解的一句话提问",
   "options": ["选项1", "选项2", "选项3", "选项4"],
   "correct_index": 0,
-  "explanation": "用2-3句话解释为什么正确，并简单点出一个常见错误选项为何不对。"
+  "explanation": "{explanation_tone_zh}"
 }}
 """
 
